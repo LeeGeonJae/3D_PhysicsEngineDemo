@@ -1,5 +1,5 @@
 #pragma once
-#include "GameProcess.h"
+#include "../Engine/GameProcess.h"
 
 class TestApp : public GameProcess
 {
@@ -8,4 +8,7 @@ class TestApp : public GameProcess
 	void LateUpdate() override;
 	void FixedUpdate() override;
 	void Render() override;
+
+public:
+	int a;
 };

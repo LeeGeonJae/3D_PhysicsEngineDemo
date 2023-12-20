@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <Windows.h>
 
 enum class KEY_TYPE
 {
@@ -44,7 +46,7 @@ enum
 class InputManager
 {
 private:
-	InputManager();
+	InputManager() {}
 public:
 	static InputManager* GetInstance()
 	{

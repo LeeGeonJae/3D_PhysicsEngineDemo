@@ -1,9 +1,10 @@
-#include "EnginePch.h"
-#include "Game.h"
-
+#include "../Engine/Game.h"
 #include "TestApp.h"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR IpCmdLine, int nShowCmd)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
 	GameDesc desc;
 	desc.appName = L"TestApp";

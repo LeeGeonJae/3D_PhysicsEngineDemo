@@ -18,7 +18,7 @@
 	class Game
 	{
 	private:
-		Game();
+		Game() {}
 	public:
 		static Game* GetInstance()
 		{

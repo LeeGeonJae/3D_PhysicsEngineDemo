@@ -1,5 +1,4 @@
 #pragma once
-#include <windows.h>
 #include <directxtk/SimpleMath.h>
 
 using int8 = __int8;

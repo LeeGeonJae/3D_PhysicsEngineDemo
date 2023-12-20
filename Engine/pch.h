@@ -1,11 +1,6 @@
 ﻿#ifndef PCH_H
 #define PCH_H
 
-#include "Enginepch.h"
-#include "Types.h"
-
-
-
-
+#include "Header.h"
 
 #endif 
