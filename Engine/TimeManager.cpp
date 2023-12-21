@@ -1,19 +1,6 @@
 #include "pch.h"
 #include "TimeManager.h"
 
-TimeManager::TimeManager()
-	:m_llcurCount{}
-	, m_llPrevCount{}
-	, m_llFrequency{}
-	, m_dDT(0.)
-	, m_iCallCount(0)
-{
-}
-
-TimeManager::~TimeManager()
-{
-}
-
 void TimeManager::Initialize()
 {
 	// 현재 카운트

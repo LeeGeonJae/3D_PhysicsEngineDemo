@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "Game.h"
 
+#include "InputManager.h"
+#include "TimeManager.h"
+#include "Graphics.h"
 
-WPARAM Game::Run(GameDesc& desc)
+WPARAM Game::Run(GameDesc& _desc)
 {
-	mdesc = desc;
-	assert(mdesc.app != nullptr);
+	m_Desc = _desc;
+	assert(m_Desc.app != nullptr);
 
 	//1) 윈도우 창 정보 등록
 	MyRegisterClass();
@@ -14,10 +17,11 @@ WPARAM Game::Run(GameDesc& desc)
 	if (!InitInstance(SW_SHOWNORMAL))
 		return FALSE;
 
-	InputManager::GetInstance()->Init(desc.hwnd);
+	InputManager::GetInstance()->Init(m_Desc.hwnd);
 	TimeManager::GetInstance()->Initialize();
+	Graphics::GetInstance()->Init(m_Desc.hwnd);
 
-	mdesc.app->Init();
+	m_Desc.app->Init();
 
 	MSG msg = { 0 };
 
@@ -47,30 +51,30 @@ ATOM Game::MyRegisterClass()
 	wcex.lpfnWndProc = WndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
-	wcex.hInstance = mdesc.hInstance;
+	wcex.hInstance = m_Desc.hInstance;
 	wcex.hIcon = ::LoadIcon(NULL, IDI_WINLOGO);
 	wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = NULL;
-	wcex.lpszClassName = mdesc.appName.c_str();
+	wcex.lpszClassName = m_Desc.appName.c_str();
 	wcex.hIconSm = wcex.hIcon;
 
 	return RegisterClassExW(&wcex);
 }
 
-BOOL Game::InitInstance(int cmdShow)
+BOOL Game::InitInstance(int _cmdShow)
 {
-	RECT windowRect = { 0, 0, mdesc.width, mdesc.height };
+	RECT windowRect = { 0, 0, m_Desc.width, m_Desc.height };
 	::AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, false);
 
-	mdesc.hwnd = CreateWindowW(mdesc.appName.c_str(), mdesc.appName.c_str(), WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, mdesc.hInstance, nullptr);
+	m_Desc.hwnd = CreateWindowW(m_Desc.appName.c_str(), m_Desc.appName.c_str(), WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, m_Desc.hInstance, nullptr);
 
-	if (!mdesc.hwnd)
+	if (!m_Desc.hwnd)
 		return FALSE;
 
-	::ShowWindow(mdesc.hwnd, cmdShow);
-	::UpdateWindow(mdesc.hwnd);
+	::ShowWindow(m_Desc.hwnd, _cmdShow);
+	::UpdateWindow(m_Desc.hwnd);
 
 	return TRUE;
 }
@@ -95,8 +99,12 @@ void Game::Update()
 	TimeManager::GetInstance()->Update();
 	InputManager::GetInstance()->Update();
 
-	mdesc.app->Update();
-	mdesc.app->FixedUpdate();
-	mdesc.app->LateUpdate();
-	mdesc.app->Render();
+	Graphics::GetInstance()->RenderBegin();
+
+	m_Desc.app->Update();
+	m_Desc.app->FixedUpdate();
+	m_Desc.app->LateUpdate();
+	m_Desc.app->Render();
+
+	Graphics::GetInstance()->RenderEnd();
 }

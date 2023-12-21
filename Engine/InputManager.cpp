@@ -4,17 +4,17 @@
 
 void InputManager::Init(HWND hwnd)
 {
-	mHwnd = hwnd;
-	mKeyStates.resize(KEY_TYPE_COUNT, KEY_STATE::NONE);
+	m_Hwnd = hwnd;
+	m_KeyStates.resize(KEY_TYPE_COUNT, KEY_STATE::NONE);
 }
 
 void InputManager::Update()
 {
 	HWND hwnd = ::GetActiveWindow();
-	if (mHwnd != hwnd)
+	if (m_Hwnd != hwnd)
 	{
 		for (uint32 key = 0; key < KEY_TYPE_COUNT; key++)
-			mKeyStates[key] = KEY_STATE::NONE;
+			m_KeyStates[key] = KEY_STATE::NONE;
 
 		return;
 	}
@@ -29,7 +29,7 @@ void InputManager::Update()
 		// 키가 눌려 있으면 true
 		if (asciiKeys[key] & 0x80)
 		{
-			KEY_STATE& state = mKeyStates[key];
+			KEY_STATE& state = m_KeyStates[key];
 
 			// 이전 프레임에 키를 누른 상태라면 PRESS
 			if (state == KEY_STATE::PRESS || state == KEY_STATE::DOWN)
@@ -39,7 +39,7 @@ void InputManager::Update()
 		}
 		else
 		{
-			KEY_STATE& state = mKeyStates[key];
+			KEY_STATE& state = m_KeyStates[key];
 
 			// 이전 프레임에 키를 누른 상태라면 UP
 			if (state == KEY_STATE::PRESS || state == KEY_STATE::DOWN)
@@ -49,6 +49,6 @@ void InputManager::Update()
 		}
 	}
 
-	::GetCursorPos(&mMousePos);
-	::ScreenToClient(mHwnd, &mMousePos);
+	::GetCursorPos(&m_MousePos);
+	::ScreenToClient(m_Hwnd, &m_MousePos);
 }

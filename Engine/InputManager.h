@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <Windows.h>
+#include "Define.h"
 
 enum class KEY_TYPE
 {
@@ -45,47 +46,40 @@ enum
 
 class InputManager
 {
-private:
-	InputManager() {}
-public:
-	static InputManager* GetInstance()
-	{
-		static InputManager inputManager;
-		return &inputManager;
-	}
+	SINGLETON(InputManager);
 
 public:
-	void Init(HWND hwnd);
+	void Init(HWND _hwnd);
 	void Update();
 
-	inline bool GetButton(KEY_TYPE key);
-	inline bool GetButtonDown(KEY_TYPE key);
-	inline bool GetButtonUp(KEY_TYPE key);
+	inline bool GetButton(KEY_TYPE _key);
+	inline bool GetButtonDown(KEY_TYPE _key);
+	inline bool GetButtonUp(KEY_TYPE _key);
 
 private:
 	inline KEY_STATE GetKeyState(KEY_TYPE key);
 
 private:
-	HWND mHwnd;
-	std::vector<KEY_STATE> mKeyStates;
-	POINT mMousePos = {};
+	HWND m_Hwnd;
+	std::vector<KEY_STATE> m_KeyStates;
+	POINT m_MousePos = {};
 };
 
-bool InputManager::GetButton(KEY_TYPE key)
+bool InputManager::GetButton(KEY_TYPE _key)
 {
-	return GetKeyState(key) == KEY_STATE::PRESS;
+	return GetKeyState(_key) == KEY_STATE::PRESS;
 }
-bool InputManager::GetButtonDown(KEY_TYPE key)
+bool InputManager::GetButtonDown(KEY_TYPE _key)
 {
-	return GetKeyState(key) == KEY_STATE::DOWN;
+	return GetKeyState(_key) == KEY_STATE::DOWN;
 }
-bool InputManager::GetButtonUp(KEY_TYPE key)
+bool InputManager::GetButtonUp(KEY_TYPE _key)
 {
-	return GetKeyState(key) == KEY_STATE::UP;
+	return GetKeyState(_key) == KEY_STATE::UP;
 }
 
 
-KEY_STATE InputManager::GetKeyState(KEY_TYPE key)
+KEY_STATE InputManager::GetKeyState(KEY_TYPE _key)
 {
-	return mKeyStates[static_cast<unsigned char>(key)];
+	return m_KeyStates[static_cast<unsigned char>(_key)];
 }

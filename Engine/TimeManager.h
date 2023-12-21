@@ -2,16 +2,7 @@
 
 class TimeManager
 {
-public:
-	static TimeManager* GetInstance()
-	{
-		static TimeManager mgr;
-		return &mgr;
-	}
-private:
-	TimeManager();
-	~TimeManager();
-
+	SINGLETON(TimeManager);
 public:
 	void Initialize();
 	void Update();
