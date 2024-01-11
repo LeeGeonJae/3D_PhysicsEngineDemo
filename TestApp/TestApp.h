@@ -1,5 +1,5 @@
 #pragma once
-#include "../Engine/GameProcess.h"
+#include "GameProcess.h"
 
 class TestApp : public GameProcess
 {
@@ -10,5 +10,4 @@ class TestApp : public GameProcess
 	void Render() override;
 
 public:
-	int a;
 };

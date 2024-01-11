@@ -1,4 +1,4 @@
-#include "../Engine/Game.h"
+#include "Game.h"
 #include "TestApp.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -6,7 +6,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	GameDesc desc;
+	Engine::GameDesc desc;
 	desc.appName = L"TestApp";
 	desc.hInstance = hInstance;
 	desc.hwnd = NULL;
@@ -15,7 +15,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	desc.clearColor = Color(0.5f, 0.5f, 0.5f, 0.5);
 	desc.app = make_shared<TestApp>();
 
-	Game::GetInstance()->Run(desc);
+	GAME->Run(desc);
+
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+	_CrtDumpMemoryLeaks();
 
 	return 0;
 }
