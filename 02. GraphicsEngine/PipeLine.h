@@ -26,7 +26,7 @@ namespace GraphicsEngine
 		void createInputLayout();
 
 	private:
-		void LoadShaderFromFile(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob);
+		void LoadShaderFromFile(const string& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob);
 
 	private:
 		ComPtr<ID3D11Device> m_Device;

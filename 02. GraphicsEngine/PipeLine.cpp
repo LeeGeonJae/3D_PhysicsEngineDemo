@@ -68,7 +68,7 @@ namespace GraphicsEngine
 		m_Device->CreateInputLayout(layout, count, m_vsBlob->GetBufferPointer(), m_vsBlob->GetBufferSize(), m_InputLayout.GetAddressOf());
 	}
 
-	void PipeLine::LoadShaderFromFile(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob)
+	void PipeLine::LoadShaderFromFile(const string& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob)
 	{
 		const unsigned int compileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 

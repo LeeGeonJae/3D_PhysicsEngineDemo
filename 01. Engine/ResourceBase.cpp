@@ -1,11 +1,18 @@
 #include "pch.h"
 #include "ResourceBase.h"
 
-Engine::ResourceBase::ResourceBase()
-	: m_ResourceType(ResourceType::None)
+namespace Engine
 {
-}
+	ResourceBase::ResourceBase()
+		: m_ResourceType(ResourceType::None)
+	{
+	}
 
-Engine::ResourceBase::~ResourceBase()
-{
+	ResourceBase::~ResourceBase()
+	{
+	}
+
+	void ResourceBase::Create(string _path)
+	{
+	}
 }

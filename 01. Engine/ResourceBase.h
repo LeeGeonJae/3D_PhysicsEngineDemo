@@ -16,7 +16,11 @@ namespace Engine
 		End
 	};
 
+
+
 	constexpr int RESOURCE_TYPE_COUNT = static_cast<int>(ResourceType::End);
+
+
 
 	class ResourceBase
 	{
@@ -25,26 +29,36 @@ namespace Engine
 		virtual ~ResourceBase();
 
 	public:
-		inline const ResourceType& GetResourceType();
-		inline const wstring& GetPath();
-		inline const wstring& GetName();
+		virtual void Create(string _path);
 
-	private:
+	public:
+		inline const ResourceType& GetResourceType();
+		inline const string& GetPath();
+		inline const string& GetName();
+		inline void SetName(string _name);
+
+	protected:
 		ResourceType m_ResourceType;
-		wstring m_Path;
-		wstring m_Name;
+		string m_Path;
+		string m_Name;
 	};
+
+
 
 	const ResourceType& ResourceBase::GetResourceType()
 	{
 		return m_ResourceType;
 	}
-	const wstring& ResourceBase::GetPath()
+	const string& ResourceBase::GetPath()
 	{
 		return m_Path;
 	}
-	const wstring& ResourceBase::GetName()
+	const string& ResourceBase::GetName()
 	{
 		return m_Name;
+	}
+	void ResourceBase::SetName(string _name)
+	{
+		m_Name = _name;
 	}
 }
