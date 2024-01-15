@@ -3,10 +3,10 @@
 
 namespace Engine
 {
+	// 텍스쳐 타입 열거형
 	enum class TextureType
 	{
-		BASECOLOR = 0,
-		DIFFUSE,
+		DIFFUSE = 0,
 		NORMAL,
 		SPECULAR,
 		OPACITY,
@@ -18,9 +18,8 @@ namespace Engine
 	};
 
 
-
-    class Texture :
-        public ResourceBase
+	// 텍스쳐 클래스
+    class Texture : public ResourceBase
     {
     public:
         Texture();
@@ -34,10 +33,9 @@ namespace Engine
 		inline TextureType GetTextureType();
 
 	private:
+		ComPtr<ID3D11ShaderResourceView> m_Texture;
 		TextureType m_TextureType;
     };
-
-
 
 	void Texture::SetTextureType(TextureType _type)
 	{

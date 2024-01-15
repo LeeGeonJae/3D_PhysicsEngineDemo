@@ -6,7 +6,7 @@ namespace Engine
 	class AnimationResource;
 
 
-
+	// 노드 데이터 구조체
 	struct NodeData
 	{
 		string m_Name;
@@ -14,7 +14,7 @@ namespace Engine
 	};
 
 
-
+	// 노드 구조체
 	class Node
 	{
 	public:
@@ -22,7 +22,7 @@ namespace Engine
 		~Node();
 
 	public:
-
+		void Update();
 
 	private:
 		NodeData m_NodeData;

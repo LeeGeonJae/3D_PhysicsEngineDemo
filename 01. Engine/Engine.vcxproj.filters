@@ -54,22 +54,23 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>03. Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
+    <ClInclude Include="MaterialResource.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
+    <ClInclude Include="SkeletalMeshResource.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Bone.h">
-      <Filter>98. Resource\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletalMesh.h">
-      <Filter>98. Resource\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticMesh.h">
+    <ClInclude Include="StaticMeshResource.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
+      <Filter>98. Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="AnimationResource.h">
+      <Filter>98. Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonResource.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,22 +99,23 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>03. Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
+    <ClCompile Include="MaterialResource.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Bone.cpp">
+    <ClCompile Include="SkeletalMeshResource.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>98. Resource\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletalMesh.cpp">
-      <Filter>98. Resource\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticMesh.cpp">
+    <ClCompile Include="StaticMeshResource.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
+      <Filter>98. Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="AnimationResource.cpp">
+      <Filter>98. Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonResource.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
   </ItemGroup>

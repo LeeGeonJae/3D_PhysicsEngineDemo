@@ -2,13 +2,13 @@
 
 namespace Engine
 {
+	// 리소스 타입 열거형
 	enum class ResourceType
 	{
 		None = 1,
 		StaticMesh,
 		SkeletalMesh,
 		Shader,
-		Texture,
 		Material,
 		Animation,
 		Bone,
@@ -16,12 +16,10 @@ namespace Engine
 		End
 	};
 
-
-
 	constexpr int RESOURCE_TYPE_COUNT = static_cast<int>(ResourceType::End);
 
 
-
+	// 리소스 기반 클래스
 	class ResourceBase
 	{
 	public:
@@ -42,8 +40,6 @@ namespace Engine
 		string m_Path;
 		string m_Name;
 	};
-
-
 
 	const ResourceType& ResourceBase::GetResourceType()
 	{

@@ -149,31 +149,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
-    <ClInclude Include="Bone.h" />
+    <ClInclude Include="AnimationResource.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameProcess.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialResource.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="SkeletalMesh.h" />
-    <ClInclude Include="StaticMesh.h" />
+    <ClInclude Include="SkeletalMeshResource.h" />
+    <ClInclude Include="SkeletonResource.h" />
+    <ClInclude Include="StaticMeshResource.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Bone.cpp" />
+    <ClCompile Include="AnimationResource.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameProcess.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialResource.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -183,8 +184,9 @@
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="SkeletalMesh.cpp" />
-    <ClCompile Include="StaticMesh.cpp" />
+    <ClCompile Include="SkeletalMeshResource.cpp" />
+    <ClCompile Include="SkeletonResource.cpp" />
+    <ClCompile Include="StaticMeshResource.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>

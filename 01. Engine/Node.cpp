@@ -11,5 +11,8 @@ namespace Engine
 	{
 	}
 
+	void Node::Update()
+	{
+	}
 }
 
