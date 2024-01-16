@@ -21,9 +21,7 @@ namespace Engine
 
 		InputManager::GetInstance()->Initalize(m_Desc.hwnd);
 		TimeManager::GetInstance()->Initialize();
-
-		m_RenderManager = make_shared<RenderManager>();
-		m_RenderManager->Initalize(m_Desc.hwnd);
+		RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
 
 		m_Desc.app->Init();
 
@@ -108,6 +106,6 @@ namespace Engine
 		m_Desc.app->LateUpdate();
 		m_Desc.app->Render();
 
-		m_RenderManager->Render();
+		RenderManager::GetInstance()->Render();
 	}
 }

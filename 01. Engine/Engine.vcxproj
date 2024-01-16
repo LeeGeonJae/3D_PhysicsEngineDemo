@@ -155,12 +155,13 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameProcess.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="MaterialResource.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalMeshResource.h" />
     <ClInclude Include="SkeletonResource.h" />
     <ClInclude Include="StaticMeshResource.h" />
@@ -173,7 +174,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameProcess.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="MaterialResource.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -184,6 +185,7 @@
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletalMeshResource.cpp" />
     <ClCompile Include="SkeletonResource.cpp" />
     <ClCompile Include="StaticMeshResource.cpp" />

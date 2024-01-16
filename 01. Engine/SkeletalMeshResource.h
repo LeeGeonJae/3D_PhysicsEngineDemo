@@ -25,7 +25,7 @@ namespace Engine
 
             for (int i = 0; i < 4; i++)
             {
-                if (m_BlendWeights[i] == 0.f);
+                if (m_BlendWeights[i] == 0.f)
                 {
                     m_BlendIndeces[i] = boneIndex;
                     m_BlendWeights[i] = weight;
@@ -37,22 +37,25 @@ namespace Engine
 
 
     // 본을 갖는 스켈레탈 메시 리소스 클래스
-    class SkeletalMeshResource
+    class SkeletalMesh
     {
     public:
-        SkeletalMeshResource();
-        virtual ~SkeletalMeshResource();
+        SkeletalMesh();
+        virtual ~SkeletalMesh();
 
     public:
-        void Create(aiMesh* mesh, SkeletonResource* skeleton);
+        void Create(aiMesh* _aiMesh, shared_ptr<SkeletonResource> _skeleton);
 
     public:
+        inline const string& GetName();
         inline vector<BoneWeightVertex> GetVertices();
         inline vector<UINT> GetIndices();
         inline ComPtr<ID3D11Buffer> GetVertexBuffer();
         inline ComPtr<ID3D11Buffer> GetIndexBuffer();
 
     private:
+        string m_Name;
+
         vector<BoneWeightVertex> m_BoneWeightVertices;
         vector<UINT> m_Indices;
 
@@ -60,19 +63,23 @@ namespace Engine
         ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
     };
 
-    vector<BoneWeightVertex> SkeletalMeshResource::GetVertices()
+    const string& SkeletalMesh::GetName()
+    {
+        return m_Name;
+    }
+    vector<BoneWeightVertex> SkeletalMesh::GetVertices()
     {
         return m_BoneWeightVertices;
     }
-    vector<UINT> SkeletalMeshResource::GetIndices()
+    vector<UINT> SkeletalMesh::GetIndices()
     {
         return m_Indices;
     }
-    ComPtr<ID3D11Buffer> SkeletalMeshResource::GetVertexBuffer()
+    ComPtr<ID3D11Buffer> SkeletalMesh::GetVertexBuffer()
     {
         return m_pVertexBuffer;
     }
-    ComPtr<ID3D11Buffer> SkeletalMeshResource::GetIndexBuffer()
+    ComPtr<ID3D11Buffer> SkeletalMesh::GetIndexBuffer()
     {
         return m_pIndexBuffer;
     }
@@ -86,9 +93,14 @@ namespace Engine
         virtual ~SkeletalMeshSceneResource();
 
     public:
-        void Create(string _path) override;
+        void Create(const aiScene* _aiScene, shared_ptr<SkeletonResource> _skeleton);
 
     private:
-        vector<SkeletalMeshResource> m_SkeletalMeshResource;
+        vector<SkeletalMesh> m_SkeletalMeshes;
+        vector<shared_ptr<Material>> m_Materials;
+
+        Vector3 m_AABBmin;
+        Vector3 m_AABBmax;
+        DirectX::BoundingBox m_BoundingBox;
     };
 }

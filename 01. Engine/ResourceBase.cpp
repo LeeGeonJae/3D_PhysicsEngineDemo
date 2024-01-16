@@ -3,16 +3,12 @@
 
 namespace Engine
 {
-	ResourceBase::ResourceBase()
-		: m_ResourceType(ResourceType::None)
+	ResourceBase::ResourceBase(ResourceType _type)
+		: m_ResourceType(_type)
 	{
 	}
 
 	ResourceBase::~ResourceBase()
-	{
-	}
-
-	void ResourceBase::Create(string _path)
 	{
 	}
 }

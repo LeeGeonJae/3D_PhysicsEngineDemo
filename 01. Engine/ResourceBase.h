@@ -5,49 +5,44 @@ namespace Engine
 	// 리소스 타입 열거형
 	enum class ResourceType
 	{
-		None = 1,
+		None = 0,
 		StaticMesh,
 		SkeletalMesh,
 		Shader,
 		Material,
+		Texture,
 		Animation,
 		Bone,
+		NodeData,
 
 		End
 	};
 
-	constexpr int RESOURCE_TYPE_COUNT = static_cast<int>(ResourceType::End);
-
+	enum
+	{
+		RESOURCE_TYPE_COUNT = static_cast<UINT>(ResourceType::End)
+	};
 
 	// 리소스 기반 클래스
-	class ResourceBase
+	class ResourceBase : public enable_shared_from_this<ResourceBase>
 	{
 	public:
-		ResourceBase();
+		ResourceBase(ResourceType _type);
 		virtual ~ResourceBase();
 
 	public:
-		virtual void Create(string _path);
-
-	public:
 		inline const ResourceType& GetResourceType();
-		inline const string& GetPath();
 		inline const string& GetName();
 		inline void SetName(string _name);
 
 	protected:
 		ResourceType m_ResourceType;
-		string m_Path;
 		string m_Name;
 	};
 
 	const ResourceType& ResourceBase::GetResourceType()
 	{
 		return m_ResourceType;
-	}
-	const string& ResourceBase::GetPath()
-	{
-		return m_Path;
 	}
 	const string& ResourceBase::GetName()
 	{

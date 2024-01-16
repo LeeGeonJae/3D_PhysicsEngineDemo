@@ -18,16 +18,18 @@ namespace Engine
 
 
     // 버텍스를 갖는 스태틱 메시 클래스
-    class StaticMeshResource 
+    class StaticMesh
     {
     public:
-        StaticMeshResource();
-        virtual ~StaticMeshResource();
+        StaticMesh();
+        virtual ~StaticMesh();
 
     public:
-        void Create(aiMesh* _mesh);
+        void Create(aiMesh* _aiMesh);
 
     private:
+        string m_Name;
+
         vector<Vertex> m_Vertices;
         vector<UINT> m_Indices;
 
@@ -44,13 +46,14 @@ namespace Engine
         virtual ~StaticMeshSceneResource();
 
     public:
-        void Create(string _path);
+        void Create(const aiScene* _aiScene);
 
     private:
-        vector<StaticMeshResource> m_StaticMeshResources;
-        vector<Material> m_Materials;
+        vector<StaticMesh> m_StaticMeshes;
+        vector<shared_ptr<Material>> m_Materials;
 
         Vector3 m_AABBmin;
         Vector3 m_AABBmax;
+        BoundingBox m_BoundingBox;
     };
 }

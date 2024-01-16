@@ -26,9 +26,11 @@ namespace Engine
         virtual ~Texture();
 
 	public:
-		void Create(string _path) override;
+		void LoadTexture(string _path);
+		void LoadEmbeddedTexture(const aiTexture* _embeddedTexture);
 
 	public:
+		inline ComPtr< ID3D11ShaderResourceView> GetTexture();
 		inline void SetTextureType(TextureType _type);
 		inline TextureType GetTextureType();
 
@@ -37,6 +39,11 @@ namespace Engine
 		TextureType m_TextureType;
     };
 
+
+	ComPtr< ID3D11ShaderResourceView> Texture::GetTexture()
+	{
+		return m_Texture;
+	}
 	void Texture::SetTextureType(TextureType _type)
 	{
 		m_TextureType = _type;

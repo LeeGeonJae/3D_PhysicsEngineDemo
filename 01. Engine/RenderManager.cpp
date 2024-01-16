@@ -1,20 +1,13 @@
 #include "pch.h"
 #include "Game.h"
 #include "RenderManager.h"
+#include "ResourceManager.h"
 
 #include "Graphics.h"
 #include "PipeLine.h"
 
 namespace Engine
 {
-	RenderManager::RenderManager()
-	{
-	}
-
-	RenderManager::~RenderManager()
-	{
-	}
-
 	void RenderManager::Initalize(HWND _hwnd)
 	{
 		m_Graphics = make_shared<GraphicsEngine::Graphics>();

@@ -3,6 +3,8 @@
 
 namespace Engine
 {
+    struct BoneWeightVertex;
+
     // 본 구조체
     struct Bone
     {
@@ -19,9 +21,9 @@ namespace Engine
         virtual ~SkeletonResource();
 
     public:
-        void Create(string _path) override;
+        void Create(aiMesh* _aiMesh, vector<BoneWeightVertex>* _vertices);
 
     private:
-        unordered_map<string, Bone> m_Bones;
+        vector<Bone> m_Bones;
     };
 }

@@ -4,38 +4,24 @@
 namespace Engine
 {
 	AnimationResource::AnimationResource()
+		:ResourceBase(ResourceType::Animation)
 	{
-		m_ResourceType = ResourceType::Animation;
 	}
 
 	AnimationResource::~AnimationResource()
 	{
 	}
 
-	void AnimationResource::Create(string _path)
+	void AnimationResource::Create(aiAnimation* _srcAnimation)
 	{
-		Assimp::Importer importer;
+		m_Name = _srcAnimation->mName.C_Str();
+		m_FrameRate = static_cast<float>(_srcAnimation->mTicksPerSecond);
+		m_FrameCount = static_cast<unsigned int>(_srcAnimation->mDuration + 1);
 
-		importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);	// $assimp_fbx$ 노드 생성안함
-		unsigned int importFlags = aiProcess_ConvertToLeftHanded;	// 왼손 좌표계로 변환
-		const aiScene* pScene = importer.ReadFile(_path, importFlags);
-
-		if (pScene->HasAnimations())
+		for (int i = 0; i < _srcAnimation->mNumChannels; i++)
 		{
-			processAnimation(*pScene->mAnimations);
-		}
-	} 
-
-	void AnimationResource::processAnimation(aiAnimation* srcAnimation)
-	{
-		m_Name = srcAnimation->mName.C_Str();
-		m_FrameRate = static_cast<float>(srcAnimation->mTicksPerSecond);
-		m_FrameCount = static_cast<unsigned int>(srcAnimation->mDuration + 1);
-
-		for (int i = 0; i < srcAnimation->mNumChannels; i++)
-		{
-			aiNodeAnim* node = srcAnimation->mChannels[i];
-			m_Nodes.push_back(ParseAnimationNode(node));
+			aiNodeAnim* node = _srcAnimation->mChannels[i];
+			m_Nodes.insert(make_pair(node->mNodeName.C_Str(), ParseAnimationNode(node)));
 		}
 	}
 

@@ -3,6 +3,8 @@
 
 namespace Engine
 {
+	class AnimationResource;
+
 	// 키프레임 구조체
 	struct KeyFrameData
 	{
@@ -30,10 +32,9 @@ namespace Engine
 		virtual ~AnimationResource();
 
 	public:
-		void Create(string _path) override;
+		void Create(aiAnimation* _srcAnimation);
 
 	private:
-		void processAnimation(aiAnimation* srcAnimation);
 		AnimationNode ParseAnimationNode(aiNodeAnim* srcNode);
 
 	private:

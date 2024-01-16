@@ -54,7 +54,7 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>03. Manager</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialResource.h">
+    <ClInclude Include="Material.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalMeshResource.h">
@@ -66,11 +66,16 @@
     <ClInclude Include="Texture.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h" />
     <ClInclude Include="AnimationResource.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonResource.h">
+      <Filter>98. Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>98. Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
       <Filter>98. Resource\Resource</Filter>
     </ClInclude>
   </ItemGroup>
@@ -99,7 +104,7 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>03. Manager</Filter>
     </ClCompile>
-    <ClCompile Include="MaterialResource.cpp">
+    <ClCompile Include="Material.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
     <ClCompile Include="SkeletalMeshResource.cpp">
@@ -111,11 +116,16 @@
     <ClCompile Include="Texture.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp" />
     <ClCompile Include="AnimationResource.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonResource.cpp">
+      <Filter>98. Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>98. Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
       <Filter>98. Resource\Resource</Filter>
     </ClCompile>
   </ItemGroup>
