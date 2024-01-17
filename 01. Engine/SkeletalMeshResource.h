@@ -3,9 +3,11 @@
 
 namespace Engine
 {
+    // 클래스 선언
     class Material;
     class SkeletonResource;
     class Node;
+
 
     // 본 가중치를 받는 버텍스 구조체
     struct BoneWeightVertex
@@ -45,6 +47,9 @@ namespace Engine
 
     public:
         void Create(aiMesh* _aiMesh, shared_ptr<SkeletonResource> _skeleton);
+
+	private:
+        void createBuffer();
 
     public:
         inline const string& GetName();

@@ -35,12 +35,39 @@ namespace Engine
 		void Create(aiAnimation* _srcAnimation);
 
 	private:
-		AnimationNode ParseAnimationNode(aiNodeAnim* srcNode);
+		shared_ptr<AnimationNode> ParseAnimationNode(aiNodeAnim* srcNode);
+
+	public:
+		inline unsigned int GetFrameCount();
+		inline float GetFrameRate();
+		inline float GetDuration();
+		inline shared_ptr<AnimationNode> FindAnimationNode(const string& _key);
 
 	private:
 		unsigned int m_FrameCount;
 		float m_FrameRate;
 		float m_Duration;
-		unordered_map<string, AnimationNode> m_Nodes;
+		unordered_map<string, shared_ptr<AnimationNode>> m_Nodes;
 	};
+
+
+	unsigned int AnimationResource::GetFrameCount()
+	{
+		return m_FrameCount;
+	}
+	float AnimationResource::GetFrameRate()
+	{
+		return m_FrameRate;
+	}
+	float AnimationResource::GetDuration()
+	{
+		return m_Duration;
+	}
+	shared_ptr<AnimationNode> AnimationResource::FindAnimationNode(const string& _key)
+	{
+		if (m_Nodes.find(_key) != m_Nodes.end())
+			return m_Nodes.find(_key)->second;
+
+		return nullptr;
+	}
 }

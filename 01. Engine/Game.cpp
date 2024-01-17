@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "RenderManager.h"
+#include "ResourceManager.h"
 
 namespace Engine
 {
@@ -22,6 +23,7 @@ namespace Engine
 		InputManager::GetInstance()->Initalize(m_Desc.hwnd);
 		TimeManager::GetInstance()->Initialize();
 		RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
+		ResourceManager::GetInstance()->Initalize();
 
 		m_Desc.app->Init();
 
@@ -101,8 +103,15 @@ namespace Engine
 		TimeManager::GetInstance()->Update();
 		InputManager::GetInstance()->Update();
 
+		static float durationTime = 0;
+		durationTime += TimeManager::GetInstance()->GetfDT();
+		if (durationTime > 0.0166667f)	// 60 ÇÁ·¹ÀÓ
+		{
+			durationTime -= 0.0166667f;
+			m_Desc.app->FixedUpdate();
+		}
+
 		m_Desc.app->Update();
-		m_Desc.app->FixedUpdate();
 		m_Desc.app->LateUpdate();
 		m_Desc.app->Render();
 

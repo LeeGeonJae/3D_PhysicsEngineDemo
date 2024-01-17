@@ -27,20 +27,20 @@ namespace Engine
 
 			if (BoneMapping.find(aibone->mName.C_Str()) == BoneMapping.end())
 			{
-				Bone bone;
+				shared_ptr<Bone> bone = make_shared<Bone>();
 
 				boneIndex = boneIndexCounter;
 				boneIndexCounter++;
-				bone.m_NodeName = aibone->mName.C_Str();
-
-				bone.m_OffsetMatrix = DirectX::SimpleMath::Matrix(
+				bone->m_NodeName = aibone->mName.C_Str();
+				
+				bone->m_OffsetMatrix = DirectX::SimpleMath::Matrix(
 					aibone->mOffsetMatrix.a1, aibone->mOffsetMatrix.b1, aibone->mOffsetMatrix.c1, aibone->mOffsetMatrix.d1,
 					aibone->mOffsetMatrix.a2, aibone->mOffsetMatrix.b2, aibone->mOffsetMatrix.c2, aibone->mOffsetMatrix.d2,
 					aibone->mOffsetMatrix.a3, aibone->mOffsetMatrix.b3, aibone->mOffsetMatrix.c3, aibone->mOffsetMatrix.d3,
 					aibone->mOffsetMatrix.a4, aibone->mOffsetMatrix.b4, aibone->mOffsetMatrix.c4, aibone->mOffsetMatrix.d4
 				);
 
-				m_Bones.push_back(bone);
+				m_BoneMap.insert(make_pair(bone->m_NodeName, bone));
 			}
 			else
 			{

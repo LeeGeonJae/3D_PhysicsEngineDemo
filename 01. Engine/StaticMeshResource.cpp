@@ -2,6 +2,9 @@
 #include "StaticMeshResource.h"
 
 #include "ResourceManager.h"
+#include "RenderManager.h"
+#include "Graphics.h"
+
 #include "Material.h"
 
 namespace Engine
@@ -66,6 +69,38 @@ namespace Engine
 				m_Indices.push_back(face.mIndices[j]);
 			}
 		}
+
+		createBuffer();
+	}
+
+	void StaticMesh::createBuffer()
+	{
+		HRESULT hr;
+
+		D3D11_BUFFER_DESC vertexDesc;
+		vertexDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * m_Vertices.size());
+		vertexDesc.CPUAccessFlags = 0;
+		vertexDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA initData;
+		initData.pSysMem = &m_Vertices[0];
+
+		hr = DEVICE->CreateBuffer(&vertexDesc, &initData, m_pVertexBuffer.GetAddressOf());
+		assert(SUCCEEDED(hr));
+
+		D3D11_BUFFER_DESC indexDesc;
+		indexDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		indexDesc.ByteWidth = static_cast<UINT>(sizeof(UINT) * m_Indices.size());
+		indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		indexDesc.CPUAccessFlags = 0;
+		indexDesc.MiscFlags = 0;
+
+		initData.pSysMem = &m_Indices[0];
+
+		hr = DEVICE->CreateBuffer(&indexDesc, &initData, m_pIndexBuffer.GetAddressOf());
+		assert(SUCCEEDED(hr));
 	}
 
 

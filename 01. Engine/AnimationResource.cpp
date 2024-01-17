@@ -25,15 +25,15 @@ namespace Engine
 		}
 	}
 
-	AnimationNode AnimationResource::ParseAnimationNode(aiNodeAnim* srcNode)
+	shared_ptr<AnimationNode> AnimationResource::ParseAnimationNode(aiNodeAnim* srcNode)
 	{
-		AnimationNode animationNode;
+		shared_ptr<AnimationNode> animationNode = make_shared<AnimationNode>();
 
-		animationNode.m_Owner = this;
-		animationNode.m_Name = srcNode->mNodeName.C_Str();
+		animationNode->m_Owner = this;
+		animationNode->m_Name = srcNode->mNodeName.C_Str();
 
 		int KeyCount = max(max(srcNode->mNumPositionKeys, srcNode->mNumScalingKeys), srcNode->mNumRotationKeys);
-		animationNode.m_KeyFrame.reserve(KeyCount);
+		animationNode->m_KeyFrame.reserve(KeyCount);
 
 		for (int i = 0; i < KeyCount; i++)
 		{
@@ -77,7 +77,7 @@ namespace Engine
 			}
 
 			if (found == true)
-				animationNode.m_KeyFrame.push_back(frameData);
+				animationNode->m_KeyFrame.push_back(frameData);
 		}
 
 		return animationNode;

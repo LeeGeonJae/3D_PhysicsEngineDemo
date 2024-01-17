@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-    // 머터리얼 구조체
+    // 머터리얼 클래스
     class Material : public ResourceBase
     {
     public:

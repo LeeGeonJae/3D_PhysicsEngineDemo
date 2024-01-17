@@ -1,0 +1,66 @@
+#include "pch.h"
+#include "SkeletalMeshComponent.h"
+#include "Helper.h"
+
+#include "ResourceManager.h"
+
+#include "AnimationResource.h"
+#include "SkeletalMeshResource.h"
+#include "SkeletonResource.h"
+#include "Node.h"
+#include "Shader.h"
+
+namespace Engine
+{
+	SkeletalMeshComponent::SkeletalMeshComponent()
+	{
+	}
+
+	SkeletalMeshComponent::~SkeletalMeshComponent()
+	{
+	}
+
+	void SkeletalMeshComponent::Setting(SkeletalMeshComponentInfo _info)
+	{
+		__super::Setting(_info.m_RenderComponentInfo);
+
+		m_FilePath = _info.m_FilePath;
+	}
+
+	void SkeletalMeshComponent::Init()
+	{
+		__super::Init();
+
+		// 리소스매니저에서 리소스들 찾기
+		m_pSkeletalMeshes = RESOURCE->Find<SkeletalMeshSceneResource>(m_FilePath);
+		m_pShader = RESOURCE->Find<Shader>("SkeletalMeshShader");
+		shared_ptr<NodeDataResource> nodeDataResource = RESOURCE->Find<NodeDataResource>(m_FilePath);
+		shared_ptr<AnimationResource> animationResource = RESOURCE->Find<AnimationResource>(m_FilePath);
+		shared_ptr<SkeletonResource> skeletonResource = RESOURCE->Find<SkeletonResource>(m_FilePath);
+
+		// 노드 갯수만큼 생성하고 노드 데이타 세팅
+		m_pNodes.reserve(nodeDataResource->GetNodeDataVec().size());
+		for (auto nodeData : nodeDataResource->GetNodeDataVec())
+		{
+			shared_ptr<Node> node = make_shared<Node>();
+			node->SetNodeData(nodeData);
+			m_pNodes.push_back(node);
+		}
+
+		// 노드 세팅해주는 전역 함수 실행
+		Engine::NodeSetting(animationResource, skeletonResource, m_pNodes, m_pRootNode);
+	}
+
+	void SkeletalMeshComponent::Update()
+	{
+		__super::Update();
+
+		m_pRootNode->Update(GetWorldTransform(), 0.f);
+	}
+
+	void SkeletalMeshComponent::Render()
+	{
+		__super::Render();
+	}
+}
+

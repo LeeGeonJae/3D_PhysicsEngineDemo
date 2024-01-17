@@ -3,7 +3,9 @@
 
 namespace Engine
 {
+    // 클래스 선언
     struct BoneWeightVertex;
+
 
     // 본 구조체
     struct Bone
@@ -23,7 +25,19 @@ namespace Engine
     public:
         void Create(aiMesh* _aiMesh, vector<BoneWeightVertex>* _vertices);
 
+    public:
+        inline shared_ptr<Bone> FindBone(string _key);
+
     private:
-        vector<Bone> m_Bones;
+        unordered_map<string, shared_ptr<Bone>> m_BoneMap;
     };
+
+
+    shared_ptr<Bone> SkeletonResource::FindBone(string _key)
+    {
+        if (m_BoneMap.find(_key) != m_BoneMap.end())
+            return m_BoneMap.find(_key)->second;
+
+        return nullptr;
+    }
 }

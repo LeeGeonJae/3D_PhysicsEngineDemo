@@ -8,10 +8,22 @@
 #include "AnimationResource.h"
 #include "Node.h"
 #include "Texture.h"
-#include "Shader.h"
+#include "Shader.h" 
 
 namespace Engine
 {
+	void ResourceManager::Initalize()
+	{
+		RESOURCE->Load("../Resources/FBX/SkinningTest.fbx");
+		RESOURCE->Load("../Resources/FBX/Dying.fbx");
+		RESOURCE->Load("../Resources/FBX/cerberus_test.fbx");
+
+		shared_ptr<Shader> skeletalMeshShader = Create<Shader>("SkeletalMeshShader");
+		shared_ptr<Shader> staticMeshShader = Create<Shader>("StaticMeshShader");
+		skeletalMeshShader->Init(L"../Resources/Shader/SkeletalMeshShader.hlsl", ShaderType::SkeletalMesh);
+		staticMeshShader->Init(L"../Resources/Shader/StaticMeshShader.hlsl", ShaderType::StaticMesh);
+	}
+
 	void ResourceManager::Load(const string& _path)
 	{
 		if (_path.find(".fbx") != string::npos)

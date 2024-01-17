@@ -3,6 +3,7 @@
 
 namespace Engine
 {
+	// 클래스 선언
 	class Material;
 	class StaticMeshSceneResource;
 	class SkeletalMeshSceneResource;
@@ -12,6 +13,7 @@ namespace Engine
 	class SkeletonResource;
 	class NodeDataResource;
 
+	// 리소스 매니저 클래스
 	class ResourceManager
 	{
 	private:
@@ -24,8 +26,9 @@ namespace Engine
 		}
 
 	public:
-		void Load(const string& _path);
+		void Initalize();
 
+		void Load(const string& _path);
 		template <typename T>
 		shared_ptr<T> Find(const string& _key);
 		template <typename T>
@@ -43,9 +46,13 @@ namespace Engine
 		array<KeyObjMap, RESOURCE_TYPE_COUNT> m_ResourceMap;
 	};
 
+	// 리소스 베이스를 상속받는 리소스들 찾기
 	template<typename T>
 	inline shared_ptr<T> ResourceManager::Find(const string& _key)
 	{
+		bool bIsBase = std::is_base_of<ResourceBase, T>::value;
+		assert(bIsBase == true);
+
 		ResourceType resourceType = GetResourceType<T>();
 
 		// 리소스를 찾으면 반환
@@ -60,6 +67,7 @@ namespace Engine
 		return nullptr;
 	}
 
+	// 머터리얼 리소스 생성
 	template <typename T>
 	shared_ptr<T> ResourceManager::Create(const string& _key)
 	{
@@ -72,6 +80,7 @@ namespace Engine
 		return resource;
 	}
 
+	// 클래스에 맞게 리소스 타입 찾기
 	template<typename T>
 	inline ResourceType ResourceManager::GetResourceType()
 	{

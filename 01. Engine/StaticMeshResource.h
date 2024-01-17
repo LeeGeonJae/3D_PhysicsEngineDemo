@@ -3,6 +3,7 @@
 
 namespace Engine
 {
+    // 클래스 선언
     class Material;
 
 
@@ -28,13 +29,16 @@ namespace Engine
         void Create(aiMesh* _aiMesh);
 
     private:
+        void createBuffer();
+
+    private:
         string m_Name;
 
         vector<Vertex> m_Vertices;
         vector<UINT> m_Indices;
 
-        ID3D11Buffer* m_pVertexBuffer = nullptr;
-        ID3D11Buffer* m_pIndexBuffer = nullptr;
+        ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
+        ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
     };
 
 
