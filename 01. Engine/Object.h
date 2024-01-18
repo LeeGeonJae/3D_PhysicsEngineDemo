@@ -42,6 +42,9 @@ namespace Engine
 		inline void SetName(string _name);
 		inline string GetName();
 		inline const unsigned int& GetID();
+		void SetPosition(Vector3 _position);
+		void SetRotation(Vector3 _rotation);
+		void SetScale(Vector3 _scale);
 
 	private:
 		string m_Name;
@@ -89,4 +92,6 @@ namespace Engine
 	{
 		return m_ID;
 	}
+
+
 }

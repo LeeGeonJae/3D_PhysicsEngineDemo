@@ -28,17 +28,22 @@ namespace Engine
 		Quaternion rotation;
 
 		// 애니메이션
-		if (m_AnimationNode != nullptr)
+		if (m_pAnimationNode != nullptr)
 		{
-			interpolateAnimationData(_currentTime, position, scale, rotation);
+			float animationTime = _currentTime;
+			while (animationTime >= m_pAnimationNode->m_Owner->GetFrameCount())
+			{
+				animationTime -= m_pAnimationNode->m_Owner->GetFrameCount();
+			}
+			interpolateAnimationData(animationTime, position, scale, rotation);
 
 			m_Local = Matrix::CreateScale(scale) * Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position);
 		}
 
 		// 부모가 있으면 해당 부모의 트랜스폼 곱하기
-		if (m_Parent != nullptr)
+		if (m_pParent != nullptr)
 		{
-			m_World = m_Local * m_Parent->m_World;
+			m_World = m_Local * m_pParent->m_World;
 		}
 		else
 		{
@@ -46,7 +51,7 @@ namespace Engine
 		}
 
 		// 자식 노드 업데이트
-		for (auto child : m_Children)
+		for (auto child : m_pChildrenVec)
 		{
 			if (child != nullptr)
 			{
@@ -65,7 +70,7 @@ namespace Engine
 		aiQuaternion nextRotation;
 
 		// 애니메이션 데이터의 키프레임 개수를 가져옴
-		unsigned int numFrames = m_AnimationNode->m_Owner->GetFrameCount();
+		unsigned int numFrames = m_pAnimationNode->m_Owner->GetFrameCount();
 		
 		// 첫 번째 키프레임 데이터
 		unsigned int frameIndex = 0;
@@ -75,7 +80,7 @@ namespace Engine
 
 		// 현재 시간을 가장 가까운 키프레임으로 보간
 		for (unsigned int i = 0; i < numFrames - 1; ++i) {
-			if (currentTime < m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Time) {
+			if (currentTime < m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Time) {
 				break;
 			}
 
@@ -84,7 +89,7 @@ namespace Engine
 		}
 
 		// 현재 키프레임과 다음 키프레임의 시간 차이 계산
-		float deltaTime = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Time - m_AnimationNode->m_KeyFrame[frameIndex].m_Time;
+		float deltaTime = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Time - m_pAnimationNode->m_KeyFrame[frameIndex].m_Time;
 
 		// 만약 다음 키프레임과 현재 키프레임의 시간 차이가 없다면 1로 보정 ( 계산 오류로 애니메이션 보간 정보가 날아가는 경우 방지하기 위해 )
 		if (deltaTime == 0)
@@ -92,30 +97,30 @@ namespace Engine
 
 		// 현재 시간이 현재 키프레임과 다음 키프레임 사이의 비율 계산
 		float factor = 0;
-		if (m_AnimationNode->m_KeyFrame[frameIndex].m_Time < currentTime)
-			factor = (currentTime - m_AnimationNode->m_KeyFrame[frameIndex].m_Time) / deltaTime;
+		if (m_pAnimationNode->m_KeyFrame[frameIndex].m_Time < currentTime)
+			factor = (currentTime - m_pAnimationNode->m_KeyFrame[frameIndex].m_Time) / deltaTime;
 
-		currentPosition.x = m_AnimationNode->m_KeyFrame[frameIndex].m_Transtation.x;
-		currentPosition.y = m_AnimationNode->m_KeyFrame[frameIndex].m_Transtation.y;
-		currentPosition.z = m_AnimationNode->m_KeyFrame[frameIndex].m_Transtation.z;
-		currentScale.x = m_AnimationNode->m_KeyFrame[frameIndex].m_Scale.x;
-		currentScale.y = m_AnimationNode->m_KeyFrame[frameIndex].m_Scale.y;
-		currentScale.z = m_AnimationNode->m_KeyFrame[frameIndex].m_Scale.z;
-		currentRotation.x = m_AnimationNode->m_KeyFrame[frameIndex].m_Rotation.x;
-		currentRotation.y = m_AnimationNode->m_KeyFrame[frameIndex].m_Rotation.y;
-		currentRotation.z = m_AnimationNode->m_KeyFrame[frameIndex].m_Rotation.z;
-		currentRotation.w = m_AnimationNode->m_KeyFrame[frameIndex].m_Rotation.w;
+		currentPosition.x = m_pAnimationNode->m_KeyFrame[frameIndex].m_Transtation.x;
+		currentPosition.y = m_pAnimationNode->m_KeyFrame[frameIndex].m_Transtation.y;
+		currentPosition.z = m_pAnimationNode->m_KeyFrame[frameIndex].m_Transtation.z;
+		currentScale.x = m_pAnimationNode->m_KeyFrame[frameIndex].m_Scale.x;
+		currentScale.y = m_pAnimationNode->m_KeyFrame[frameIndex].m_Scale.y;
+		currentScale.z = m_pAnimationNode->m_KeyFrame[frameIndex].m_Scale.z;
+		currentRotation.x = m_pAnimationNode->m_KeyFrame[frameIndex].m_Rotation.x;
+		currentRotation.y = m_pAnimationNode->m_KeyFrame[frameIndex].m_Rotation.y;
+		currentRotation.z = m_pAnimationNode->m_KeyFrame[frameIndex].m_Rotation.z;
+		currentRotation.w = m_pAnimationNode->m_KeyFrame[frameIndex].m_Rotation.w;
 
-		nextPosition.x = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Transtation.x;
-		nextPosition.y = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Transtation.y;
-		nextPosition.z = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Transtation.z;
-		nextScale.x = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Scale.x;
-		nextScale.y = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Scale.y;
-		nextScale.z = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Scale.z;
-		nextRotation.x = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.x;
-		nextRotation.y = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.y;
-		nextRotation.z = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.z;
-		nextRotation.w = m_AnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.w;
+		nextPosition.x = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Transtation.x;
+		nextPosition.y = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Transtation.y;
+		nextPosition.z = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Transtation.z;
+		nextScale.x = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Scale.x;
+		nextScale.y = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Scale.y;
+		nextScale.z = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Scale.z;
+		nextRotation.x = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.x;
+		nextRotation.y = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.y;
+		nextRotation.z = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.z;
+		nextRotation.w = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.w;
 
 		// 키프레임 데이터의 변환을 선형 보간하여 계산
 		aiVector3D fianlPosition = currentPosition + factor * (nextPosition - currentPosition);

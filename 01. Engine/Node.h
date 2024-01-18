@@ -76,11 +76,11 @@ namespace Engine
 	private:
 		NodeData m_NodeData;
 
-		shared_ptr<Node> m_Parent;
-		vector<shared_ptr<Node>> m_Children;
+		shared_ptr<Node> m_pParent;
+		vector<shared_ptr<Node>> m_pChildrenVec;
 
-		shared_ptr<Bone> m_Bone;
-		shared_ptr<AnimationNode> m_AnimationNode;
+		shared_ptr<Bone> m_pBone;
+		shared_ptr<AnimationNode> m_pAnimationNode;
 
 		Matrix m_Local;
 		Matrix m_World;
@@ -97,36 +97,36 @@ namespace Engine
 	}
 	shared_ptr<Node> Node::GetParent()
 	{
-		return m_Parent;
+		return m_pParent;
 	}
 	void Node::SetParent(shared_ptr<Node> _node)
 	{
-		m_Parent = _node;
-		m_Parent->SetChildNode(shared_from_this());
+		m_pParent = _node;
+		m_pParent->SetChildNode(shared_from_this());
 	}
 	const vector<shared_ptr<Node>>& Node::GetNodes()
 	{
-		return m_Children;
+		return m_pChildrenVec;
 	}
 	void Node::SetChildNode(shared_ptr<Node> _node)
 	{
-		m_Children.push_back(_node);
+		m_pChildrenVec.push_back(_node);
 	}
 	shared_ptr<Bone> Node::GetBone()
 	{
-		return m_Bone;
+		return m_pBone;
 	}
 	void Node::SetBone(shared_ptr<Bone> _bone)
 	{
-		m_Bone = _bone;
+		m_pBone = _bone;
 	}
 	shared_ptr<AnimationNode> Node::GetAnimationNode()
 	{
-		return m_AnimationNode;
+		return m_pAnimationNode;
 	}
 	void Node::SetAnimationNode(shared_ptr<AnimationNode> _animationNode)
 	{
-		m_AnimationNode = _animationNode;
+		m_pAnimationNode = _animationNode;
 	}
 	const Matrix& Node::GetLocalTransform()
 	{

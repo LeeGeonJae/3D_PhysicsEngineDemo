@@ -40,7 +40,6 @@ namespace Engine
 	{
 		__super::Render();
 
-
 	}
 }
 

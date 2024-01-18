@@ -16,5 +16,5 @@ public:
 	void Render() override;
 
 public:
-	shared_ptr<Engine::Object> m_Object;
+	vector<shared_ptr<Engine::Object>> m_ObjectVec;
 };

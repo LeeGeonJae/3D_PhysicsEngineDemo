@@ -34,7 +34,13 @@ namespace Engine
 			* SimpleMath::Matrix::CreateTranslation(m_Position);
 
 		if (m_pOwner.lock() != nullptr)
+		{
 			m_World = m_pOwner.lock()->GetWorldTransform() * m_Local;
+		}
+		else
+		{
+			m_World = m_Local;
+		}
 
 		for (auto component : m_pChildren)
 		{

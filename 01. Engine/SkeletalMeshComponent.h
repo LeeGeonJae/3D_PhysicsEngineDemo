@@ -4,14 +4,10 @@
 namespace Engine
 {
 	// 클래스 선언
-	class AnimationResource;
-	class NodeData;
 	class Node;
 	class SkeletalMeshSceneResource;
-	class SkeletalMesh;
-	class SkeletonResource;
-	class Material;
 	class Shader;
+	class SkeletalMeshInstance;
 
 	// 스켈레탈메시 컴포넌트 정보 구조체
 	struct SkeletalMeshComponentInfo
@@ -37,12 +33,13 @@ namespace Engine
 
 	private:
 		string m_FilePath;
+		float m_CurrentTime = 0.f;
 
 		shared_ptr<Node> m_pRootNode;
-		vector<shared_ptr<Node>> m_pNodes;
+		vector<shared_ptr<Node>> m_pNodeVec;
 		shared_ptr<SkeletalMeshSceneResource> m_pSkeletalMeshes;
 		shared_ptr<Shader> m_pShader;
+
+		vector<shared_ptr<SkeletalMeshInstance>> m_pSkeletalMeshInstanceVec;
 	};
 }
-
-

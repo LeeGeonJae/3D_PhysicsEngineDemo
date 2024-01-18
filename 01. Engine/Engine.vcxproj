@@ -168,9 +168,11 @@
     <ClInclude Include="SceneComponent.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalMeshComponent.h" />
+    <ClInclude Include="SkeletalMeshInstance.h" />
     <ClInclude Include="SkeletalMeshResource.h" />
     <ClInclude Include="SkeletonResource.h" />
     <ClInclude Include="StaticMeshComponent.h" />
+    <ClInclude Include="StaticMeshInstance.h" />
     <ClInclude Include="StaticMeshResource.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TimeManager.h" />
@@ -199,9 +201,11 @@
     <ClCompile Include="SceneComponent.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletalMeshComponent.cpp" />
+    <ClCompile Include="SkeletalMeshInstance.cpp" />
     <ClCompile Include="SkeletalMeshResource.cpp" />
     <ClCompile Include="SkeletonResource.cpp" />
     <ClCompile Include="StaticMeshComponent.cpp" />
+    <ClCompile Include="StaticMeshInstance.cpp" />
     <ClCompile Include="StaticMeshResource.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TimeManager.cpp" />
@@ -210,6 +214,18 @@
     <ProjectReference Include="..\02. GraphicsEngine\GraphicsEngine.vcxproj">
       <Project>{2407ebee-d4d0-4e45-9bf6-43508db4b831}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Resources\Shader\SkeletalMeshShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\StaticMeshShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -56,5 +56,18 @@ namespace Engine
 		_component->SetMyObject(shared_from_this());
 		m_pMyComponents.push_back(_component);
 	}
+
+	void Object::SetPosition(Vector3 _position)
+	{
+		m_pRootComponent->SetPosition(_position);
+	}
+	void Object::SetRotation(Vector3 _rotation)
+	{
+		m_pRootComponent->SetRotation(_rotation);
+	}
+	void Object::SetScale(Vector3 _scale)
+	{
+		m_pRootComponent->SetScale(_scale);
+	}
 }
 

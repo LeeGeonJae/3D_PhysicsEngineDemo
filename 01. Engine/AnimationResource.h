@@ -47,7 +47,7 @@ namespace Engine
 		unsigned int m_FrameCount;
 		float m_FrameRate;
 		float m_Duration;
-		unordered_map<string, shared_ptr<AnimationNode>> m_Nodes;
+		unordered_map<string, shared_ptr<AnimationNode>> m_pAnimationNodeMap;
 	};
 
 
@@ -65,8 +65,8 @@ namespace Engine
 	}
 	shared_ptr<AnimationNode> AnimationResource::FindAnimationNode(const string& _key)
 	{
-		if (m_Nodes.find(_key) != m_Nodes.end())
-			return m_Nodes.find(_key)->second;
+		if (m_pAnimationNodeMap.find(_key) != m_pAnimationNodeMap.end())
+			return m_pAnimationNodeMap.find(_key)->second;
 
 		return nullptr;
 	}

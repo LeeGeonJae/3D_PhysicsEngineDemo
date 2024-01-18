@@ -10,8 +10,8 @@ namespace Engine
 	struct SceneComponentInfo
 	{
 		string m_Name;
-		Vector3 m_Position = Vector3::One;
-		Vector3 m_Rotation = Vector3::One;
+		Vector3 m_Position = Vector3::Zero;
+		Vector3 m_Rotation = Vector3::Zero;
 		Vector3 m_Scale = Vector3::One;
 	};
 
@@ -40,7 +40,7 @@ namespace Engine
 
 	public:
 		inline void SetWorldTransform(Matrix _world);
-		inline const Matrix& GetWorldTransform();
+		inline Matrix& GetWorldTransform();
 		inline void SetLocalTransform(Matrix _local);
 		inline const Matrix& GetLocalTransform();
 		inline void SetPosition(Vector3 _position);
@@ -94,7 +94,7 @@ namespace Engine
 	{
 		m_World = _world;
 	}
-	const Matrix& SceneComponent::GetWorldTransform()
+	Matrix& SceneComponent::GetWorldTransform()
 	{
 		return m_World;
 	}

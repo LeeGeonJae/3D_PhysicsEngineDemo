@@ -48,9 +48,6 @@ namespace Engine
     public:
         void Create(aiMesh* _aiMesh, shared_ptr<SkeletonResource> _skeleton);
 
-	private:
-        void createBuffer();
-
     public:
         inline const string& GetName();
         inline vector<BoneWeightVertex> GetVertices();
@@ -59,10 +56,13 @@ namespace Engine
         inline ComPtr<ID3D11Buffer> GetIndexBuffer();
 
     private:
+        void createBuffer();
+
+    private:
         string m_Name;
 
-        vector<BoneWeightVertex> m_BoneWeightVertices;
-        vector<UINT> m_Indices;
+        vector<BoneWeightVertex> m_BoneWeightVertexVec;
+        vector<UINT> m_IndexVec;
 
         ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
         ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
@@ -74,11 +74,11 @@ namespace Engine
     }
     vector<BoneWeightVertex> SkeletalMesh::GetVertices()
     {
-        return m_BoneWeightVertices;
+        return m_BoneWeightVertexVec;
     }
     vector<UINT> SkeletalMesh::GetIndices()
     {
-        return m_Indices;
+        return m_IndexVec;
     }
     ComPtr<ID3D11Buffer> SkeletalMesh::GetVertexBuffer()
     {
@@ -100,12 +100,30 @@ namespace Engine
     public:
         void Create(const aiScene* _aiScene, shared_ptr<SkeletonResource> _skeleton);
 
+    public:
+        inline vector<SkeletalMesh>& GetSkeletalMeshVec();
+        inline vector <shared_ptr<Material>>& GetMaterialVec();
+        inline DirectX::BoundingBox GetBoundingBox();
+
     private:
-        vector<SkeletalMesh> m_SkeletalMeshes;
-        vector<shared_ptr<Material>> m_Materials;
+        vector<SkeletalMesh> m_SkeletalMeshVec;
+        vector<shared_ptr<Material>> m_pMaterialVec;
 
         Vector3 m_AABBmin;
         Vector3 m_AABBmax;
         DirectX::BoundingBox m_BoundingBox;
     };
+
+    vector<SkeletalMesh>& SkeletalMeshSceneResource::GetSkeletalMeshVec()
+    {
+        return m_SkeletalMeshVec;
+    }
+    vector <shared_ptr<Material>>& SkeletalMeshSceneResource::GetMaterialVec()
+    {
+        return m_pMaterialVec;
+    }
+    DirectX::BoundingBox SkeletalMeshSceneResource::GetBoundingBox()
+    {
+        return m_BoundingBox;
+    }
 }

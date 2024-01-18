@@ -21,9 +21,6 @@ namespace GraphicsEngine
 		void createRasterizerState();
 		void createBlendState();
 		void createSamplerState();
-		void createVS();
-		void createPS();
-		void createInputLayout();
 
 	private:
 		void LoadShaderFromFile(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob);
@@ -35,13 +32,5 @@ namespace GraphicsEngine
 		ComPtr<ID3D11RasterizerState> m_RasterizerState;
 		ComPtr<ID3D11SamplerState> m_SamplerState;
 		ComPtr<ID3D11BlendState> m_BlendState;
-
-		ComPtr<ID3D11InputLayout> m_InputLayout;
-
-		ComPtr<ID3D11VertexShader> m_VertexShader;
-		ComPtr<ID3DBlob> m_vsBlob;
-
-		ComPtr<ID3D11PixelShader> m_PixelShader;
-		ComPtr<ID3DBlob> m_psBlob;
 	};
 }

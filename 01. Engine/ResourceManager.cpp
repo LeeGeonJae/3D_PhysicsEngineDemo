@@ -53,8 +53,6 @@ namespace Engine
 				nodeData = Create<NodeDataResource>(_path);
 				processNode(pScene->mRootNode, pScene, nodeData);
 			}
-
-
 			// 머터리얼 로드
 			for (int i = 0; i < pScene->mNumMaterials; i++)
 			{
@@ -67,8 +65,6 @@ namespace Engine
 					material->Create(pScene->mMaterials[i], pScene, _path);
 				}
 			}
-
-
 			// 스켈레탈 메시 로드
 			if (pScene->mMeshes[0]->HasBones())
 			{
@@ -91,22 +87,18 @@ namespace Engine
 					staticMesh->Create(pScene);
 				}
 			}
-
-
 			// 애니메이션 로드
 			if (pScene->HasAnimations())
 			{
-				// 애니메이션이 찾아서 없으면 생성
+				//애니메이션이 찾아서 없으면 생성
 				shared_ptr<AnimationResource> animation = Find<AnimationResource>(_path);
 				if (animation == nullptr)
 				{
-					animation = Create<AnimationResource>(_path);
+					shared_ptr<AnimationResource> animation = Create<AnimationResource>(_path);
 					animation->Create(*pScene->mAnimations);
 					m_ResourceMap[static_cast<int>(ResourceType::Animation)].insert(make_pair(_path, animation));
 				}
 			}
-
-			int a = 0;
 		}
 		else
 		{

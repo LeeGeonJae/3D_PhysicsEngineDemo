@@ -25,6 +25,11 @@ namespace Engine
 	public:
 		void Init(const wstring& _path, ShaderType _type);
 
+	public:
+		inline ComPtr<ID3D11InputLayout> GetInputLayout();
+		inline ComPtr<ID3D11VertexShader> GetVertexShader();
+		inline ComPtr<ID3D11PixelShader> GetPixelShader();
+
 	private:
 		void createVS(const wstring& _path);
 		void createPS(const wstring& _path);
@@ -43,5 +48,18 @@ namespace Engine
 		ComPtr<ID3D11PixelShader> m_PixelShader = nullptr;
 		ComPtr<ID3DBlob> m_psBlob = nullptr;
 	};
+
+	ComPtr<ID3D11InputLayout> Shader::GetInputLayout()
+	{
+		return m_InputLayout;
+	}
+	ComPtr<ID3D11VertexShader> Shader::GetVertexShader()
+	{
+		return m_VertexShader;
+	}
+	ComPtr<ID3D11PixelShader> Shader::GetPixelShader()
+	{
+		return m_PixelShader;
+	}
 }
 

@@ -12,7 +12,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	desc.hwnd = NULL;
 	desc.width = 800;
 	desc.height = 600;
-	desc.clearColor = Color(0.5f, 0.5f, 0.5f, 0.5);
+	desc.clearColor = Color(0.f, 0.5f, 0.5f, 0.5);
 	desc.app = make_shared<TestApp>();
 
 	GAME->Run(desc);

@@ -22,7 +22,7 @@ namespace Engine
 		m_Name = _aiMesh->mName.C_Str();
 
 		// 메시 버텍스 가져오기
-		m_Vertices.reserve(_aiMesh->mNumVertices);
+		m_VertexVec.reserve(_aiMesh->mNumVertices);
 		for (UINT i = 0; i < _aiMesh->mNumVertices; i++)
 		{
 			Vertex vertex;
@@ -55,18 +55,18 @@ namespace Engine
 				vertex.m_BiTangents.z = _aiMesh->mBitangents[i].z;
 			}
 
-			m_Vertices.push_back(vertex);
+			m_VertexVec.push_back(vertex);
 		}
 
 		// 메시 인덱스 가져오기
-		m_Indices.reserve(_aiMesh->mNumFaces * 3);
+		m_IndexVec.reserve(_aiMesh->mNumFaces * 3);
 		for (UINT i = 0; i < _aiMesh->mNumFaces; i++)
 		{
 			aiFace face = _aiMesh->mFaces[i];
 
 			for (UINT j = 0; j < face.mNumIndices; j++)
 			{
-				m_Indices.push_back(face.mIndices[j]);
+				m_IndexVec.push_back(face.mIndices[j]);
 			}
 		}
 
@@ -80,24 +80,24 @@ namespace Engine
 		D3D11_BUFFER_DESC vertexDesc;
 		vertexDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * m_Vertices.size());
+		vertexDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * m_VertexVec.size());
 		vertexDesc.CPUAccessFlags = 0;
 		vertexDesc.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA initData;
-		initData.pSysMem = &m_Vertices[0];
+		initData.pSysMem = &m_VertexVec[0];
 
 		hr = DEVICE->CreateBuffer(&vertexDesc, &initData, m_pVertexBuffer.GetAddressOf());
 		assert(SUCCEEDED(hr));
 
 		D3D11_BUFFER_DESC indexDesc;
 		indexDesc.Usage = D3D11_USAGE_IMMUTABLE;
-		indexDesc.ByteWidth = static_cast<UINT>(sizeof(UINT) * m_Indices.size());
+		indexDesc.ByteWidth = static_cast<UINT>(sizeof(UINT) * m_IndexVec.size());
 		indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexDesc.CPUAccessFlags = 0;
 		indexDesc.MiscFlags = 0;
 
-		initData.pSysMem = &m_Indices[0];
+		initData.pSysMem = &m_IndexVec[0];
 
 		hr = DEVICE->CreateBuffer(&indexDesc, &initData, m_pIndexBuffer.GetAddressOf());
 		assert(SUCCEEDED(hr));
@@ -122,7 +122,7 @@ namespace Engine
 		{
 			StaticMesh mesh;
 			mesh.Create(_aiScene->mMeshes[i]);
-			m_StaticMeshes.push_back(mesh);
+			m_StaticMeshVec.push_back(mesh);
 
 			// 바운딩 볼륨
 			Vector3 min; memcpy(&min, &_aiScene->mMeshes[i]->mAABB.mMin, sizeof(min));
@@ -149,7 +149,7 @@ namespace Engine
 			string materialName = _aiScene->mMaterials[i]->GetName().C_Str();
 
 			shared_ptr<Material> material = RESOURCE->Find<Material>(materialName);
-			m_Materials.push_back(material);
+			m_pMaterialVec.push_back(material);
 		}
 	}
 }

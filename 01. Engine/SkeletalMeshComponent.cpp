@@ -3,12 +3,16 @@
 #include "Helper.h"
 
 #include "ResourceManager.h"
+#include "RenderManager.h"
+#include "TimeManager.h"
 
 #include "AnimationResource.h"
 #include "SkeletalMeshResource.h"
 #include "SkeletonResource.h"
 #include "Node.h"
 #include "Shader.h"
+
+#include "SkeletalMeshInstance.h"
 
 namespace Engine
 {
@@ -39,28 +43,42 @@ namespace Engine
 		shared_ptr<SkeletonResource> skeletonResource = RESOURCE->Find<SkeletonResource>(m_FilePath);
 
 		// 노드 갯수만큼 생성하고 노드 데이타 세팅
-		m_pNodes.reserve(nodeDataResource->GetNodeDataVec().size());
+		m_pNodeVec.reserve(nodeDataResource->GetNodeDataVec().size());
 		for (auto nodeData : nodeDataResource->GetNodeDataVec())
 		{
 			shared_ptr<Node> node = make_shared<Node>();
 			node->SetNodeData(nodeData);
-			m_pNodes.push_back(node);
+			m_pNodeVec.push_back(node);
 		}
 
 		// 노드 세팅해주는 전역 함수 실행
-		Engine::NodeSetting(animationResource, skeletonResource, m_pNodes, m_pRootNode);
+		Engine::NodeSetting(animationResource, skeletonResource, m_pNodeVec, m_pRootNode);
+
+		// 렌더 매니저에 보내줄 메시 인스턴스 생성
+		for (int i = 0; i < m_pSkeletalMeshes->GetSkeletalMeshVec().size(); i++)
+		{
+			shared_ptr<SkeletalMeshInstance> meshInstance = make_shared<SkeletalMeshInstance>();
+			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetMaterialVec()[i].get(), &GetWorldTransform());
+			m_pSkeletalMeshInstanceVec.push_back(meshInstance);
+		}
 	}
 
 	void SkeletalMeshComponent::Update()
 	{
 		__super::Update();
 
-		m_pRootNode->Update(GetWorldTransform(), 0.f);
+		m_CurrentTime += TimeManager::GetInstance()->GetfDT();
+		m_pRootNode->Update(GetWorldTransform(), m_CurrentTime * 30.f);
 	}
 
 	void SkeletalMeshComponent::Render()
 	{
 		__super::Render();
+
+		for (auto meshInstance : m_pSkeletalMeshInstanceVec)
+		{
+			RENDER->SetSkeletalMeshInstance(meshInstance);
+		}
 	}
 }
 

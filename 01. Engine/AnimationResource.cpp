@@ -21,7 +21,7 @@ namespace Engine
 		for (int i = 0; i < _srcAnimation->mNumChannels; i++)
 		{
 			aiNodeAnim* node = _srcAnimation->mChannels[i];
-			m_Nodes.insert(make_pair(node->mNodeName.C_Str(), ParseAnimationNode(node)));
+			m_pAnimationNodeMap.insert(make_pair(node->mNodeName.C_Str(), ParseAnimationNode(node)));
 		}
 	}
 
@@ -78,6 +78,18 @@ namespace Engine
 
 			if (found == true)
 				animationNode->m_KeyFrame.push_back(frameData);
+		}
+
+		// Keyframe ´Ã·ÁÁÖ±â
+		if (animationNode->m_KeyFrame.size() < animationNode->m_Owner->GetFrameCount())
+		{
+			unsigned int count = animationNode->m_Owner->GetFrameCount() - animationNode->m_KeyFrame.size();
+			KeyFrameData keyFrame = animationNode->m_KeyFrame.back();
+
+			for (unsigned int i = 0; i < count; i++)
+			{
+				animationNode->m_KeyFrame.push_back(keyFrame);
+			}
 		}
 
 		return animationNode;

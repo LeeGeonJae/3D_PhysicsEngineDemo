@@ -20,5 +20,6 @@ namespace Engine
 
 	void RenderComponent::Render()
 	{
+		__super::Render();
 	}
 }

@@ -19,10 +19,6 @@ namespace GraphicsEngine
 		createRasterizerState();
 		createBlendState();
 		createSamplerState();
-
-		createVS();
-		createPS();
-		createInputLayout();
 	}
 
 	void PipeLine::Update()
@@ -31,41 +27,6 @@ namespace GraphicsEngine
 
 		m_DeviceContext->RSSetState(m_RasterizerState.Get());
 		m_DeviceContext->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
-
-		m_DeviceContext->IASetInputLayout(m_InputLayout.Get());
-		m_DeviceContext->VSSetShader(m_VertexShader.Get(), nullptr, 0);
-		m_DeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
-	}
-
-	void PipeLine::createVS()
-	{
-		LoadShaderFromFile(L"../Resources/Shader/Defalut.hlsl", "VS", "vs_5_0", m_vsBlob);
-		HRESULT hr = m_Device->CreateVertexShader(m_vsBlob->GetBufferPointer(), m_vsBlob->GetBufferSize(), nullptr, m_VertexShader.GetAddressOf());
-		assert(SUCCEEDED(hr));
-	}
-
-	void PipeLine::createPS()
-	{
-		LoadShaderFromFile(L"../Resources/Shader/Defalut.hlsl", "PS", "ps_5_0", m_psBlob);
-		HRESULT hr = m_Device->CreatePixelShader(m_psBlob->GetBufferPointer(), m_psBlob->GetBufferSize(), nullptr, m_PixelShader.GetAddressOf());
-		assert(SUCCEEDED(hr));
-	}
-
-	void PipeLine::createInputLayout()
-	{
-		D3D11_INPUT_ELEMENT_DESC layout[] =
-		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL", 1, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL", 2, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"BLENDINDICES", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 56, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"BLENDWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 72, D3D11_INPUT_PER_VERTEX_DATA, 0}
-		};
-
-		const int count = sizeof(layout) / sizeof(D3D11_INPUT_ELEMENT_DESC);
-		m_Device->CreateInputLayout(layout, count, m_vsBlob->GetBufferPointer(), m_vsBlob->GetBufferSize(), m_InputLayout.GetAddressOf());
 	}
 
 	void PipeLine::LoadShaderFromFile(const wstring& path, const string& name, const string& version, ComPtr<ID3DBlob>& blob)

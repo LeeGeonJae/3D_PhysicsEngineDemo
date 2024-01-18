@@ -25,7 +25,10 @@
     <Filter Include="98. Resource\Resource">
       <UniqueIdentifier>{3e0e6157-6f30-40ba-aacd-65a52a2bda89}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04.Component\Component">
+    <Filter Include="05.RenderInstance">
+      <UniqueIdentifier>{d7ffff80-dedc-41ed-a32a-47369806209c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Component\RenderComponent">
       <UniqueIdentifier>{b79551e6-01f6-438f-9216-ad7360d81696}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -100,13 +103,19 @@
       <Filter>99. Header</Filter>
     </ClInclude>
     <ClInclude Include="RenderComponent.h">
-      <Filter>04.Component\Component</Filter>
+      <Filter>04.Component\RenderComponent</Filter>
     </ClInclude>
     <ClInclude Include="SkeletalMeshComponent.h">
-      <Filter>04.Component\Component</Filter>
+      <Filter>04.Component\RenderComponent</Filter>
     </ClInclude>
     <ClInclude Include="StaticMeshComponent.h">
-      <Filter>04.Component\Component</Filter>
+      <Filter>04.Component\RenderComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshInstance.h">
+      <Filter>05.RenderInstance</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMeshInstance.h">
+      <Filter>05.RenderInstance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -171,13 +180,23 @@
       <Filter>99. Header</Filter>
     </ClCompile>
     <ClCompile Include="RenderComponent.cpp">
-      <Filter>04.Component\Component</Filter>
+      <Filter>04.Component\RenderComponent</Filter>
     </ClCompile>
     <ClCompile Include="SkeletalMeshComponent.cpp">
-      <Filter>04.Component\Component</Filter>
+      <Filter>04.Component\RenderComponent</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshComponent.cpp">
-      <Filter>04.Component\Component</Filter>
+      <Filter>04.Component\RenderComponent</Filter>
     </ClCompile>
+    <ClCompile Include="SkeletalMeshInstance.cpp">
+      <Filter>05.RenderInstance</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshInstance.cpp">
+      <Filter>05.RenderInstance</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Resources\Shader\SkeletalMeshShader.hlsl" />
+    <FxCompile Include="..\Resources\Shader\StaticMeshShader.hlsl" />
   </ItemGroup>
 </Project>

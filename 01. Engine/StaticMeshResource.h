@@ -34,8 +34,8 @@ namespace Engine
     private:
         string m_Name;
 
-        vector<Vertex> m_Vertices;
-        vector<UINT> m_Indices;
+        vector<Vertex> m_VertexVec;
+        vector<UINT> m_IndexVec;
 
         ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
         ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
@@ -53,8 +53,8 @@ namespace Engine
         void Create(const aiScene* _aiScene);
 
     private:
-        vector<StaticMesh> m_StaticMeshes;
-        vector<shared_ptr<Material>> m_Materials;
+        vector<StaticMesh> m_StaticMeshVec;
+        vector<shared_ptr<Material>> m_pMaterialVec;
 
         Vector3 m_AABBmin;
         Vector3 m_AABBmax;

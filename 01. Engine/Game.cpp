@@ -115,6 +115,7 @@ namespace Engine
 		m_Desc.app->LateUpdate();
 		m_Desc.app->Render();
 
+		RenderManager::GetInstance()->Update();
 		RenderManager::GetInstance()->Render();
 	}
 }
