@@ -26,6 +26,7 @@ namespace Engine
 	struct CB_Camera
 	{
 		Matrix m_View;
+		// 잘 바뀌지 않는 데이터는 따로 상수버퍼를 만들어 빼도록 한다!
 		Matrix m_Projection;
 		Vector3 m_CameraPosition;
 		int dummy;
@@ -44,6 +45,7 @@ namespace Engine
 		Vector3 m_emissiveColor = Vector3(1.f, 1.f, 1.f);
 		float m_OpacityValue = 1.f;
 		float m_EmissivePower = 1.f;
+		// 이거 없어도 될듯...
 		int m_bIsTexture = 0;
 		Vector3 m_dummy;
 	};
@@ -73,7 +75,6 @@ namespace Engine
 	private:
 		void renderSkeletalMeshInstance();
 		void renderStaticMeshInstance();
-		void constantBufferUpdate(shared_ptr<SkeletalMeshInstance> _meshInstance);
 
 	private:
 		void createConstantBuffer();
@@ -86,7 +87,7 @@ namespace Engine
 
 	private:
 		shared_ptr<GraphicsEngine::Graphics> m_Graphics;
-		shared_ptr<GraphicsEngine::PipeLine> m_PipeLine;
+		shared_ptr<GraphicsEngine::PipeLine> m_pPipeLine;
 
 		vector<shared_ptr<SkeletalMeshInstance>> m_pSkeletalMeshInstanceVec;
 		vector<shared_ptr<StaticMeshInstance>> m_pStaticMeshInstanceVec;
@@ -110,7 +111,7 @@ namespace Engine
 	}
 	shared_ptr<GraphicsEngine::PipeLine> RenderManager::GetPipeLine()
 	{
-		return m_PipeLine;
+		return m_pPipeLine;
 	}
 
 	void RenderManager::SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance)

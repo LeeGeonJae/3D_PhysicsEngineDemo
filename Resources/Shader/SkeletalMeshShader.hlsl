@@ -26,6 +26,8 @@ struct VS_OUTPUT
     float3 mBiTangent : NORMAL2;
 };
 
+
+
 cbuffer CB_ModelTransform : register(b0)
 {
     Matrix World;
@@ -44,7 +46,9 @@ cbuffer CB_DirectionLight : register(b2)
     float3 DirectionColor ;
 };
 
-cbuffer CB_Material : register(b3)
+
+
+cbuffer CB_Material : register(b11)
 {
     float3 baseColor;
     float3 emissiveColor ;
@@ -53,7 +57,7 @@ cbuffer CB_Material : register(b3)
     int bIsTexture;
 };
 
-cbuffer CB_MatrixPalette : register(b4)
+cbuffer CB_MatrixPalette : register(b12)
 {
     Matrix MatrixPalleteArray[128];
 };

@@ -20,7 +20,8 @@ namespace Engine
 	void RenderManager::Initalize(HWND _hwnd)
 	{
 		m_Graphics = make_shared<GraphicsEngine::Graphics>();
-		m_PipeLine = make_shared<GraphicsEngine::PipeLine>();
+		m_pPipeLine = make_shared<GraphicsEngine::PipeLine>();
+		m_Graphics->m_pPipeLine = m_pPipeLine;
 
 		GraphicsEngine::GraphicsInfo graphicsinfo;
 		graphicsinfo.m_Height = GAME->GetGameDesc().height;
@@ -28,7 +29,7 @@ namespace Engine
 		graphicsinfo.m_hwnd = GAME->GetGameDesc().hwnd;
 		graphicsinfo.m_ClearColor = GAME->GetGameDesc().clearColor;
 		m_Graphics->Initalize(graphicsinfo);
-		m_PipeLine->Initalize(m_Graphics->GetDevice(), m_Graphics->GetDeviceContext());
+		m_pPipeLine->Initalize(m_Graphics->GetDevice(), m_Graphics->GetDeviceContext());
 		createConstantBuffer();
 	}
 
@@ -48,13 +49,21 @@ namespace Engine
 
 		DEVICE_CONTEXT->UpdateSubresource(m_pCBCamera.Get(), 0, nullptr, &m_CBCameraData, 0, 0);
 		DEVICE_CONTEXT->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_CBDirectionLightData, 0, 0);
+
+
+		DEVICE_CONTEXT->VSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
+		DEVICE_CONTEXT->VSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
+
+		DEVICE_CONTEXT->PSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
+		DEVICE_CONTEXT->PSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
 	}
 
 	void RenderManager::Render()
 	{
 		m_Graphics->RenderBegin();
 
-		m_PipeLine->Update();
+		m_pPipeLine->Update();
+		m_pPipeLine->StateSetDefault();
 		renderSkeletalMeshInstance();
 		renderStaticMeshInstance();
 
@@ -101,14 +110,10 @@ namespace Engine
 			DEVICE_CONTEXT->UpdateSubresource(m_pCBbIsTexture.Get(), 0, nullptr, &CBTextureData, 0, 0);
 
 			DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
-			DEVICE_CONTEXT->VSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
-			DEVICE_CONTEXT->VSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
-			DEVICE_CONTEXT->VSSetConstantBuffers(4, 1, m_pCBBoneTransformPallete.GetAddressOf());
-			DEVICE_CONTEXT->PSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
-			DEVICE_CONTEXT->PSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
-			DEVICE_CONTEXT->PSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
-			DEVICE_CONTEXT->PSSetConstantBuffers(3, 1, m_pCBMaterial.GetAddressOf());
-			DEVICE_CONTEXT->PSSetConstantBuffers(5, 1, m_pCBbIsTexture.GetAddressOf());
+			DEVICE_CONTEXT->VSSetConstantBuffers(12, 1, m_pCBBoneTransformPallete.GetAddressOf());
+
+			DEVICE_CONTEXT->PSSetConstantBuffers(11, 1, m_pCBMaterial.GetAddressOf());
+
 
 			DEVICE_CONTEXT->IASetVertexBuffers(0, 1, meshInstance->GetSkeletalMesh()->GetVertexBuffer().GetAddressOf(), &stride, &offset);
 			DEVICE_CONTEXT->IASetIndexBuffer(meshInstance->GetSkeletalMesh()->GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
@@ -116,12 +121,12 @@ namespace Engine
 			DEVICE_CONTEXT->DrawIndexed(static_cast<UINT>(meshInstance->GetSkeletalMesh()->GetIndices().size()), 0, 0);
 		}
 
-		m_pSkeletalMeshInstanceVec.clear();
+		//m_pSkeletalMeshInstanceVec.clear();
 	}
 
 	void RenderManager::renderStaticMeshInstance()
 	{
-		shared_ptr<Shader> shader = RESOURCE->Find<Shader>("StaticMeshShader");
+		/*shared_ptr<Shader> shader = RESOURCE->Find<Shader>("StaticMeshShader");
 
 		for (auto meshInstance : m_pStaticMeshInstanceVec)
 		{
@@ -174,6 +179,7 @@ namespace Engine
 		}
 
 		m_pStaticMeshInstanceVec.clear();
+		*/
 	}
 
 	void RenderManager::createConstantBuffer()

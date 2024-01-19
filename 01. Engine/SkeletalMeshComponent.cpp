@@ -61,6 +61,11 @@ namespace Engine
 			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get(), &GetWorldTransform());
 			m_pSkeletalMeshInstanceVec.push_back(meshInstance);
 		}
+
+		for (auto meshInstance : m_pSkeletalMeshInstanceVec)
+		{
+			RENDER->SetSkeletalMeshInstance(meshInstance);
+		}
 	}
 
 	void SkeletalMeshComponent::Update()
@@ -74,11 +79,6 @@ namespace Engine
 	void SkeletalMeshComponent::Render()
 	{
 		__super::Render();
-
-		for (auto meshInstance : m_pSkeletalMeshInstanceVec)
-		{
-			RENDER->SetSkeletalMeshInstance(meshInstance);
-		}
 	}
 }
 

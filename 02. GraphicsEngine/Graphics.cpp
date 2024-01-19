@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Graphics.h"
+#include "PipeLine.h"
 #include <cassert>
 
 
@@ -20,28 +21,6 @@ namespace GraphicsEngine
 		m_Height = info.m_Height;
 		m_ClearColor = info.m_ClearColor;
 
-		createDeviceAndSwapChain();
-		createRenderTargetView();
-		createDepthStencilView();
-		setViewPort();
-	}
-
-	void Graphics::RenderBegin()
-	{
-		m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), (float*)(&m_ClearColor));
-		m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.f, 0);
-		m_DeviceContext->RSSetViewports(1, &m_Viewport);
-		m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
-	}
-
-	void Graphics::RenderEnd()
-	{
-		HRESULT hr = m_SwapChain->Present(1, 0);
-		assert(SUCCEEDED(hr));
-	}
-
-	void Graphics::createDeviceAndSwapChain()
-	{
 		HRESULT hr = 0;
 
 		// 스왑체인 속성 설정 구조체를 초기화합니다.
@@ -79,11 +58,6 @@ namespace GraphicsEngine
 			m_DeviceContext.GetAddressOf());
 
 		assert(SUCCEEDED(hr));
-	}
-
-	void Graphics::createRenderTargetView()
-	{
-		HRESULT hr = 0;
 
 		// 4. 렌더타겟뷰 생성 (백버퍼를 이용하는 렌더타겟뷰)
 		ID3D11Texture2D* pBackBufferTexture = nullptr;
@@ -92,11 +66,6 @@ namespace GraphicsEngine
 
 		hr = m_Device->CreateRenderTargetView(pBackBufferTexture, NULL, m_RenderTargetView.GetAddressOf()); // 백 버퍼 텍스처를 렌더 타겟 뷰로 생성합니다.
 		assert(SUCCEEDED(hr));
-	}
-
-	void Graphics::createDepthStencilView()
-	{
-		HRESULT hr;
 
 		D3D11_TEXTURE2D_DESC descDepth;
 		ZeroMemory(&descDepth, sizeof(D3D11_TEXTURE2D_DESC));
@@ -127,7 +96,26 @@ namespace GraphicsEngine
 
 		assert(textureDepthStancil != nullptr);
 		textureDepthStancil->Release();
+
+		setViewPort();
 	}
+
+	void Graphics::RenderBegin()
+	{
+		m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), (float*)(&m_ClearColor));
+		m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.f, 0);
+		m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		m_DeviceContext->RSSetViewports(1, &m_Viewport);
+		m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+	}
+
+	void Graphics::RenderEnd()
+	{
+		HRESULT hr = m_SwapChain->Present(1, 0);
+		assert(SUCCEEDED(hr));
+	}
+
 
 	void Graphics::setViewPort()
 	{
