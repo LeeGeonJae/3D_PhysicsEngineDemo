@@ -201,7 +201,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float3 directLighting = 0.0f;
     {
         float3 vView = input.mViewDir;
-        float cosLo = dot(Normal, vView);
+        float cosLo = dot(Normal, -lightDir);
     
     // 카메라 정반사 방향
         float3 Lr = 2.0 * cosLo * Normal - vView;
@@ -213,7 +213,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
         {
             float3 Lh = normalize(-lightDir + vView);
 
-            float cosLi = max(0.0, dot(Normal, -lightDir));
+            float cosLi = max(0.0, dot(Normal, lightDir));
             float cosLh = max(0.0, dot(Normal, Lh));
         
             float3 F = FresnelReflection(max(0.0, dot(Lh, vView)), F0);
@@ -231,7 +231,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     }
     
     // 오파시티 맵이 있으면 해당 오파시티 맵의 알파값에 따라 픽셀 버리기
-    float alpha = texture0.Sample(sampler0, input.mUV).a;
+    float alpha = opcity0.Sample(sampler0, input.mUV).a;
     if (alpha > 1.f)
     {
         clip(alpha < OpacityValue ? -1.f : 1.f);
@@ -250,7 +250,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     // 감마 콜렉션
     //if (UseGammaCorrection)
     {
-        finalColor.rgb = sqrt(finalColor.rgb);
+        finalColor.rgb = sqrt(albedo.rgb);
     }
     
     //(난반사광 + 직접광 + 주변광)

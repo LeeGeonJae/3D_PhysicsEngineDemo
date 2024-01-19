@@ -25,13 +25,14 @@ namespace Engine
         inline Vector3 GetEmissiveColor();
         inline void SetEmissiveColor(Vector3 _color);
 
+
     private:
         Vector3 m_BaseColor;
         Vector3 m_EmissiveColor;
-        shared_ptr<Texture> m_Textures[static_cast<int>(TextureType::END)];
+        std::shared_ptr<Texture> m_Textures[static_cast<int>(TextureType::END)];
     };
 
- 
+
     shared_ptr<Texture> Material::GetTexture(TextureType _textureType)
     {
         return m_Textures[static_cast<int>(_textureType)];
@@ -56,4 +57,5 @@ namespace Engine
     {
         m_EmissiveColor = _color;
     }
+    
 }
