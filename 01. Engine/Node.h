@@ -14,6 +14,8 @@ namespace Engine
 	{
 		string m_Name;
 		string m_ParentName;
+		vector<string> m_MeshName;
+		Matrix m_LocalMatrix;
 	};
 
 	class NodeDataResource : public ResourceBase

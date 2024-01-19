@@ -19,7 +19,7 @@ namespace Engine
 	{
 	}
 
-	void SkeletalMeshInstance::Create(SkeletalMesh* _pMeshResource, vector<shared_ptr<Node>>& _pNodeVec, Material* _pMaterial, Matrix* _pTransform)
+	void SkeletalMeshInstance::Create(SkeletalMesh* _pMeshResource, vector<shared_ptr<Node>>& _pNodeVec, Material* _pMaterial)
 	{
 		m_pMaterial = _pMaterial;
 		m_pMeshResource = _pMeshResource;
