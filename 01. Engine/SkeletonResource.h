@@ -27,11 +27,12 @@ namespace Engine
 
     public:
         inline shared_ptr<Bone> FindBone(string _key);
+        inline void SetBone(shared_ptr<Bone> _bone);
 
     private:
+        vector<shared_ptr<Bone>> m_BoneVec;
         unordered_map<string, shared_ptr<Bone>> m_BoneMap;
     };
-
 
     shared_ptr<Bone> SkeletonResource::FindBone(string _key)
     {
@@ -39,5 +40,10 @@ namespace Engine
             return m_BoneMap.find(_key)->second;
 
         return nullptr;
+    }
+    void SkeletonResource::SetBone(shared_ptr<Bone> _bone)
+    {
+         m_BoneVec.push_back(_bone);
+         m_BoneMap.insert(make_pair(_bone->m_NodeName, _bone));
     }
 }

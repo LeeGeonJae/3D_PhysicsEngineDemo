@@ -34,7 +34,7 @@ namespace Engine
 
 	void RenderManager::Update()
 	{
-		Vector3 eye = Vector3(0.f, 80.f, -600.f);
+		Vector3 eye = Vector3(0.f, 300.f, -600.f);
 		Vector3 target = Vector3(0.f, 0.f, 0.f);
 		Vector3 up = Vector3(0.f, 1.f, 0.f);
 		m_CBCameraData.m_CameraPosition = eye;
@@ -73,6 +73,7 @@ namespace Engine
 			CB_Material CBMaterialData;
 			CB_MatrixPalette CBMatrixPaletteData;
 			CB_ModelTransform CBModelTransformData;
+			CB_bIsTexture CBTextureData{};
 			CBMaterialData.m_baseColor = meshInstance->GetMaterial()->GetBaseColor();
 			CBMaterialData.m_emissiveColor = meshInstance->GetMaterial()->GetEmissiveColor();
 			CBMaterialData.m_bIsTexture = 0;
@@ -90,13 +91,14 @@ namespace Engine
 				if (find != nullptr)
 				{
 					DEVICE_CONTEXT->PSSetShaderResources(i, 1, find->GetTexture().GetAddressOf());
-					CBMaterialData.m_bIsTexture = CBMaterialData.m_bIsTexture | (1 << i);
+					CBTextureData.bIsValidTextureMap[i] = true;
 				}
 			}
 
 			DEVICE_CONTEXT->UpdateSubresource(m_pCBMaterial.Get(), 0, nullptr, &CBMaterialData, 0, 0);
 			DEVICE_CONTEXT->UpdateSubresource(m_pCBBoneTransformPallete.Get(), 0, nullptr, &CBMatrixPaletteData, 0, 0);
 			DEVICE_CONTEXT->UpdateSubresource(m_pCBModelTransform.Get(), 0, nullptr, &CBModelTransformData, 0, 0);
+			DEVICE_CONTEXT->UpdateSubresource(m_pCBbIsTexture.Get(), 0, nullptr, &CBTextureData, 0, 0);
 
 			DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
 			DEVICE_CONTEXT->VSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
@@ -106,6 +108,7 @@ namespace Engine
 			DEVICE_CONTEXT->PSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
 			DEVICE_CONTEXT->PSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
 			DEVICE_CONTEXT->PSSetConstantBuffers(3, 1, m_pCBMaterial.GetAddressOf());
+			DEVICE_CONTEXT->PSSetConstantBuffers(5, 1, m_pCBbIsTexture.GetAddressOf());
 
 			DEVICE_CONTEXT->IASetVertexBuffers(0, 1, meshInstance->GetSkeletalMesh()->GetVertexBuffer().GetAddressOf(), &stride, &offset);
 			DEVICE_CONTEXT->IASetIndexBuffer(meshInstance->GetSkeletalMesh()->GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
@@ -122,11 +125,52 @@ namespace Engine
 
 		for (auto meshInstance : m_pStaticMeshInstanceVec)
 		{
+			UINT stride = sizeof(Vertex);
+			UINT offset = 0;
 
+			CB_Material CBMaterialData;
+			CB_MatrixPalette CBMatrixPaletteData;
+			CB_ModelTransform CBModelTransformData;
+			CB_bIsTexture CBTextureData{};
+			CBMaterialData.m_baseColor = meshInstance->GetMaterial()->GetBaseColor();
+			CBMaterialData.m_emissiveColor = meshInstance->GetMaterial()->GetEmissiveColor();
+			CBMaterialData.m_bIsTexture = 0;
+			CBModelTransformData.m_World = (meshInstance->GetMatrix()->Transpose());
 
 			DEVICE_CONTEXT->IASetInputLayout(shader->GetInputLayout().Get());
 			DEVICE_CONTEXT->VSSetShader(shader->GetVertexShader().Get(), nullptr, 0);
 			DEVICE_CONTEXT->PSSetShader(shader->GetPixelShader().Get(), nullptr, 0);
+
+			for (int i = 0; i < static_cast<int>(TextureType::END); i++)
+			{
+				auto find = meshInstance->GetMaterial()->GetTexture(static_cast<TextureType>(i));
+
+				if (find != nullptr)
+				{
+					DEVICE_CONTEXT->PSSetShaderResources(i, 1, find->GetTexture().GetAddressOf());
+					CBTextureData.bIsValidTextureMap[i] = true;
+				}
+			}
+
+			DEVICE_CONTEXT->UpdateSubresource(m_pCBMaterial.Get(), 0, nullptr, &CBMaterialData, 0, 0);
+			DEVICE_CONTEXT->UpdateSubresource(m_pCBBoneTransformPallete.Get(), 0, nullptr, &CBMatrixPaletteData, 0, 0);
+			DEVICE_CONTEXT->UpdateSubresource(m_pCBModelTransform.Get(), 0, nullptr, &CBModelTransformData, 0, 0);
+			DEVICE_CONTEXT->UpdateSubresource(m_pCBbIsTexture.Get(), 0, nullptr, &CBTextureData, 0, 0);
+
+			DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
+			DEVICE_CONTEXT->VSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
+			DEVICE_CONTEXT->VSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
+			DEVICE_CONTEXT->VSSetConstantBuffers(4, 1, m_pCBBoneTransformPallete.GetAddressOf());
+			DEVICE_CONTEXT->PSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
+			DEVICE_CONTEXT->PSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
+			DEVICE_CONTEXT->PSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
+			DEVICE_CONTEXT->PSSetConstantBuffers(3, 1, m_pCBMaterial.GetAddressOf());
+			DEVICE_CONTEXT->PSSetConstantBuffers(5, 1, m_pCBbIsTexture.GetAddressOf());
+
+			DEVICE_CONTEXT->IASetVertexBuffers(0, 1, meshInstance->GetStaticMesh()->GetVertexBuffer().GetAddressOf(), &stride, &offset);
+			DEVICE_CONTEXT->IASetIndexBuffer(meshInstance->GetStaticMesh()->GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+			DEVICE_CONTEXT->DrawIndexed(static_cast<UINT>(meshInstance->GetStaticMesh()->GetIndices().size()), 0, 0);
 		}
 
 		m_pStaticMeshInstanceVec.clear();
@@ -174,22 +218,25 @@ namespace Engine
 		hr = DEVICE->CreateBuffer(&bd, nullptr, m_pCBBoneTransformPallete.GetAddressOf());
 		assert(SUCCEEDED(hr));
 
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.ByteWidth = sizeof(CB_bIsTexture);
+		bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bd.CPUAccessFlags = 0;
+		hr = DEVICE->CreateBuffer(&bd, nullptr, m_pCBbIsTexture.GetAddressOf());
+		assert(SUCCEEDED(hr));
+
 		// 버텍스셰이더 상수설정
 		DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
 		DEVICE_CONTEXT->VSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
 		DEVICE_CONTEXT->VSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
 		DEVICE_CONTEXT->VSSetConstantBuffers(4, 1, m_pCBBoneTransformPallete.GetAddressOf());
 
-		// 3 material
-		//m_cbMatrixPallete.Create(DEVICE.Get());
-		//auto buffer = m_cbMatrixPallete.GetBuffer();
-		//DEVICE_CONTEXT->VSSetConstantBuffers(4, 1, &buffer);
-
 		// 픽셀셰이더 상수설정
 		DEVICE_CONTEXT->PSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
 		DEVICE_CONTEXT->PSSetConstantBuffers(1, 1, m_pCBCamera.GetAddressOf());
 		DEVICE_CONTEXT->PSSetConstantBuffers(2, 1, m_pCBDirectionLight.GetAddressOf());
 		DEVICE_CONTEXT->PSSetConstantBuffers(3, 1, m_pCBMaterial.GetAddressOf());
+		DEVICE_CONTEXT->PSSetConstantBuffers(5, 1, m_pCBbIsTexture.GetAddressOf());
 	}
 
 }

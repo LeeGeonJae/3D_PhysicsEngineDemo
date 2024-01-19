@@ -11,7 +11,7 @@ namespace Engine
 	{
 	}
 
-	void StaticMeshInstance::Create(StaticMeshResource* _pMeshResource, Material* _pMaterial, Matrix* _pTransform)
+	void StaticMeshInstance::Create(StaticMesh* _pMeshResource, Material* _pMaterial, Matrix* _pTransform)
 	{
 		m_pMeshResource = _pMeshResource;
 		m_pMaterial = _pMaterial;

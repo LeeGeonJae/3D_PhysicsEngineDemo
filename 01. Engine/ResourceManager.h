@@ -62,8 +62,13 @@ namespace Engine
 		{
 			return static_pointer_cast<T>(resourceIter->second);
 		}
+		//else // 못찾으면 로드 후 반환
+		//{
+		//	Load(_key);
+		//	resourceIter = m_ResourceMap[static_cast<int>(resourceType)].find(_key);
+		//	return static_pointer_cast<T>(resourceIter->second);
+		//}
 
-		// 못찾으면 nullptr
 		return nullptr;
 	}
 

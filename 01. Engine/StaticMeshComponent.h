@@ -8,6 +8,7 @@ namespace Engine
     class StaticMesh;
     class Material;
     class Shader;
+    class StaticMeshInstance;
 
     // 스켈레탈메시 컴포넌트 정보 구조체
     struct StaticMeshComponentInfo
@@ -34,7 +35,9 @@ namespace Engine
     private:
         string m_FilePath;
 
-        shared_ptr<StaticMeshSceneResource> m_pStaticMeshes;
+        shared_ptr<StaticMeshSceneResource> m_pStaticMesheScene;
         shared_ptr<Shader> m_pShader;
+
+        vector<shared_ptr<StaticMeshInstance>> m_pStaticMeshInstanceVec;
     };
 }

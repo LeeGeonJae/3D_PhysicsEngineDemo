@@ -24,33 +24,40 @@ struct VS_OUTPUT
     float3 mBiTangent : NORMAL2;
 };
 
-// 좌표 변환 Constant Buffer
-cbuffer BufferData : register(b0)
+cbuffer CB_ModelTransform : register(b0)
 {
-    matrix View;
-    matrix Projection;
+    Matrix World;
+};
+
+cbuffer CB_Camera : register(b1)
+{
+    Matrix View;
+    Matrix Projection;
     float3 CameraPos;
-}
-// Direction Light Constant Buffer
-cbuffer LightData : register(b1)
+};
+
+cbuffer CB_DirectionLight : register(b2)
 {
-    float4 LightDir;
-    float4 LightColor;
-    float SpecularPower;
-    float3 AmbientColor;
-}
-// ImGui로 텍스쳐 체크해주는 Constant Buffer
-cbuffer NormalMap : register(b3)
+    float3 Direction;
+    float3 DirectionColor;
+};
+
+cbuffer CB_Material : register(b3)
 {
-    int UseNormalMap;
-    int UseSpecularMap;
-    int UseEmissiveMap;
-    int UseGammaCorrection;
-}
-// 텍스쳐 맵이 있는지 체크하는 Constant Buffer
-cbuffer bisTextureMapData : register(b4)
+    float3 baseColor;
+    float3 emissiveColor;
+    float OpacityValue;
+    float EmissivePower;
+    int bIsTexture;
+};
+
+cbuffer CB_MatrixPalette : register(b4)
 {
-    int bIsValidBaseColor;
+    Matrix MatrixPalleteArray[128];
+};
+
+cbuffer CB_MatrixPalette : register(b5)
+{
     int bIsValidDiffuseMap;
     int bIsValidNormalMap;
     int bIsValidSpecularMap;
@@ -58,26 +65,7 @@ cbuffer bisTextureMapData : register(b4)
     int bIsValidEmissiveMap;
     int bIsValidMetalnessMap;
     int bIsValidRoughnessMap;
-}
-
-cbuffer MaterialData : register(b5)
-{
-    float4 baseColor;
-    float4 emissiveColor;
-    float OpacityValue;
-    float EmissivePower;
-}
-
-// 메시 월드 좌표 ConstantBuffer
-cbuffer MeshData : register(b6)
-{
-    matrix meshWorld;
-}
-// 본 오프셋 좌표 ConstantBuffer
-cbuffer MeshData : register(b7)
-{
-    matrix MatrixPalleteArray[128];
-}
+};
 
 // Normal Distribution Function : 거칠기에 따라 반사율을 작게한다.
 float ndfGGX(float cosLh, float roughness)
@@ -120,7 +108,7 @@ VS_OUTPUT VS(VS_INPUT input)
     float4 pos = input.mPosition;
     float4x4 matWorldBlended = MatrixPalleteArray[0];
     
-    pos = mul(pos, meshWorld);
+    pos = mul(pos, World);
     output.mPositionWorld = pos;
     
     // ndc 공간 내의 위치
@@ -129,14 +117,14 @@ VS_OUTPUT VS(VS_INPUT input)
     output.mPositionProj = pos;
     
     // 빛 방향, 오브젝트에서 카메라 방향 계산 ( 월드 )
-    float3 lightDir = normalize(LightDir);
+    float3 lightDir = normalize(Direction);
     float3 viewDir = normalize(output.mPositionWorld.xyz - CameraPos.xyz);
     output.mViewDir = viewDir;
     
     // 오브젝트 월드에서 노말 벡터 계산 (오브젝트의 정면에 90도를 이루는 벡터)
-    output.mNormal = normalize(mul(input.mNormal, (float3x3) meshWorld));
-    output.mTangent = normalize(mul(input.mTangent, (float3x3) meshWorld));
-    output.mBiTangent = normalize(mul(input.mBiTangent, (float3x3) meshWorld));
+    output.mNormal = normalize(mul(input.mNormal, (float3x3) World));
+    output.mTangent = normalize(mul(input.mTangent, (float3x3) World));
+    output.mBiTangent = normalize(mul(input.mBiTangent, (float3x3) World));
     
     // 난반사(Diffuse) 내적으로 구하기
     output.mDiffuse = saturate(dot(-lightDir, output.mNormal));
@@ -148,14 +136,13 @@ VS_OUTPUT VS(VS_INPUT input)
 }
 
 // Texture, Sampler 
-Texture2D basecolor : register(t0);
-Texture2D texture0 : register(t1);
-Texture2D normal0 : register(t2);
-Texture2D specular0 : register(t3);
-Texture2D opcity0 : register(t4);
-Texture2D emissive0 : register(t5);
-Texture2D metalness0 : register(t6);
-Texture2D roughness0 : register(t7);
+Texture2D texture0 : register(t0);
+Texture2D normal0 : register(t1);
+Texture2D specular0 : register(t2);
+Texture2D opcity0 : register(t3);
+Texture2D emissive0 : register(t4);
+Texture2D metalness0 : register(t5);
+Texture2D roughness0 : register(t6);
 
 SamplerState sampler0 : register(s0);
 SamplerState BRDFsampler0 : register(s1);
@@ -181,18 +168,15 @@ float4 PS(VS_OUTPUT input) : SV_Target
         roughness = 0.1f;
     
     // 감마 콜렉션
-    if (UseGammaCorrection)
-    {
         albedo.rgb = albedo.rgb * albedo.rgb;
-    }
     
     // 노말
     float3 Normal = input.mNormal;
-    float3 lightDir = normalize(LightDir);
+    float3 lightDir = normalize(Direction);
     
     float3 NormalTangentSpace = normal0.Sample(sampler0, input.mUV).rgb * 2.f - 1.f;
     
-    if (UseNormalMap && bIsValidNormalMap && NormalTangentSpace.x != -1.f)
+    if (bIsValidNormalMap && NormalTangentSpace.x != -1.f)
     {
         // 노멀 맵을 샘플링하여 노멀 벡터를 가져옵니다.
         NormalTangentSpace = normalize(NormalTangentSpace);
@@ -211,7 +195,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     // BRDF
     float3 directLighting = 0.0f;
     {
-        float3 Lo = normalize(CameraPos - input.mPositionWorld);
+        float3 Lo = normalize(CameraPos - input.mPositionProj.rgb);
         float cosLo = dot(Normal, Lo);
     
     // 카메라 정반사 방향
@@ -237,7 +221,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
         
             float3 specularBRDF = (F * D * G) / (4.0 * cosLi * cosLo);
         
-            directLighting += (diffuseBRDF + specularBRDF) * LightColor.rgb * cosLi;
+            directLighting += (diffuseBRDF + specularBRDF) * DirectionColor.rgb * cosLi;
         }
     }
     
@@ -249,21 +233,18 @@ float4 PS(VS_OUTPUT input) : SV_Target
     }
     
     float3 emissive = float3(0.f, 0.f, 0.f);
-    if (bIsValidEmissiveMap && UseEmissiveMap)
+    if (bIsValidEmissiveMap)
     {
         emissive = emissive0.Sample(sampler0, input.mUV).rgb;
         emissive = emissive * emissiveColor.rgb * EmissivePower;
     }
     
     //float4 TotalAmbient = float4(AmbientColor, 1) * float4(albedo, alpha) * 0.1f;
-    float4 TotalAmbient = float4(AmbientColor, 1) * float4(albedo, alpha) * 0.1f;
+    float4 TotalAmbient = float4(albedo, alpha) * 0.1f;
     float4 finalColor = float4(directLighting + emissive.rgb, 1.f);
     
     // 감마 콜렉션
-    if (UseGammaCorrection)
-    {
-        finalColor.rgb = sqrt(finalColor.rgb);
-    }
+    finalColor.rgb = sqrt(finalColor.rgb);
     
     //(난반사광 + 직접광 + 주변광)
     return finalColor;

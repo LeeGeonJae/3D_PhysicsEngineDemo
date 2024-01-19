@@ -58,6 +58,17 @@ cbuffer CB_MatrixPalette : register(b4)
     Matrix MatrixPalleteArray[128];
 };
 
+cbuffer CB_MatrixPalette : register(b5)
+{
+    int bIsValidDiffuseMap;
+    int bIsValidNormalMap;
+    int bIsValidSpecularMap;
+    int bIsValidOpcityMap;
+    int bIsValidEmissiveMap;
+    int bIsValidMetalnessMap;
+    int bIsValidRoughnessMap;
+};
+
 // Normal Distribution Function : 거칠기에 따라 반사율을 작게한다.
 float ndfGGX(float cosLh, float roughness)
 {
@@ -163,13 +174,13 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float metalness = 0.f;
     
     //텍스처
-    if (bIsTexture && (1 << 0))
+    if (bIsValidDiffuseMap)
         albedo = texture0.Sample(sampler0, input.mUV).rgb;
-    // 러프니스
-    if (bIsTexture && (1 << 6))
+    //러프니스
+    if (bIsValidRoughnessMap)
         roughness = roughness0.Sample(sampler0, input.mUV).r;
-    // 메탈릭
-    if (bIsTexture && (1 << 5))
+    //메탈릭
+    if (bIsValidMetalnessMap)
         metalness = metalness0.Sample(sampler0, input.mUV).r;
     
     if (roughness <= 0)
@@ -187,7 +198,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     
     float3 NormalTangentSpace = normal0.Sample(sampler0, input.mUV).rgb * 2.f - 1.f;
     
-    if ((bIsTexture && (1 << 5)) && NormalTangentSpace.x != -1.f)
+    if (NormalTangentSpace.x != -1.f && bIsValidNormalMap)
     {
         // 노멀 맵을 샘플링하여 노멀 벡터를 가져옵니다.
         NormalTangentSpace = normalize(NormalTangentSpace);
@@ -244,7 +255,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     }
     
     float3 emissive = float3(0.f, 0.f, 0.f);
-    if (bIsTexture && (1 << 4))
+    if (bIsValidEmissiveMap)
     {
         emissive = emissive0.Sample(sampler0, input.mUV).rgb;
         emissive = emissive * emissiveColor.rgb * EmissivePower;

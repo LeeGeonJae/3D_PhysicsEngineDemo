@@ -53,6 +53,12 @@ namespace Engine
 		Matrix Array[128];
 	};
 
+	struct CB_bIsTexture
+	{
+		int bIsValidTextureMap[7];
+		int dummy;
+	};
+
 
 	// 렌더 매니저 클래스
 	class RenderManager
@@ -94,6 +100,7 @@ namespace Engine
 		ComPtr<ID3D11Buffer> m_pCBCamera = nullptr;				// 상수 버퍼: 변환행렬
 		ComPtr<ID3D11Buffer> m_pCBDirectionLight = nullptr;		// 상수 버퍼: 방향광
 		ComPtr<ID3D11Buffer> m_pCBBoneTransformPallete = nullptr;	// 상수 버퍼: 방향광
+		ComPtr<ID3D11Buffer> m_pCBbIsTexture = nullptr;	// 상수 버퍼: 방향광
 		//ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
 	};
 

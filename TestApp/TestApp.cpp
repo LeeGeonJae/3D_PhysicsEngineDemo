@@ -7,28 +7,29 @@
 
 #include "Object.h"
 #include "SkeletalMeshComponent.h"
+#include "StaticMeshComponent.h"
 
 
 void TestApp::Init()
 {
 	using namespace Engine;
 
-	//{
-	//	shared_ptr<Object> object = std::make_shared<Object>(1);
-	//	ObjectInfo objectInfo;
-	//	objectInfo.m_Name = "Object";
-	//	object->Setting(objectInfo);
+	{
+		shared_ptr<Object> object = std::make_shared<Object>(1);
+		ObjectInfo objectInfo;
+		objectInfo.m_Name = "Object";
+		object->Setting(objectInfo);
 
-	//	std::shared_ptr<SkeletalMeshComponent> meshComponent = std::make_shared<SkeletalMeshComponent>();
-	//	SkeletalMeshComponentInfo meshInfo;
-	//	meshInfo.m_FilePath = "../Resources/FBX/Dying.fbx";
-	//	meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
-	//	meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
-	//	meshComponent->Setting(meshInfo);
-	//	meshComponent->SetOwner(object->GetRootComponent());
+		std::shared_ptr<SkeletalMeshComponent> meshComponent = std::make_shared<SkeletalMeshComponent>();
+		SkeletalMeshComponentInfo meshInfo;
+		meshInfo.m_FilePath = "../Resources/FBX/Dying.fbx";
+		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
+		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
+		meshComponent->Setting(meshInfo);
+		meshComponent->SetOwner(object->GetRootComponent());
 
-	//	m_ObjectVec.push_back(object);
-	//}
+		m_ObjectVec.push_back(object);
+	}
 	{
 		shared_ptr<Object> object = std::make_shared<Object>(2);
 		ObjectInfo objectInfo;
@@ -42,7 +43,24 @@ void TestApp::Init()
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
 		meshComponent->SetOwner(object->GetRootComponent());
-		object->SetPosition(Vector3(0.f, 0.f, 0.f));
+		object->SetPosition(Vector3(200.f, 0.f, 0.f));
+
+		m_ObjectVec.push_back(object);
+	}
+	{
+		shared_ptr<Object> object = std::make_shared<Object>(2);
+		ObjectInfo objectInfo;
+		objectInfo.m_Name = "Object";
+		object->Setting(objectInfo);
+
+		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
+		StaticMeshComponentInfo meshInfo;
+		meshInfo.m_FilePath = "../Resources/FBX/zeldaPosed001.fbx";
+		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
+		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
+		meshComponent->Setting(meshInfo);
+		meshComponent->SetOwner(object->GetRootComponent());
+		object->SetPosition(Vector3(100.f, 0.f, 0.f));
 
 		m_ObjectVec.push_back(object);
 	}

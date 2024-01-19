@@ -58,7 +58,7 @@ namespace Engine
 		for (int i = 0; i < m_pSkeletalMeshes->GetSkeletalMeshVec().size(); i++)
 		{
 			shared_ptr<SkeletalMeshInstance> meshInstance = make_shared<SkeletalMeshInstance>();
-			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetMaterialVec()[i].get(), &GetWorldTransform());
+			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get(), &GetWorldTransform());
 			m_pSkeletalMeshInstanceVec.push_back(meshInstance);
 		}
 	}

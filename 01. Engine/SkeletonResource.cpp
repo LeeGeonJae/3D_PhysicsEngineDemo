@@ -20,6 +20,11 @@ namespace Engine
 		UINT boneIndexCounter = 0;
 		map<string, int> BoneMapping;
 
+		for (int i = 0; i < m_BoneVec.size(); i++)
+		{
+			BoneMapping.insert(make_pair(m_BoneVec[i]->m_NodeName, i));
+		}
+
 		for (UINT i = 0; i < meshBoneCount; i++)
 		{
 			aiBone* aibone = _aiMesh->mBones[i];
@@ -41,10 +46,20 @@ namespace Engine
 				);
 
 				m_BoneMap.insert(make_pair(bone->m_NodeName, bone));
+				m_BoneVec.push_back(bone);
 			}
 			else
 			{
 				boneIndex = BoneMapping[aibone->mName.C_Str()];
+			}
+
+			for (int i = 0; i < m_BoneVec.size(); i++)
+			{
+				if (m_BoneVec[i]->m_NodeName == aibone->mName.C_Str())
+				{
+					boneIndex = i;
+					break;
+				}
 			}
 
 			for (UINT j = 0; j < aibone->mNumWeights; j++)

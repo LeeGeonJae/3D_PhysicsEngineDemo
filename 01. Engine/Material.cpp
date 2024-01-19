@@ -81,6 +81,8 @@ namespace Engine
 
 			// 외장형 텍스쳐 파일일 경우 있으면 반환
 			string strtemp = str.C_Str();
+			if (strtemp.find('\\') != string::npos)
+				strtemp.erase(strtemp.begin(), strtemp.begin() + strtemp.find_last_of('\\') + 1);
 			string textureName = "../Resources/Texture/" + strtemp;
 			texture = RESOURCE->Find<Texture>(textureName);
 			if (texture != nullptr)

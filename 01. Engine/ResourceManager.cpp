@@ -17,6 +17,7 @@ namespace Engine
 		RESOURCE->Load("../Resources/FBX/SkinningTest.fbx");
 		RESOURCE->Load("../Resources/FBX/Dying.fbx");
 		RESOURCE->Load("../Resources/FBX/cerberus_test.fbx");
+		RESOURCE->Load("../Resources/FBX/zeldaPosed001.fbx");
 
 		shared_ptr<Shader> skeletalMeshShader = Create<Shader>("SkeletalMeshShader");
 		shared_ptr<Shader> staticMeshShader = Create<Shader>("StaticMeshShader");
@@ -45,7 +46,6 @@ namespace Engine
 			if (pScene == nullptr)
 				return;
 
-
 			// 노드 데이타 로드
 			shared_ptr<NodeDataResource> nodeData = Find<NodeDataResource>(_path);
 			if (nodeData == nullptr)
@@ -73,7 +73,13 @@ namespace Engine
 				if (skeletalMeshResource == nullptr)
 				{
 					skeletalMeshResource = Create<SkeletalMeshSceneResource>(_path);
-					shared_ptr<SkeletonResource> skeletonResource = Create<SkeletonResource>(_path);
+					shared_ptr<SkeletonResource> skeletonResource = Find<SkeletonResource>(_path);
+					
+					if (skeletonResource == nullptr)
+					{
+						skeletonResource = Create<SkeletonResource>(_path);
+					}
+
 					skeletalMeshResource->Create(pScene, skeletonResource);
 				}
 			}

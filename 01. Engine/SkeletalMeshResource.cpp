@@ -72,7 +72,6 @@ namespace Engine
 			}
 		}
 
-
 		// 메시 본 가져오기
 		if (_aiMesh->HasBones())
 		{
@@ -133,6 +132,9 @@ namespace Engine
 		{
 			SkeletalMesh mesh;
 			mesh.Create(_aiScene->mMeshes[i], _skeleton);
+			string materialName = _aiScene->mMaterials[_aiScene->mMeshes[i]->mMaterialIndex]->GetName().C_Str();
+			shared_ptr<Material> material = RESOURCE->Find<Material>(materialName);
+			mesh.SetMaterial(material);
 			m_SkeletalMeshVec.push_back(mesh);
 
 			// 바운딩 볼륨
@@ -152,15 +154,6 @@ namespace Engine
 			m_BoundingBox.Extents.x = maxValue;
 			m_BoundingBox.Extents.y = maxValue;
 			m_BoundingBox.Extents.z = maxValue;
-		}
-
-		// 머터리얼 세팅
-		for (int i = 0; i < _aiScene->mNumMaterials; i++)
-		{
-			string materialName = _aiScene->mMaterials[i]->GetName().C_Str();
-
-			shared_ptr<Material> material = RESOURCE->Find<Material>(materialName);
-			m_pMaterialVec.push_back(material);
 		}
 	}
 }

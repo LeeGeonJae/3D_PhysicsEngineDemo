@@ -48,21 +48,24 @@ namespace Engine
     public:
         void Create(aiMesh* _aiMesh, shared_ptr<SkeletonResource> _skeleton);
 
+    private:
+        void createBuffer();
+
     public:
         inline const string& GetName();
         inline vector<BoneWeightVertex> GetVertices();
         inline vector<UINT> GetIndices();
         inline ComPtr<ID3D11Buffer> GetVertexBuffer();
         inline ComPtr<ID3D11Buffer> GetIndexBuffer();
-
-    private:
-        void createBuffer();
+        inline void SetMaterial(shared_ptr<Material> _material);
+        inline shared_ptr<Material> GetMaterial();
 
     private:
         string m_Name;
 
         vector<BoneWeightVertex> m_BoneWeightVertexVec;
         vector<UINT> m_IndexVec;
+        shared_ptr<Material> m_pMaterial;
 
         ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
         ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
@@ -88,6 +91,14 @@ namespace Engine
     {
         return m_pIndexBuffer;
     }
+    void SkeletalMesh::SetMaterial(shared_ptr<Material> _material)
+    {
+        m_pMaterial = _material;
+    }
+    shared_ptr<Material> SkeletalMesh::GetMaterial()
+    {
+        return m_pMaterial;
+    }
 
 
     // FBX 씬의 모든 스켈레탈 메시 리소스 집합을 가지고 있는 리소스 클래스
@@ -102,12 +113,10 @@ namespace Engine
 
     public:
         inline vector<SkeletalMesh>& GetSkeletalMeshVec();
-        inline vector <shared_ptr<Material>>& GetMaterialVec();
         inline DirectX::BoundingBox GetBoundingBox();
 
     private:
         vector<SkeletalMesh> m_SkeletalMeshVec;
-        vector<shared_ptr<Material>> m_pMaterialVec;
 
         Vector3 m_AABBmin;
         Vector3 m_AABBmax;
@@ -117,10 +126,6 @@ namespace Engine
     vector<SkeletalMesh>& SkeletalMeshSceneResource::GetSkeletalMeshVec()
     {
         return m_SkeletalMeshVec;
-    }
-    vector <shared_ptr<Material>>& SkeletalMeshSceneResource::GetMaterialVec()
-    {
-        return m_pMaterialVec;
     }
     DirectX::BoundingBox SkeletalMeshSceneResource::GetBoundingBox()
     {

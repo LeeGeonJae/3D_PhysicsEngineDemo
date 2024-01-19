@@ -122,6 +122,10 @@ namespace Engine
 		{
 			StaticMesh mesh;
 			mesh.Create(_aiScene->mMeshes[i]);
+			// 메시 머터리얼 등록
+			string materialName = _aiScene->mMaterials[_aiScene->mMeshes[i]->mMaterialIndex]->GetName().C_Str();
+			shared_ptr<Material> material = RESOURCE->Find<Material>(materialName);
+			mesh.SetMaterial(material);
 			m_StaticMeshVec.push_back(mesh);
 
 			// 바운딩 볼륨
@@ -142,14 +146,7 @@ namespace Engine
 			m_BoundingBox.Extents.y = maxValue;
 			m_BoundingBox.Extents.z = maxValue;
 		}
-
-		// 머터리얼 세팅
-		for (int i = 0; i < _aiScene->mNumMaterials; i++)
-		{
-			string materialName = _aiScene->mMaterials[i]->GetName().C_Str();
-
-			shared_ptr<Material> material = RESOURCE->Find<Material>(materialName);
-			m_pMaterialVec.push_back(material);
-		}
 	}
 }
+
+
