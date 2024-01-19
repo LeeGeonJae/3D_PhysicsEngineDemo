@@ -159,7 +159,6 @@ namespace Engine
 
 			for (auto& meshInstance : material.second)
 			{
-				CBModelTransformData.m_World = (meshInstance->GetMatrix()->Transpose());
 				DEVICE_CONTEXT->UpdateSubresource(m_pCBModelTransform.Get(), 0, nullptr, &CBModelTransformData, 0, 0);
 
 				DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());

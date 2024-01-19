@@ -62,7 +62,7 @@ namespace Engine
 		{
 			shared_ptr<SkeletalMeshInstance> meshInstance = make_shared<SkeletalMeshInstance>();
 			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get());
-			m_pSkeletalMeshInstanceVec.push_back(meshInstance);
+			RENDER->SetSkeletalMeshInstance(meshInstance);
 		}
 	}
 
