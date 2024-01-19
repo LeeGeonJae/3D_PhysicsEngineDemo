@@ -78,7 +78,6 @@ namespace Engine
 			CBMaterialData.m_emissiveColor = meshInstance->GetMaterial()->GetEmissiveColor();
 			CBMaterialData.m_bIsTexture = 0;
 			meshInstance->UpdateMatrixPallete(&CBMatrixPaletteData);
-			CBModelTransformData.m_World = *meshInstance->GetMatrix();
 
 			DEVICE_CONTEXT->IASetInputLayout(shader->GetInputLayout().Get());
 			DEVICE_CONTEXT->VSSetShader(shader->GetVertexShader().Get(), nullptr, 0);
@@ -135,7 +134,7 @@ namespace Engine
 			CBMaterialData.m_baseColor = meshInstance->GetMaterial()->GetBaseColor();
 			CBMaterialData.m_emissiveColor = meshInstance->GetMaterial()->GetEmissiveColor();
 			CBMaterialData.m_bIsTexture = 0;
-			CBModelTransformData.m_World = (meshInstance->GetMatrix()->Transpose());
+			CBModelTransformData.m_World = (meshInstance->GetNode()->GetWorldTransform().Transpose());
 
 			DEVICE_CONTEXT->IASetInputLayout(shader->GetInputLayout().Get());
 			DEVICE_CONTEXT->VSSetShader(shader->GetVertexShader().Get(), nullptr, 0);

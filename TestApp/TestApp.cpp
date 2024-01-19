@@ -22,7 +22,7 @@ void TestApp::Init()
 
 		std::shared_ptr<SkeletalMeshComponent> meshComponent = std::make_shared<SkeletalMeshComponent>();
 		SkeletalMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/Dying.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/SkinningTest.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);

@@ -9,6 +9,7 @@
 #include "Node.h"
 #include "Texture.h"
 #include "Shader.h" 
+#include "Helper.h"
 
 namespace Engine
 {
@@ -74,11 +75,8 @@ namespace Engine
 				{
 					skeletalMeshResource = Create<SkeletalMeshSceneResource>(_path);
 					shared_ptr<SkeletonResource> skeletonResource = Find<SkeletonResource>(_path);
-					
 					if (skeletonResource == nullptr)
-					{
 						skeletonResource = Create<SkeletonResource>(_path);
-					}
 
 					skeletalMeshResource->Create(pScene, skeletonResource);
 				}
@@ -123,8 +121,16 @@ namespace Engine
 	{
 		NodeData nodeData;
 		nodeData.m_Name = _aiNode->mName.C_Str();
+		aiMatrixToMatrix(_aiNode->mTransformation, nodeData.m_LocalMatrix);
 		if (_aiNode->mParent != nullptr)
 			nodeData.m_ParentName = _aiNode->mParent->mName.C_Str();
+
+		for (int i = 0; i < _aiNode->mNumMeshes; i++)
+		{
+			auto aimesh = _aiScene->mMeshes[_aiNode->mMeshes[i]];
+			string meshName = aimesh->mName.C_Str();
+			nodeData.m_MeshName.push_back(meshName);
+		}
 		_nodeDataResource->AddNodeData(nodeData);
 
 		for (int i = 0; i < _aiNode->mNumChildren; i++)

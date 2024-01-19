@@ -48,6 +48,8 @@ namespace Engine
 		{
 			shared_ptr<Node> node = make_shared<Node>();
 			node->SetNodeData(nodeData);
+			node->SetLocalTransform(nodeData.m_LocalMatrix);
+
 			m_pNodeVec.push_back(node);
 		}
 
@@ -58,7 +60,7 @@ namespace Engine
 		for (int i = 0; i < m_pSkeletalMeshes->GetSkeletalMeshVec().size(); i++)
 		{
 			shared_ptr<SkeletalMeshInstance> meshInstance = make_shared<SkeletalMeshInstance>();
-			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get(), &GetWorldTransform());
+			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get());
 			m_pSkeletalMeshInstanceVec.push_back(meshInstance);
 		}
 	}
