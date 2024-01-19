@@ -50,6 +50,7 @@ namespace Engine
 	{
 	public:
 		Node();
+		Node(NodeData _nodeData) : m_NodeData(_nodeData) {};
 		~Node();
 
 	public:

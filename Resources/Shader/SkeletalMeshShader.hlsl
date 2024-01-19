@@ -54,23 +54,11 @@ cbuffer CB_Material : register(b11)
     float3 emissiveColor ;
     float OpacityValue;
     float EmissivePower;
-    int bIsTexture;
 };
 
 cbuffer CB_MatrixPalette : register(b12)
 {
     Matrix MatrixPalleteArray[128];
-};
-
-cbuffer CB_MatrixPalette : register(b5)
-{
-    int bIsValidDiffuseMap;
-    int bIsValidNormalMap;
-    int bIsValidSpecularMap;
-    int bIsValidOpcityMap;
-    int bIsValidEmissiveMap;
-    int bIsValidMetalnessMap;
-    int bIsValidRoughnessMap;
 };
 
 // Normal Distribution Function : 거칠기에 따라 반사율을 작게한다.
@@ -83,15 +71,6 @@ float ndfGGX(float cosLh, float roughness)
     return alpha / denominator;
 }
 
-//// Normal Distribution Function : 거칠기에 따라 반사율을 작게한다.
-//float ndfGGX(float cosLh, float roughness)
-//{
-//    float alpha = roughness * roughness;
-//    float alphaSq = alpha * alpha;
-
-//    float denom = (cosLh * cosLh) * (alphaSq - 1.0) + 1.0;
-//    return alphaSq / (3.141592 * denom * denom);
-//}
 
 // Fresnel Reflection : 
 float3 FresnelReflection(float costheta, float3 F0)
@@ -173,18 +152,18 @@ SamplerState sampler0 : register(s0);
 // Pixel Shader(PS) 프로그래밍
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-    float3 albedo = baseColor.rgb;
+    float3 albedo;
     float roughness = 0.f;
     float metalness = 0.f;
     
     //텍스처
-    if (bIsValidDiffuseMap)
-        albedo = texture0.Sample(sampler0, input.mUV).rgb;
+    //if (bIsValidDiffuseMap)
+    albedo = texture0.Sample(sampler0, input.mUV).rgb + baseColor.rgb;
     //러프니스
-    if (bIsValidRoughnessMap)
+    //if (bIsValidRoughnessMap)
         roughness = roughness0.Sample(sampler0, input.mUV).r;
     //메탈릭
-    if (bIsValidMetalnessMap)
+    //if (bIsValidMetalnessMap)
         metalness = metalness0.Sample(sampler0, input.mUV).r;
     
     if (roughness <= 0)
@@ -202,7 +181,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     
     float3 NormalTangentSpace = normal0.Sample(sampler0, input.mUV).rgb * 2.f - 1.f;
     
-    if (NormalTangentSpace.x != -1.f && bIsValidNormalMap)
+    //if (length(NormalTangentSpace) > 0.f)
     {
         // 노멀 맵을 샘플링하여 노멀 벡터를 가져옵니다.
         NormalTangentSpace = normalize(NormalTangentSpace);
@@ -221,23 +200,23 @@ float4 PS(VS_OUTPUT input) : SV_Target
     // BRDF
     float3 directLighting = 0.0f;
     {
-        float3 Lo = normalize(CameraPos - input.mPositionWorld.rgb);
-        float cosLo = dot(Normal, Lo);
+        float3 vView = input.mViewDir;
+        float cosLo = dot(Normal, vView);
     
     // 카메라 정반사 방향
-        float3 Lr = 2.0 * cosLo * Normal - Lo;
+        float3 Lr = 2.0 * cosLo * Normal - vView;
     
     // 프레넬
-        float3 F0 = lerp(0.04f, albedo, metalness);
+        float3 F0 = lerp(0.004f, albedo, metalness);
     
     // 빛 ( 빛의 양에 따라 for문 돌리는거 추가해야함 )
         {
-            float3 Lh = normalize(-lightDir + Lo);
+            float3 Lh = normalize(-lightDir + vView);
 
             float cosLi = max(0.0, dot(Normal, -lightDir));
             float cosLh = max(0.0, dot(Normal, Lh));
         
-            float3 F = FresnelReflection(max(0.0, dot(Lh, Lo)), F0);
+            float3 F = FresnelReflection(max(0.0, dot(Lh, vView)), F0);
             float D = ndfGGX(cosLh, roughness);
             float G = gaSchlickGGX(cosLi, cosLo, roughness);
 
@@ -247,7 +226,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
         
             float3 specularBRDF = (F * D * G) / (4.0 * cosLi * cosLo);
         
-            directLighting += (diffuseBRDF + specularBRDF) * DirectionColor.rgb * cosLi;
+            directLighting += (diffuseBRDF + specularBRDF) * DirectionColor.rgb * cosLo;
         }
     }
     
@@ -259,16 +238,15 @@ float4 PS(VS_OUTPUT input) : SV_Target
     }
     
     float3 emissive = float3(0.f, 0.f, 0.f);
-    if (bIsValidEmissiveMap)
-    {
-        emissive = emissive0.Sample(sampler0, input.mUV).rgb;
-        emissive = emissive * emissiveColor.rgb * EmissivePower;
-    }
+
+    emissive = emissive0.Sample(sampler0, input.mUV).rgb;
+    emissive = (emissive + emissiveColor.rgb) * EmissivePower;
+    
     
     //float4 TotalAmbient = float4(AmbientColor, 1) * float4(albedo, alpha) * 0.1f;
     float4 TotalAmbient = float4(albedo, alpha) * 0.1f;
-    float4 finalColor = float4(directLighting + emissive.rgb, 1.f);
     
+    float4 finalColor = float4(albedo, 1.f);
     // 감마 콜렉션
     //if (UseGammaCorrection)
     {

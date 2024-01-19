@@ -22,7 +22,6 @@ namespace Engine
 	void SkeletalMeshInstance::Create(SkeletalMesh* _pMeshResource, vector<shared_ptr<Node>>& _pNodeVec, Material* _pMaterial, Matrix* _pTransform)
 	{
 		m_pMaterial = _pMaterial;
-		m_pTransform = _pTransform;
 		m_pMeshResource = _pMeshResource;
 		m_pNodeVec = _pNodeVec;
 	}

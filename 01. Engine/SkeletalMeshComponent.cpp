@@ -46,10 +46,9 @@ namespace Engine
 		m_pNodeVec.reserve(nodeDataResource->GetNodeDataVec().size());
 		for (auto nodeData : nodeDataResource->GetNodeDataVec())
 		{
-			shared_ptr<Node> node = make_shared<Node>();
-			node->SetNodeData(nodeData);
-			m_pNodeVec.push_back(node);
+			m_pNodeVec.emplace_back(make_shared<Node>(nodeData));
 		}
+		m_pNodeVec.resize(m_pNodeVec.size());
 
 		// 노드 세팅해주는 전역 함수 실행
 		Engine::NodeSetting(animationResource, skeletonResource, m_pNodeVec, m_pRootNode);
@@ -57,9 +56,7 @@ namespace Engine
 		// 렌더 매니저에 보내줄 메시 인스턴스 생성
 		for (int i = 0; i < m_pSkeletalMeshes->GetSkeletalMeshVec().size(); i++)
 		{
-			shared_ptr<SkeletalMeshInstance> meshInstance = make_shared<SkeletalMeshInstance>();
-			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get(), &GetWorldTransform());
-			m_pSkeletalMeshInstanceVec.push_back(meshInstance);
+			m_pSkeletalMeshInstanceVec.emplace_back(make_shared<SkeletalMeshInstance>( & m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get(), &GetWorldTransform()));
 		}
 
 		for (auto meshInstance : m_pSkeletalMeshInstanceVec)
