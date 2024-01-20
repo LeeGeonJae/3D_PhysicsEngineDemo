@@ -11,7 +11,9 @@ namespace Engine
 	{
 	public:
 		SkeletalMeshInstance();
-		~SkeletalMeshInstance();
+		SkeletalMeshInstance(SkeletalMesh* _pMeshResource, vector<shared_ptr<Node>>& _pNodeVec, Material* _pMaterial, Matrix* _pTransform) : m_pMaterial(_pMaterial), m_pMeshResource(_pMeshResource), m_pNodeVec(_pNodeVec) {};
+		
+		~SkeletalMeshInstance();			 
 
 	public:
 		void Create(SkeletalMesh* _pMeshResource, vector<shared_ptr<Node>>& _pNodeVec, Material* _pMaterial);

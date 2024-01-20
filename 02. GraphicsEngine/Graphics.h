@@ -13,6 +13,8 @@ namespace GraphicsEngine
 		DirectX::SimpleMath::Vector4 m_ClearColor = DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 0.5f);
 	};
 
+	class PipeLine;
+
 	class Graphics
 	{
 	public:
@@ -25,15 +27,12 @@ namespace GraphicsEngine
 		void RenderBegin();
 		void RenderEnd();
 
-	private:
-		void createDeviceAndSwapChain();
-		void createRenderTargetView();
-		void createDepthStencilView();
 		void setViewPort();
-
 	public:
 		inline ComPtr<ID3D11Device> GetDevice();
 		inline ComPtr<ID3D11DeviceContext> GetDeviceContext();
+
+		std::weak_ptr<PipeLine> m_pPipeLine;
 
 	private:
 		HWND m_Hwnd;

@@ -15,17 +15,21 @@ namespace Engine
 	// 클래스 선언
 	class SkeletalMeshInstance;
 	class StaticMeshInstance;
-
+	class Texture;
+	class Material;
 
 	// ConstantBuffer 구조체
 	struct CB_ModelTransform
 	{
+
+		// 이건 어디에 쓰는거지???
 		Matrix m_World;
 	};
 
 	struct CB_Camera
 	{
 		Matrix m_View;
+		// 잘 바뀌지 않는 데이터는 따로 상수버퍼를 만들어 빼도록 한다!
 		Matrix m_Projection;
 		Vector3 m_CameraPosition;
 		int dummy;
@@ -44,19 +48,12 @@ namespace Engine
 		Vector3 m_emissiveColor = Vector3(1.f, 1.f, 1.f);
 		float m_OpacityValue = 1.f;
 		float m_EmissivePower = 1.f;
-		int m_bIsTexture = 0;
-		Vector3 m_dummy;
+
 	};
 
 	struct CB_MatrixPalette
 	{
 		Matrix Array[128];
-	};
-
-	struct CB_bIsTexture
-	{
-		int bIsValidTextureMap[7];
-		int dummy;
 	};
 
 
@@ -71,9 +68,8 @@ namespace Engine
 		void Render();
 
 	private:
-		void renderSkeletalMeshInstance();
+		void SortSkeletalMeshInstance();
 		void renderStaticMeshInstance();
-		void constantBufferUpdate(shared_ptr<SkeletalMeshInstance> _meshInstance);
 
 	private:
 		void createConstantBuffer();
@@ -81,15 +77,17 @@ namespace Engine
 	public:
 		inline shared_ptr<GraphicsEngine::Graphics> GetGraphics();
 		inline shared_ptr<GraphicsEngine::PipeLine> GetPipeLine();
-		inline void SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance);
-		inline void SetStaticMeshInstance(shared_ptr<StaticMeshInstance> _meshInstance);
+		void SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance);
+		
+
+		void SetStaticMeshInstance(shared_ptr<StaticMeshInstance> _meshInstance);
 
 	private:
 		shared_ptr<GraphicsEngine::Graphics> m_Graphics;
-		shared_ptr<GraphicsEngine::PipeLine> m_PipeLine;
+		shared_ptr<GraphicsEngine::PipeLine> m_pPipeLine;
 
-		vector<shared_ptr<SkeletalMeshInstance>> m_pSkeletalMeshInstanceVec;
-		vector<shared_ptr<StaticMeshInstance>> m_pStaticMeshInstanceVec;
+		std::unordered_map<Material* ,vector<shared_ptr<SkeletalMeshInstance>>> m_pSkeletalMeshInstanceVec;
+		std::unordered_map < Material*, vector<shared_ptr<StaticMeshInstance>>> m_pStaticMeshInstanceVec;
 
 		CB_Camera m_CBCameraData;
 		CB_DirectionLight m_CBDirectionLightData;
@@ -110,16 +108,7 @@ namespace Engine
 	}
 	shared_ptr<GraphicsEngine::PipeLine> RenderManager::GetPipeLine()
 	{
-		return m_PipeLine;
-	}
-
-	void RenderManager::SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance)
-	{
-		m_pSkeletalMeshInstanceVec.push_back(_meshInstance);
-	}
-	void RenderManager::SetStaticMeshInstance(shared_ptr<StaticMeshInstance> _meshInstance)
-	{
-		m_pStaticMeshInstanceVec.push_back(_meshInstance);
+		return m_pPipeLine;
 	}
 }
 

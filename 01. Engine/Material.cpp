@@ -27,6 +27,7 @@ namespace Engine
 		shared_ptr<Texture> diffuse = loadMaterialTexture(_aimaterial, aiTextureType_DIFFUSE, "texture_diffuse", _aiScene, _path);
 		if (diffuse != nullptr)
 		{
+			//m_BaseColor = { 0,0,0 };
 			diffuse->SetTextureType(TextureType::DIFFUSE);
 			m_Textures[static_cast<int>(TextureType::DIFFUSE)] = diffuse;
 		}

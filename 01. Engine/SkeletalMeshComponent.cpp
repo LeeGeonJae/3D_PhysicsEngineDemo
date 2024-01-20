@@ -52,6 +52,7 @@ namespace Engine
 
 			m_pNodeVec.push_back(node);
 		}
+		m_pNodeVec.resize(m_pNodeVec.size());
 
 		// 노드 세팅해주는 전역 함수 실행
 		Engine::NodeSetting(animationResource, skeletonResource, m_pNodeVec, m_pRootNode);
@@ -61,7 +62,7 @@ namespace Engine
 		{
 			shared_ptr<SkeletalMeshInstance> meshInstance = make_shared<SkeletalMeshInstance>();
 			meshInstance->Create(&m_pSkeletalMeshes->GetSkeletalMeshVec()[i], m_pNodeVec, m_pSkeletalMeshes->GetSkeletalMeshVec()[i].GetMaterial().get());
-			m_pSkeletalMeshInstanceVec.push_back(meshInstance);
+			RENDER->SetSkeletalMeshInstance(meshInstance);
 		}
 	}
 
@@ -76,11 +77,6 @@ namespace Engine
 	void SkeletalMeshComponent::Render()
 	{
 		__super::Render();
-
-		for (auto meshInstance : m_pSkeletalMeshInstanceVec)
-		{
-			RENDER->SetSkeletalMeshInstance(meshInstance);
-		}
 	}
 }
 
