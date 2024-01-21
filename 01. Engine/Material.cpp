@@ -13,7 +13,7 @@ namespace Engine
 	{
 	}
 
-	// Material 생성 
+	// 건재 : Material 생성 
 	void Material::Create(aiMaterial* _aimaterial, const aiScene* _aiScene, const string& _path)
 	{
 		m_Name = _aimaterial->GetName().C_Str();
@@ -74,13 +74,13 @@ namespace Engine
 	{
 		shared_ptr<Texture> texture = nullptr;
 
-		// 해당 머티리얼에 해당 텍스쳐 타입의 텍스쳐가 있을 경우
+		// 건재 : 해당 머티리얼에 해당 텍스쳐 타입의 텍스쳐가 있을 경우
 		if (_aiMaterial->GetTextureCount(_type) > 0)
 		{
 			aiString str;
 			_aiMaterial->GetTexture(_type, 0, &str);
 
-			// 외장형 텍스쳐 파일일 경우 있으면 반환
+			// 건재 : 외장형 텍스쳐 파일일 경우 있으면 반환
 			string strtemp = str.C_Str();
 			if (strtemp.find('\\') != string::npos)
 				strtemp.erase(strtemp.begin(), strtemp.begin() + strtemp.find_last_of('\\') + 1);
@@ -89,22 +89,22 @@ namespace Engine
 			if (texture != nullptr)
 				return texture;
 
-			// 내장형 텍스쳐 파일일 경우 있으면 반환
+			// 건재 : 내장형 텍스쳐 파일일 경우 있으면 반환
 			textureName = _path + '/' + _typeName;
 			texture = RESOURCE->Find<Texture>(textureName);
 			if (texture != nullptr)
 				return texture;
 
-			// 못찾으면 텍스쳐 생성
+			// 건재 : 못찾으면 텍스쳐 생성
 			const aiTexture* embeddedTexture = _aiScene->GetEmbeddedTexture(str.C_Str());
-			// 내장 텍스쳐를 사용할 경우
+			// 건재 : 내장 텍스쳐를 사용할 경우
 			if (embeddedTexture != nullptr)
 			{
 				textureName = _path + '/' + _typeName;
 				texture = RESOURCE->Create<Texture>(textureName);
 				texture->LoadEmbeddedTexture(embeddedTexture);
 			}
-			else // 파일에서 텍스쳐를 로드해야 하는 경우
+			else // 건재 : 파일에서 텍스쳐를 로드해야 하는 경우
 			{
 				textureName = "../Resources/Texture/" + strtemp;
 				texture = RESOURCE->Create<Texture>(textureName);

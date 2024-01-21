@@ -2,11 +2,11 @@
 
 namespace Engine
 {
+	// 건재 : 클래스 선언
 	class AnimationResource;
 	class SkeletonResource;
 	class Node;
 
-	void NodeSetting(shared_ptr<AnimationResource> _animationResource, shared_ptr<SkeletonResource> _skeletonResource, vector<shared_ptr<Node>>& _nodeVec, shared_ptr<Node>& _rootNode);
-	void NodeSetting(shared_ptr<AnimationResource> _animationResource, vector<shared_ptr<Node>>& _nodeVec, shared_ptr<Node>& _rootNode);
+	// 건재 : aiMatrix를 Matrix로 변환해주는 전역 함수
 	void aiMatrixToMatrix(const aiMatrix4x4& _aiMatrix, Matrix& _matrix);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <directxtk/SimpleMath.h>
 
+// 건재 : 자료형 타입 이름 지정
 using int8 = __int8;
 using int16 = __int16;
 using int32 = __int32;
@@ -10,7 +11,7 @@ using uint16 = unsigned __int16;
 using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
 
-
+// 건재 : DirectX 자료형 타입 이름 지정
 using Vector2 = DirectX::SimpleMath::Vector2;
 using Vector3 = DirectX::SimpleMath::Vector3;
 using Vector4 = DirectX::SimpleMath::Vector4;

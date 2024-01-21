@@ -5,7 +5,7 @@
 #include "Types.h"
 #include "Define.h"
 
-// STL
+// 건재 : STL
 #include <memory>
 #include <iostream>
 #include <array>
@@ -15,19 +15,20 @@
 #include <unordered_map>
 #include <algorithm>
 #include <random>
+#include <set>
 using namespace std;
 
-// WIN
+// 건재 : WIN
 #include <windows.h>
 #include <assert.h>
 #include <optional>
 
-// assimp
+// 건재 : assimp
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-// DX
+// 건재 : DX
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <d3d11shader.h>

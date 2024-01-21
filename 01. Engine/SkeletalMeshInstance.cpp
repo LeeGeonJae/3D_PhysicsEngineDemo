@@ -28,6 +28,7 @@ namespace Engine
 
 	void SkeletalMeshInstance::UpdateMatrixPallete(CB_MatrixPalette* pMatrixPallete)
 	{
+		// 건재 : 본 팔레트 상수 버퍼의 데이터를 세팅해주는 함수입니다.
 		int Count = 0;
 
 		for (int i = 0; i < m_pNodeVec.size(); i++)

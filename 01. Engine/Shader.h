@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-	// 쉐이더 타입
+	// 건재 : 쉐이더 타입
 	enum class ShaderType
 	{
 		SkeletalMesh = 0,
@@ -15,7 +15,7 @@ namespace Engine
 		End,
 	};
 
-	// 쉐이더 클래스
+	// 건재 : 쉐이더 클래스
 	class Shader : public ResourceBase
 	{
 	public:
@@ -39,12 +39,12 @@ namespace Engine
 	public:
 		ShaderType m_ShaderType;
 
-		// Geometry
+		// 건재 : Geometry
 		ComPtr<ID3D11InputLayout> m_InputLayout = nullptr;
-		// VS
+		// 건재 : VS
 		ComPtr<ID3D11VertexShader> m_VertexShader = nullptr;
 		ComPtr<ID3DBlob> m_vsBlob = nullptr;
-		// PS
+		// 건재 : PS
 		ComPtr<ID3D11PixelShader> m_PixelShader = nullptr;
 		ComPtr<ID3DBlob> m_psBlob = nullptr;
 	};

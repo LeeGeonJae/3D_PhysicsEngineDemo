@@ -25,8 +25,8 @@ namespace Engine
 	}
 	void StaticMeshComponent::Setting(StaticMeshComponentInfo _info)
 	{
+		// 건재 : 정보 구조체에 따라 세팅
 		__super::Setting(_info.m_RenderComponentInfo);
-
 		m_FilePath = _info.m_FilePath;
 	}
 
@@ -34,13 +34,13 @@ namespace Engine
 	{
 		__super::Init();
 
-		// 리소스매니저에서 리소스들 찾기
+		// 건재 : 리소스매니저에서 리소스들 찾기
 		m_pStaticMesheScene = RESOURCE->Find<StaticMeshSceneResource>(m_FilePath);
 		m_pShader = RESOURCE->Find<Shader>("StaticMeshShader");
 		shared_ptr<NodeDataResource> nodeDataResource = RESOURCE->Find<NodeDataResource>(m_FilePath);
 		shared_ptr<AnimationResource> animationResource = RESOURCE->Find<AnimationResource>(m_FilePath);
 
-		// 노드 갯수만큼 생성하고 노드 데이타 세팅
+		// 건재 : 노드 갯수만큼 생성하고 노드 데이타 세팅
 		m_pNodeVec.reserve(nodeDataResource->GetNodeDataVec().size());
 		for (auto nodeData : nodeDataResource->GetNodeDataVec())
 		{
@@ -50,8 +50,11 @@ namespace Engine
 
 			m_pNodeVec.push_back(node);
 		}
+
+		// 건재 : 노드 세팅
 		NodeSetting(animationResource, m_pNodeVec, m_pRootNode);
 
+		// 건재 : 스태틱 메시 씬 리소스가 가지고 있는 스태틱 메시 갯수에 따라 스태틱 메시 인스턴스 생성
 		for (int i = 0; i < m_pStaticMesheScene->GetStaticMeshVec().size(); i++)
 		{
 			shared_ptr<StaticMeshInstance> meshInstance = make_shared<StaticMeshInstance>();
@@ -75,6 +78,37 @@ namespace Engine
 		for (auto meshInstance : m_pStaticMeshInstanceVec)
 		{
 			RENDER->SetStaticMeshInstance(meshInstance);
+		}
+	}
+
+	void StaticMeshComponent::NodeSetting(shared_ptr<AnimationResource> _animationResource, vector<shared_ptr<Node>>& _nodeVec, shared_ptr<Node>& _rootNode)
+	{
+		// 노드에 애니메이션노드, 부모 세팅
+		for (auto currentNode : _nodeVec)
+		{
+			// 애니메이션을 노드에 세팅
+			if (_animationResource != nullptr)
+			{
+				shared_ptr<AnimationNode> animationNode = _animationResource->FindAnimationNode(currentNode->GetNodaData().m_Name);
+
+				if (animationNode != nullptr)
+					currentNode->SetAnimationNode(animationNode);
+			}
+
+			// 노드 계층구조 세팅
+			for (auto parentNode : _nodeVec)
+			{
+				if (currentNode->GetNodaData().m_ParentName.empty())
+				{
+					_rootNode = currentNode;
+				}
+
+				if (parentNode->GetNodaData().m_Name == currentNode->GetNodaData().m_ParentName)
+				{
+					currentNode->SetParent(parentNode);
+					break;
+				}
+			}
 		}
 	}
 }

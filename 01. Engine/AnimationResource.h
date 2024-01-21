@@ -3,9 +3,10 @@
 
 namespace Engine
 {
+	// 건재 : 클래스 선언
 	class AnimationResource;
 
-	// 키프레임 구조체
+	// 건재 : 키프레임 구조체
 	struct KeyFrameData
 	{
 		float m_Time;
@@ -15,7 +16,7 @@ namespace Engine
 	};
 
 
-	// 애니메이션 노드 구조체
+	// 건재 : 애니메이션 노드 구조체
 	struct AnimationNode
 	{
 		string m_Name;
@@ -24,7 +25,7 @@ namespace Engine
 	};
 
 
-	// 애니메이션 리소스 구조체
+	// 건재 : 애니메이션 리소스 구조체
 	class AnimationResource : public ResourceBase
 	{
 	public:

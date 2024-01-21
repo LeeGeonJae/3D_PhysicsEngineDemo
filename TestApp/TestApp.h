@@ -6,7 +6,7 @@ namespace Engine
 	class Object;
 }
 
-class TestApp : public GameProcess
+class TestApp : public Engine::GameProcess
 {
 public:
 	void Init() override;

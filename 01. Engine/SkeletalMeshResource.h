@@ -3,13 +3,13 @@
 
 namespace Engine
 {
-    // 클래스 선언
+    // 건재 : 클래스 선언
     class Material;
     class SkeletonResource;
     class Node;
 
 
-    // 본 가중치를 받는 버텍스 구조체
+    // 건재 : 본 가중치를 받는 버텍스 구조체
     struct BoneWeightVertex
     {
         Vector3 m_Position;
@@ -38,7 +38,7 @@ namespace Engine
     };
 
 
-    // 본을 갖는 스켈레탈 메시 리소스 클래스
+    // 건재 : 본을 갖는 스켈레탈 메시 리소스 클래스
     class SkeletalMesh
     {
     public:
@@ -101,7 +101,7 @@ namespace Engine
     }
 
 
-    // FBX 씬의 모든 스켈레탈 메시 리소스 집합을 가지고 있는 리소스 클래스
+    // 건재 : FBX 씬의 모든 스켈레탈 메시 리소스 집합을 가지고 있는 리소스 클래스
     class SkeletalMeshSceneResource : public ResourceBase
     {
     public:

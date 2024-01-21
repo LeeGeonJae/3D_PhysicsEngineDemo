@@ -2,11 +2,16 @@
 
 namespace Engine
 {
+	// 건재 : 클래스 선언
 	class SkeletalMesh;
 	class Material;
 	class Node;
 	struct CB_MatrixPalette;
 
+	// 건재 : 스켈레탈 메시 인스턴스 클래스
+	// 건재 : 스켈레탈 메시 인스턴스 클래스로 렌더 매니저에 보낼 데이터를 가지고 있습니다.
+	// 건재 : 스켈레탈 메시 컴포넌트에서 스켈레탈 메시 인스턴스 클래스를 생성하면 해당 스켈레탈 메시 컴포넌트의 렌더 정보들을 인스턴스에 저장해서
+	// 건재 : 렌더 매니저에 보내주면 렌더 매니저에서 정보를 처리하여 렌더링 합니다.
 	class SkeletalMeshInstance
 	{
 	public:

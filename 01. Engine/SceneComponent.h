@@ -3,10 +3,10 @@
 
 namespace Engine
 {
-	// 선언
+	// 건재 : 선언
 	class Object;
 
-	// 컴포넌트 정보 구조체
+	// 건재 : 컴포넌트 정보 구조체
 	struct SceneComponentInfo
 	{
 		string m_Name;
@@ -15,7 +15,8 @@ namespace Engine
 		Vector3 m_Scale = Vector3::One;
 	};
 
-	// 씬 컴포넌트 클래스
+	// 건재 : 씬 컴포넌트 클래스
+	// 건재 : 기본 컴포넌트에 트랜스폼이 더해진 컴포넌트로 위치 계층구조를 가지고 있는 컴포넌트
 	class SceneComponent : public Component, public enable_shared_from_this<SceneComponent>
 	{
 	public:
@@ -50,7 +51,7 @@ namespace Engine
 		inline void SetScale(Vector3 _scale);
 		inline const Vector3& GetScale();
 		inline void SetOwner(shared_ptr<SceneComponent> _owner);
-		inline const weak_ptr<SceneComponent>& GetOwner();
+		inline const weak_ptr<SceneComponent> GetOwner();
 
 	private:
 		weak_ptr<SceneComponent> m_pOwner;
@@ -63,7 +64,7 @@ namespace Engine
 		Vector3 m_Scale;
 	};
 
-	// 원하는 타입의 자식 컴포넌트들을 가져오는 GetComponent
+	// 건재 : 원하는 타입의 자식 컴포넌트들을 가져오는 GetComponent
 	template <typename T> 
 	inline vector<shared_ptr<T>> SceneComponent::FindComponent()
 	{
@@ -84,7 +85,7 @@ namespace Engine
 	{
 		return m_pChildren;
 	}
-	// 자식 컴포넌트를 세팅하고 그 컴포넌트의 owner 세팅
+	// 건재 : 자식 컴포넌트를 세팅하고 그 컴포넌트의 owner 세팅
 	void SceneComponent::SetComponent(shared_ptr<SceneComponent> _component)
 	{
 		m_pChildren.push_back(_component);
@@ -135,7 +136,7 @@ namespace Engine
 		_owner->SetComponent(shared_from_this());
 		m_pOwner = _owner;
 	}
-	const weak_ptr<SceneComponent>& SceneComponent::GetOwner()
+	const weak_ptr<SceneComponent> SceneComponent::GetOwner()
 	{
 		return m_pOwner;
 	}

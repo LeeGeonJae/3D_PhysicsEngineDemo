@@ -14,6 +14,7 @@ namespace Engine
 
 	void AnimationResource::Create(aiAnimation* _srcAnimation)
 	{
+		// 건재 : 리소스 매니저에서 aiAnimation를 받아 우리가 사용할 정보의 형태에 맞게 데이터 파싱합니다.
 		m_Name = _srcAnimation->mName.C_Str();
 		m_FrameRate = static_cast<float>(_srcAnimation->mTicksPerSecond);
 		m_FrameCount = static_cast<unsigned int>(_srcAnimation->mDuration + 1);
@@ -41,7 +42,7 @@ namespace Engine
 
 			bool found = false;
 
-			// Position
+			// 건재 : Position
 			{
 				aiVectorKey key = srcNode->mPositionKeys[i];
 				frameData.m_Time = (float)key.mTime;
@@ -52,7 +53,7 @@ namespace Engine
 
 				found = true;
 			}
-			// Rotation
+			// 건재 : Rotation
 			{
 				aiQuatKey key = srcNode->mRotationKeys[i];
 				frameData.m_Time = (float)key.mTime;
@@ -64,7 +65,7 @@ namespace Engine
 
 				found = true;
 			}
-			// Scale
+			// 건재 : Scale
 			{
 				aiVectorKey key = srcNode->mScalingKeys[i];
 				frameData.m_Time = (float)key.mTime;
@@ -80,7 +81,7 @@ namespace Engine
 				animationNode->m_KeyFrame.push_back(frameData);
 		}
 
-		// Keyframe 늘려주기
+		// 건재 : Keyframe 늘려주기
 		if (animationNode->m_KeyFrame.size() < animationNode->m_Owner->GetFrameCount())
 		{
 			unsigned int count = animationNode->m_Owner->GetFrameCount() - animationNode->m_KeyFrame.size();

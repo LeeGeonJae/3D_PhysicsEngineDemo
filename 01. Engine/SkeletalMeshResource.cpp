@@ -23,7 +23,7 @@ namespace Engine
 	{
 		m_Name = _aiMesh->mName.C_Str();
 
-		// 메시 버텍스 가져오기
+		// 건재 : 메시 버텍스 가져오기
 		m_BoneWeightVertexVec.reserve(_aiMesh->mNumVertices);
 		for (UINT i = 0; i < _aiMesh->mNumVertices; i++)
 		{
@@ -60,7 +60,7 @@ namespace Engine
 			m_BoneWeightVertexVec.push_back(vertex);
 		}
 
-		// 메시 인덱스 가져오기
+		// 건재 : 메시 인덱스 가져오기
 		m_IndexVec.reserve(_aiMesh->mNumFaces * 3);
 		for (UINT i = 0; i < _aiMesh->mNumFaces; i++)
 		{
@@ -72,7 +72,7 @@ namespace Engine
 			}
 		}
 
-		// 메시 본 가져오기
+		// 건재 : 메시 본 가져오기
 		if (_aiMesh->HasBones())
 		{
 			size_t nums = _aiMesh->mNumBones;
@@ -84,6 +84,7 @@ namespace Engine
 
 	void SkeletalMesh::createBuffer()
 	{
+		// 건재 : 버텍스 및 인덱스 버퍼 생성
 		HRESULT hr;
 
 		D3D11_BUFFER_DESC vertexDesc;
@@ -127,7 +128,7 @@ namespace Engine
 	{
 		namespace Math = DirectX::SimpleMath;
 
-		// 메시 로드
+		// 건재 : 메시 로드
 		for (int i = 0; i < _aiScene->mNumMeshes; i++)
 		{
 			SkeletalMesh mesh;
@@ -137,19 +138,19 @@ namespace Engine
 			mesh.SetMaterial(material);
 			m_SkeletalMeshVec.push_back(mesh);
 
-			// 바운딩 볼륨
+			// 건재 : 바운딩 볼륨
 			Vector3 min; memcpy(&min, &_aiScene->mMeshes[i]->mAABB.mMin, sizeof(min));
 			Vector3 max; memcpy(&max, &_aiScene->mMeshes[i]->mAABB.mMax, sizeof(max));
 			m_AABBmin = Math::Vector3::Min(m_AABBmin, min);
 			m_AABBmax = Math::Vector3::Max(m_AABBmax, max);
 		}
 
-		// 바운딩 박스 세팅
+		// 건재 : 바운딩 박스 세팅
 		{
 			m_BoundingBox.Center = Math::Vector3(m_AABBmin + m_AABBmax) * 0.5;
 			m_BoundingBox.Extents = Math::Vector3(m_AABBmax - m_AABBmin) * 0.5;
 
-			// 팔 벌릴 때를 대비해서 z축과 x축 중 큰값으로 AABB를 만든다.
+			// 건재 : 팔 벌릴 때를 대비해서 z축과 x축 중 큰값으로 AABB를 만든다.
 			float maxValue = fmax(m_BoundingBox.Extents.z, fmax(m_BoundingBox.Extents.x, m_BoundingBox.Extents.y));
 			m_BoundingBox.Extents.x = maxValue;
 			m_BoundingBox.Extents.y = maxValue;

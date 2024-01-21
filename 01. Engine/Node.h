@@ -9,7 +9,7 @@ namespace Engine
 	class Bone;
 
 
-	// 노드 데이터 구조체
+	// 건재 : 노드 데이터 구조체
 	struct NodeData
 	{
 		string m_Name;
@@ -18,11 +18,17 @@ namespace Engine
 		Matrix m_LocalMatrix;
 	};
 
+
+	// 건재 : 노드 데이터 리소스 클래스
+	// 건재 : 특정 FBX가 가지고 있는 모든 노드 데이터들을 가진 클래스입니다.
 	class NodeDataResource : public ResourceBase
 	{
 	public:
 		NodeDataResource();
 		virtual ~NodeDataResource();
+
+	public:
+		void processNode(const aiNode* _aiNode, const aiScene* _aiScene);
 
 	public:
 		inline const vector<NodeData>& GetNodeDataVec();
@@ -47,7 +53,7 @@ namespace Engine
 	}
 
 
-	// 노드 구조체
+	// 건재 : 노드 클래스
 	class Node : public enable_shared_from_this<Node>
 	{
 	public:

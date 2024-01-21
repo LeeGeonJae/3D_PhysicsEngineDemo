@@ -3,11 +3,11 @@
 
 namespace Engine
 {
-    // 클래스 선언
+    // 건재 : 클래스 선언
     struct BoneWeightVertex;
 
 
-    // 본 구조체
+    // 건재 : 본 구조체
     struct Bone
     {
         string m_NodeName;
@@ -15,7 +15,7 @@ namespace Engine
     };
 
 
-    // 본 구조체 집합을 담은 스켈레톤 클래스
+    // 건재 : 본 구조체 집합을 담은 스켈레톤 클래스
     class SkeletonResource : public ResourceBase
     {
     public:

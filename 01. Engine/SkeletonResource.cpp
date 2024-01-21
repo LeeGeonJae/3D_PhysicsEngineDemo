@@ -17,6 +17,9 @@ namespace Engine
 
 	void SkeletonResource::Create(aiMesh* _aiMesh, vector<BoneWeightVertex>* _vertices)
 	{
+		// 건재 : 스켈레톤 (본) 세팅
+		// 건재 : 스켈레탈 메시가 영향을 받는 본들을 세팅 및 저장하고
+		// 건재 : 스켈레탈 메시의 버텍스들에 본의 가중치와 본의 인덱스 정보를 추가
 		UINT meshBoneCount = _aiMesh->mNumBones;
 		UINT boneIndexCounter = 0;
 		map<string, int> BoneMapping;

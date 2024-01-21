@@ -3,22 +3,23 @@
 
 namespace Engine
 {
-    // 클래스 선언
+    // 건재 : 클래스 선언
     class StaticMeshSceneResource;
     class StaticMesh;
     class Material;
     class Shader;
     class StaticMeshInstance;
     class Node;
+    class AnimationResource;
 
-    // 스켈레탈메시 컴포넌트 정보 구조체
+    // 건재 : 스태틱 메시 컴포넌트 정보 구조체
     struct StaticMeshComponentInfo
     {
         RenderComponentInfo m_RenderComponentInfo;
         string m_FilePath;
     };
 
-    // 스태틱 메시 컴포넌트 클래스
+    // 건재 : 스태틱 메시 컴포넌트 클래스
     class StaticMeshComponent : public RenderComponent
     {
     public:
@@ -32,6 +33,9 @@ namespace Engine
         virtual void Init() override;
         virtual void Update() override;
         virtual void Render() override;
+
+    private:
+        void NodeSetting(shared_ptr<AnimationResource> _animationResource, vector<shared_ptr<Node>>& _nodeVec, shared_ptr<Node>& _rootNode);
 
     private:
         string m_FilePath;

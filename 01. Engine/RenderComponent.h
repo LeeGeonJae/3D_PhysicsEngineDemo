@@ -3,14 +3,14 @@
 
 namespace Engine
 {
-	// 렌더 컴포넌트 정보 구조체
+	// 건재 : 렌더 컴포넌트 정보 구조체
 	struct RenderComponentInfo
 	{
 		SceneComponentInfo m_SceneComponentInfo;
 		bool m_bIsVisible;
 	};
 
-	// 렌더 컴포넌트 클래스
+	// 건재 : 렌더 컴포넌트 클래스
 	class RenderComponent : public SceneComponent
 	{
 	public:

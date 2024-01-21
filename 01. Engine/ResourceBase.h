@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-	// 리소스 타입 열거형
+	// 건재 : 리소스 타입 열거형
 	enum class ResourceType
 	{
 		None = 0,
@@ -18,12 +18,13 @@ namespace Engine
 		End
 	};
 
+	// 건재 : 리소스 타입의 갯수
 	enum
 	{
 		RESOURCE_TYPE_COUNT = static_cast<UINT>(ResourceType::End)
 	};
 
-	// 리소스 기반 클래스
+	// 건재 : 리소스 기반 클래스
 	class ResourceBase : public enable_shared_from_this<ResourceBase>
 	{
 	public:

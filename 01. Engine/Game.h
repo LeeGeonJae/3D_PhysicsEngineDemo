@@ -4,10 +4,14 @@
 
 using namespace std;
 
+// 건재 : 게임 실행
+// 건재 : 윈도우 창 생성 및 게임 프로세스 진행
 namespace Engine
 {
+	// 건재 : 클래스 선언
 	class RenderManager;
 
+	// 건재 : 게임을 실행할 때 필요한 데이터 구조체
 	struct GameDesc
 	{
 		shared_ptr<GameProcess> app = nullptr;
@@ -19,6 +23,7 @@ namespace Engine
 		HINSTANCE hInstance = nullptr;
 	};
 
+	// 건재 : 게임 엔진 클래스
 	class Game
 	{
 		SINGLETON(Game)
@@ -31,7 +36,7 @@ namespace Engine
 		ATOM MyRegisterClass();
 		BOOL InitInstance(int _cmdshow);
 
-		void Update();
+		void Loop();
 
 		static LRESULT CALLBACK WndProc(HWND _handle, UINT _message, WPARAM _wParam, LPARAM _lParam);
 

@@ -13,22 +13,26 @@ namespace Engine
 		m_Desc = _desc;
 		assert(m_Desc.app != nullptr);
 
-		//1) 윈도우 창 정보 등록
+		// 건재 : 1) 윈도우 창 정보 등록
 		MyRegisterClass();
 
-		//2) 윈도우 창 생성
+		// 건재 : 2) 윈도우 창 생성
 		if (!InitInstance(SW_SHOWNORMAL))
 			return FALSE;
 
-		InputManager::GetInstance()->Initalize(m_Desc.hwnd);
-		TimeManager::GetInstance()->Initialize();
-		RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
-		ResourceManager::GetInstance()->Initalize();
+		// 건재 : 3) 매니저 세팅 및 게임 앱 세팅
+		{
+			InputManager::GetInstance()->Initalize(m_Desc.hwnd);
+			TimeManager::GetInstance()->Initialize();
+			RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
+			ResourceManager::GetInstance()->Initalize();
 
-		m_Desc.app->Init();
+			m_Desc.app->Init();
+		}
 
 		MSG msg = { 0 };
 
+		// 건재 : 4) 게임 루프 진행
 		while (msg.message != WM_QUIT)
 		{
 			if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -38,13 +42,39 @@ namespace Engine
 			}
 			else
 			{
-				Update();
+				Loop();
 			}
 		}
 
 		return msg.wParam;
 	}
 
+	// 건재 : 게임 업데이트
+	void Game::Loop()
+	{
+		TimeManager::GetInstance()->Update();
+		InputManager::GetInstance()->Update();
+
+		static float durationTime = 0;
+		durationTime += TimeManager::GetInstance()->GetfDT();
+		if (durationTime > 0.0166667f)	// 건재 : 60 프레임
+		{
+			durationTime -= 0.0166667f;
+			m_Desc.app->FixedUpdate();
+		}
+
+		m_Desc.app->Update();
+		m_Desc.app->LateUpdate();
+
+		// ???
+		m_Desc.app->Render();
+
+		RenderManager::GetInstance()->Update();
+		RenderManager::GetInstance()->Render();
+	}
+
+
+	// 건재 : 윈도우 창 세팅 ( WinApi )
 	ATOM Game::MyRegisterClass()
 	{
 		WNDCLASSEXW wcex;
@@ -96,28 +126,5 @@ namespace Engine
 		default:
 			return ::DefWindowProc(handle, message, wParam, lParam);
 		}
-	}
-
-	void Game::Update()
-	{
-		TimeManager::GetInstance()->Update();
-		InputManager::GetInstance()->Update();
-
-		static float durationTime = 0;
-		durationTime += TimeManager::GetInstance()->GetfDT();
-		if (durationTime > 0.0166667f)	// 60 프레임
-		{
-			durationTime -= 0.0166667f;
-			m_Desc.app->FixedUpdate();
-		}
-
-		m_Desc.app->Update();
-		m_Desc.app->LateUpdate();
-
-		// ???
-		m_Desc.app->Render();
-
-		RenderManager::GetInstance()->Update();
-		RenderManager::GetInstance()->Render();
 	}
 }

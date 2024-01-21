@@ -3,11 +3,11 @@
 
 namespace Engine
 {
-    // 클래스 선언
+    // 건재 : 클래스 선언
     class Material;
 
 
-    // 기본 버텍스 구조체
+    // 건재 : 기본 버텍스 구조체
     struct Vertex
     {
         Vector3 m_Position;
@@ -18,7 +18,7 @@ namespace Engine
     };
 
 
-    // 버텍스를 갖는 스태틱 메시 클래스
+    // 건재 : 버텍스를 갖는 스태틱 메시 클래스
     class StaticMesh
     {
     public:
@@ -81,7 +81,7 @@ namespace Engine
     }
 
 
-    // 스테틱 메시의 집합을 가진 리소스 클래스
+    // 건재 : FBX 씬의 모든 스켈레탈 메시 리소스 집합을 가지고 있는 리소스 클래스
     class StaticMeshSceneResource : public ResourceBase
     {
     public:

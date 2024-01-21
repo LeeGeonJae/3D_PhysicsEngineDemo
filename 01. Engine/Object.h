@@ -2,19 +2,21 @@
 
 namespace Engine
 {
-	// 클래스 선언
+	// 건재 : 클래스 선언
 	class Component;
 	class SceneComponent;
 
 
-	// 오브젝트 정보 구조체
+	// 건재 : 오브젝트 정보 구조체
 	struct ObjectInfo
 	{
 		string m_Name;
 	};
 
 
-	// 오브젝트 클래스
+	// 건재 : 오브젝트 클래스 ( 오브젝트 매니저 생성 대기 중 )
+	// 건재 : 씬 매니저 -> 현재 씬 -> 오브젝트 매니저 -> 오브젝트
+	// 건재 : 현재 씬들은 오브젝트 매니저 클래스를 가지고 있고 해당 오브젝트 클래스(오브젝트 ID관리)에서 오브젝트를 생성할 구조를 작성할 예정입니다.
 	class Object : public enable_shared_from_this<Object>
 	{
 	public:
@@ -42,8 +44,13 @@ namespace Engine
 		inline void SetName(string _name);
 		inline string GetName();
 		inline const unsigned int& GetID();
+		void SetWorldTransform(Matrix _world);
+		const Matrix& GetWorldTransform();
+		Vector3 GetPosition();
 		void SetPosition(Vector3 _position);
+		Vector3 GetRotation();
 		void SetRotation(Vector3 _rotation);
+		Vector3 GetScale();
 		void SetScale(Vector3 _scale);
 
 	private:
@@ -53,7 +60,7 @@ namespace Engine
 		shared_ptr<SceneComponent> m_pRootComponent;
 	};
 
-	// 컴포넌트를 상속받는 특정 컴포넌트들 반환
+	// 건재 : 컴포넌트를 상속받는 모든 특정 컴포넌트들을 선별해서 반환
 	template <typename T>
 	vector<shared_ptr<T>> Object::FindComponent()
 	{
@@ -71,6 +78,7 @@ namespace Engine
 
 		return Components;
 	}
+
 	const vector<shared_ptr<SceneComponent>>& Object::GetComponent()
 	{
 		return m_pMyComponents;
@@ -79,7 +87,6 @@ namespace Engine
 	{
 		return m_pRootComponent;
 	}
-
 	void Object::SetName(string _name)
 	{
 		m_Name = _name;
@@ -92,6 +99,4 @@ namespace Engine
 	{
 		return m_ID;
 	}
-
-
 }

@@ -3,7 +3,7 @@
 
 namespace Engine
 {
-	// 텍스쳐 타입 열거형
+	// 건재 : 텍스쳐 타입 열거형
 	enum class TextureType
 	{
 		DIFFUSE = 0,
@@ -18,7 +18,7 @@ namespace Engine
 	};
 
 
-	// 텍스쳐 클래스
+	// 건재 : 텍스쳐 클래스
     class Texture : public ResourceBase
     {
     public:

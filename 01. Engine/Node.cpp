@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Node.h"
 
+#include "Helper.h"
+
 #include "AnimationResource.h"
 #include "SkeletonResource.h"
 
@@ -13,6 +15,8 @@ namespace Engine
 	NodeDataResource::~NodeDataResource()
 	{
 	}
+
+
 
 	Node::Node()
 	{
@@ -27,7 +31,7 @@ namespace Engine
 		Vector3 position, scale;
 		Quaternion rotation;
 
-		// 애니메이션
+		// 건재 : 애니메이션
 		if (m_pAnimationNode != nullptr)
 		{
 			float animationTime = _currentTime;
@@ -40,7 +44,7 @@ namespace Engine
 			m_Local = Matrix::CreateScale(scale) * Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position);
 		}
 
-		// 부모가 있으면 해당 부모의 트랜스폼 곱하기
+		// 건재 : 부모가 있으면 해당 부모의 트랜스폼 곱하기
 		if (m_pParent != nullptr)
 		{
 			m_World = m_Local * m_pParent->m_World;
@@ -50,7 +54,7 @@ namespace Engine
 			m_World = m_Local * _modelTransform;
 		}
 
-		// 자식 노드 업데이트
+		// 건재 : 자식 노드 업데이트
 		for (auto child : m_pChildrenVec)
 		{
 			if (child != nullptr)
@@ -69,16 +73,16 @@ namespace Engine
 		aiVector3D nextScale;
 		aiQuaternion nextRotation;
 
-		// 애니메이션 데이터의 키프레임 개수를 가져옴
+		// 건재 : 애니메이션 데이터의 키프레임 개수를 가져옴
 		unsigned int numFrames = m_pAnimationNode->m_Owner->GetFrameCount();
 		
-		// 첫 번째 키프레임 데이터
+		// 건재 : 첫 번째 키프레임 데이터
 		unsigned int frameIndex = 0;
 
-		// 두 번째 키프레임 데이터
+		// 건재 : 두 번째 키프레임 데이터
 		unsigned int nextFrameIndex = 1;
 
-		// 현재 시간을 가장 가까운 키프레임으로 보간
+		// 건재 : 현재 시간을 가장 가까운 키프레임으로 보간
 		for (unsigned int i = 0; i < numFrames - 1; ++i) {
 			if (currentTime < m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Time) {
 				break;
@@ -88,14 +92,14 @@ namespace Engine
 			nextFrameIndex = i + 1;
 		}
 
-		// 현재 키프레임과 다음 키프레임의 시간 차이 계산
+		// 건재 : 현재 키프레임과 다음 키프레임의 시간 차이 계산
 		float deltaTime = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Time - m_pAnimationNode->m_KeyFrame[frameIndex].m_Time;
 
-		// 만약 다음 키프레임과 현재 키프레임의 시간 차이가 없다면 1로 보정 ( 계산 오류로 애니메이션 보간 정보가 날아가는 경우 방지하기 위해 )
+		// 건재 : 만약 다음 키프레임과 현재 키프레임의 시간 차이가 없다면 1로 보정 ( 계산 오류로 애니메이션 보간 정보가 날아가는 경우 방지하기 위해 )
 		if (deltaTime == 0)
 			deltaTime = 1;
 
-		// 현재 시간이 현재 키프레임과 다음 키프레임 사이의 비율 계산
+		// 건재 : 현재 시간이 현재 키프레임과 다음 키프레임 사이의 비율 계산
 		float factor = 0;
 		if (m_pAnimationNode->m_KeyFrame[frameIndex].m_Time < currentTime)
 			factor = (currentTime - m_pAnimationNode->m_KeyFrame[frameIndex].m_Time) / deltaTime;
@@ -122,7 +126,7 @@ namespace Engine
 		nextRotation.z = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.z;
 		nextRotation.w = m_pAnimationNode->m_KeyFrame[nextFrameIndex].m_Rotation.w;
 
-		// 키프레임 데이터의 변환을 선형 보간하여 계산
+		// 건재 : 키프레임 데이터의 변환을 선형 보간하여 계산
 		aiVector3D fianlPosition = currentPosition + factor * (nextPosition - currentPosition);
 		aiVector3D fianlScale = currentScale + factor * (nextScale - currentScale);
 		aiQuaternion fianlRotation;
@@ -138,6 +142,28 @@ namespace Engine
 		outRotation.y = fianlRotation.y;
 		outRotation.z = fianlRotation.z;
 		outRotation.w = fianlRotation.w;
+	}
+
+	void NodeDataResource::processNode(const aiNode* _aiNode, const aiScene* _aiScene)
+	{
+		NodeData nodeData;
+		nodeData.m_Name = _aiNode->mName.C_Str();
+		aiMatrixToMatrix(_aiNode->mTransformation, nodeData.m_LocalMatrix);
+		if (_aiNode->mParent != nullptr)
+			nodeData.m_ParentName = _aiNode->mParent->mName.C_Str();
+
+		for (int i = 0; i < _aiNode->mNumMeshes; i++)
+		{
+			auto aimesh = _aiScene->mMeshes[_aiNode->mMeshes[i]];
+			string meshName = aimesh->mName.C_Str();
+			nodeData.m_MeshName.push_back(meshName);
+		}
+		AddNodeData(nodeData);
+
+		for (int i = 0; i < _aiNode->mNumChildren; i++)
+		{
+			processNode(_aiNode->mChildren[i], _aiScene);
+		}
 	}
 }
 

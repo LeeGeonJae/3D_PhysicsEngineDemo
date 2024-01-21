@@ -3,7 +3,7 @@
 
 namespace Engine
 {
-	// 클래스 선언
+	// 건재 : 클래스 선언
 	class Material;
 	class StaticMeshSceneResource;
 	class SkeletalMeshSceneResource;
@@ -13,7 +13,7 @@ namespace Engine
 	class SkeletonResource;
 	class NodeDataResource;
 
-	// 리소스 매니저 클래스
+	// 건재 : 리소스 매니저 클래스 ( 싱글톤 )
 	class ResourceManager
 	{
 	private:
@@ -39,14 +39,17 @@ namespace Engine
 		ResourceType GetResourceType();
 
 	private:
-		void processNode(const aiNode* _aiNode, const aiScene* _aiScene, shared_ptr<NodeDataResource> _nodeDataResource);
+		void createNodeData(const aiScene* _pScene, const string& _path);
+		void createMaterial(const aiScene* _pScene, const string& _path);
+		void createMesh(const aiScene* _pScene, const string& _path);
+		void createAnimation(const aiScene* _pScene, const string& _path);
 
 	private:
 		using KeyObjMap = unordered_map<string, shared_ptr<ResourceBase>>;
 		array<KeyObjMap, RESOURCE_TYPE_COUNT> m_ResourceMap;
 	};
 
-	// 리소스 베이스를 상속받는 리소스들 찾기
+	// 건재 : 리소스 베이스를 상속받는 리소스들 찾기
 	template<typename T>
 	inline shared_ptr<T> ResourceManager::Find(const string& _key)
 	{
@@ -55,14 +58,14 @@ namespace Engine
 
 		ResourceType resourceType = GetResourceType<T>();
 
-		// 리소스를 찾으면 반환
+		// 건재 : 리소스를 찾으면 반환
 		auto resourceIter = m_ResourceMap[static_cast<int>(resourceType)].find(_key);
 		
 		if (resourceIter != m_ResourceMap[static_cast<int>(resourceType)].end())
 		{
 			return static_pointer_cast<T>(resourceIter->second);
 		}
-		//else // 못찾으면 로드 후 반환
+		//else // 건재 : 못찾으면 로드 후 반환 ( 오류 발생 수정 중 )
 		//{
 		//	Load(_key);
 		//	resourceIter = m_ResourceMap[static_cast<int>(resourceType)].find(_key);
@@ -72,7 +75,7 @@ namespace Engine
 		return nullptr;
 	}
 
-	// 머터리얼 리소스 생성
+	// 건재 : 머터리얼 리소스 생성
 	template <typename T>
 	shared_ptr<T> ResourceManager::Create(const string& _key)
 	{
@@ -85,11 +88,10 @@ namespace Engine
 		return resource;
 	}
 
-	// 클래스에 맞게 리소스 타입 찾기
+	// 건재 : 클래스에 맞게 리소스 타입 찾기
 	template<typename T>
 	inline ResourceType ResourceManager::GetResourceType()
 	{
-		// constexpr을 붙이면 컴파일 단계에서 완성시켜준다.
 		if (is_same_v<T, StaticMeshSceneResource>)
 			return ResourceType::StaticMesh;
 		if (is_same_v<T, SkeletalMeshSceneResource>)

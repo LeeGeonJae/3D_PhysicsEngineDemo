@@ -13,6 +13,7 @@ namespace Engine
 
 	void SceneComponent::Setting(SceneComponentInfo _info)
 	{
+		// 건재 : 정보 구조체에 따라 멤버 함수 세팅
 		SetName(_info.m_Name);
 		m_Position = _info.m_Position;
 		m_Rotation = _info.m_Rotation;
@@ -29,6 +30,7 @@ namespace Engine
 
 	void SceneComponent::Update()
 	{
+		// 건재 : 계층구조로 월드 트랜스폼 배치
 		m_Local = SimpleMath::Matrix::CreateScale(m_Scale)
 			* SimpleMath::Matrix::CreateFromYawPitchRoll(m_Rotation)
 			* SimpleMath::Matrix::CreateTranslation(m_Position);

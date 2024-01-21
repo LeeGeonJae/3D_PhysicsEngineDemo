@@ -7,6 +7,8 @@
 
 namespace Engine
 {
+	// 건재 : 입력 매니저 ( 싱글톤 )
+	// 건재 : DirectX 라이브러리에서 제공해준 것 사용
 	class InputManager
 	{
 	private:
@@ -35,7 +37,7 @@ namespace Engine
 		std::unique_ptr<DirectX::Mouse>                 m_Mouse;
 
 	private:
-		// input
+		// 건재 : input
 		DirectX::Keyboard::KeyboardStateTracker         m_KeyboardStateTracker;
 		DirectX::Mouse::ButtonStateTracker              m_MouseStateTracker;
 
