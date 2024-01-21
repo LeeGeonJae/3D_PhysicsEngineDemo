@@ -5,7 +5,7 @@ namespace Engine
 	// 건재 : 클래스 선언
 	class Object;
 
-
+	// -------------------------------------------------------------------------
 	// 건재 : 컴포넌트 클래스
 	// 건재 : 모든 컴포넌트들은 이 클래스를 상속 받습니다. 
 	// 건재 : 만약 트랜스폼이 존재하는 컴포넌트라면 Scene컴포넌트를 상속 받고 아니라면 그냥 Component를 상속 받습니다.
@@ -33,6 +33,7 @@ namespace Engine
 		weak_ptr<Object> m_pObject;
 	};
 
+	// 건재 : Component의 Get & Set 함수
 	const string& Component::GetName()
 	{
 		return m_Name;
@@ -49,6 +50,7 @@ namespace Engine
 	{
 		return m_pObject.lock();
 	}
+	// -------------------------------------------------------------------------
 }
 
 

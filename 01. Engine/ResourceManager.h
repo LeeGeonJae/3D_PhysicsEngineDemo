@@ -13,6 +13,7 @@ namespace Engine
 	class SkeletonResource;
 	class NodeDataResource;
 
+	// -------------------------------------------------------------------------
 	// 건재 : 리소스 매니저 클래스 ( 싱글톤 )
 	class ResourceManager
 	{
@@ -112,6 +113,7 @@ namespace Engine
 		assert(false);
 		return ResourceType::None;
 	}
+	// -------------------------------------------------------------------------
 }
 
 #define RESOURCE Engine::ResourceManager::GetInstance()

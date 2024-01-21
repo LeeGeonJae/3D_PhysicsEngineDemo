@@ -23,6 +23,7 @@ namespace Engine
 		HINSTANCE hInstance = nullptr;
 	};
 
+	// -------------------------------------------------------------------------
 	// 건재 : 게임 엔진 클래스
 	class Game
 	{
@@ -43,6 +44,7 @@ namespace Engine
 	private:
 		GameDesc m_Desc;
 	};
+	// -------------------------------------------------------------------------
 }
 
 #define GAME Engine::Game::GetInstance()

@@ -19,6 +19,7 @@ namespace Engine
         string m_FilePath;
     };
 
+    // -------------------------------------------------------------------------
     // 건재 : 스태틱 메시 컴포넌트 클래스
     class StaticMeshComponent : public RenderComponent
     {
@@ -48,4 +49,5 @@ namespace Engine
 
         vector<shared_ptr<StaticMeshInstance>> m_pStaticMeshInstanceVec;
     };
+    // -------------------------------------------------------------------------
 }

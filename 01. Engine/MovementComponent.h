@@ -4,6 +4,7 @@
 
 namespace Engine
 {
+	// 건재 : 무브먼트 컴포넌트 데이터 구조체
 	struct MovementComponentInfo
 	{
 		string m_Name;
@@ -11,7 +12,8 @@ namespace Engine
 		float m_MaxSpeed;			// 건재 : 속도
 	};
 
-	// 건재 : 오브젝트가 움직일 때 필요한 컴포넌트
+	// -------------------------------------------------------------------------
+	// 건재 : 오브젝트가 움직일 때 필요한 컴포넌트 클래스
 	class MovementComponent : public Component
 	{
 	public:
@@ -46,6 +48,7 @@ namespace Engine
 		Vector3 m_PositionAfter;
 	};
 
+	// 건재 : MovementComponent의 Get & Set 함수
 	float MovementComponent::GetMaxSpeed()
 	{
 		return m_MaxSpeed;
@@ -82,6 +85,7 @@ namespace Engine
 	{
 		return m_InputVector;
 	}
+	// -------------------------------------------------------------------------
 }
 
 

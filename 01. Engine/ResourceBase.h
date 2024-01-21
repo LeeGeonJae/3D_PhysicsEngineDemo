@@ -24,6 +24,7 @@ namespace Engine
 		RESOURCE_TYPE_COUNT = static_cast<UINT>(ResourceType::End)
 	};
 
+	// -------------------------------------------------------------------------
 	// 건재 : 리소스 기반 클래스
 	class ResourceBase : public enable_shared_from_this<ResourceBase>
 	{
@@ -41,6 +42,7 @@ namespace Engine
 		string m_Name;
 	};
 
+	// 건재 : ResourceBase의 Get & Set 함수
 	const ResourceType& ResourceBase::GetResourceType()
 	{
 		return m_ResourceType;
@@ -53,4 +55,5 @@ namespace Engine
 	{
 		m_Name = _name;
 	}
+	// -------------------------------------------------------------------------
 }

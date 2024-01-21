@@ -15,6 +15,7 @@ namespace Engine
 		Vector3 m_Scale = Vector3::One;
 	};
 
+	// -------------------------------------------------------------------------
 	// 건재 : 씬 컴포넌트 클래스
 	// 건재 : 기본 컴포넌트에 트랜스폼이 더해진 컴포넌트로 위치 계층구조를 가지고 있는 컴포넌트
 	class SceneComponent : public Component, public enable_shared_from_this<SceneComponent>
@@ -81,11 +82,12 @@ namespace Engine
 
 		return Components;
 	}
+
+	// 건재 : SceneComponent의 Get & Set 함수
 	const vector<shared_ptr<SceneComponent>>& SceneComponent::GetChildrenComponent()
 	{
 		return m_pChildren;
 	}
-	// 건재 : 자식 컴포넌트를 세팅하고 그 컴포넌트의 owner 세팅
 	void SceneComponent::SetComponent(shared_ptr<SceneComponent> _component)
 	{
 		m_pChildren.push_back(_component);
@@ -140,6 +142,7 @@ namespace Engine
 	{
 		return m_pOwner;
 	}
+	// -------------------------------------------------------------------------
 }
 
 

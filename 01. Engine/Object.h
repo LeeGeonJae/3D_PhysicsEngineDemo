@@ -13,7 +13,7 @@ namespace Engine
 		string m_Name;
 	};
 
-
+	// -------------------------------------------------------------------------
 	// 건재 : 오브젝트 클래스 ( 오브젝트 매니저 생성 대기 중 )
 	// 건재 : 씬 매니저 -> 현재 씬 -> 오브젝트 매니저 -> 오브젝트
 	// 건재 : 현재 씬들은 오브젝트 매니저 클래스를 가지고 있고 해당 오브젝트 클래스(오브젝트 ID관리)에서 오브젝트를 생성할 구조를 작성할 예정입니다.
@@ -60,7 +60,7 @@ namespace Engine
 		shared_ptr<SceneComponent> m_pRootComponent;
 	};
 
-	// 건재 : 컴포넌트를 상속받는 모든 특정 컴포넌트들을 선별해서 반환
+	// 건재 : 컴포넌트를 상속받는 모든 특정 컴포넌트들을 선별해서 반환해주는 템플릿 함수
 	template <typename T>
 	vector<shared_ptr<T>> Object::FindComponent()
 	{
@@ -79,6 +79,7 @@ namespace Engine
 		return Components;
 	}
 
+	// 건재 : Object의 Get & Set 함수
 	const vector<shared_ptr<SceneComponent>>& Object::GetComponent()
 	{
 		return m_pMyComponents;
@@ -99,4 +100,5 @@ namespace Engine
 	{
 		return m_ID;
 	}
+	// -------------------------------------------------------------------------
 }

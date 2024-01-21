@@ -10,6 +10,7 @@ namespace Engine
 		bool m_bIsVisible;
 	};
 
+	// -------------------------------------------------------------------------
 	// 건재 : 렌더 컴포넌트 클래스
 	class RenderComponent : public SceneComponent
 	{
@@ -31,7 +32,7 @@ namespace Engine
 		bool m_bIsVisible;
 	};
 
-
+	// 건재 : RenderComponent의 Get & Set 함수
 	void RenderComponent::SetVisible(bool _bisVisible)
 	{
 		m_bIsVisible = _bisVisible;
@@ -40,4 +41,5 @@ namespace Engine
 	{
 		return m_bIsVisible;
 	}
+	// -------------------------------------------------------------------------
 }

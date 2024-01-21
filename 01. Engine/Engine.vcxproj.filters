@@ -51,9 +51,6 @@
     <ClInclude Include="TimeManager.h">
       <Filter>02. Manager</Filter>
     </ClInclude>
-    <ClInclude Include="GameProcess.h">
-      <Filter>00. Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Header.h">
       <Filter>99. Header</Filter>
     </ClInclude>
@@ -68,9 +65,6 @@
     </ClInclude>
     <ClInclude Include="RenderManager.h">
       <Filter>02. Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>01. Game</Filter>
     </ClInclude>
     <ClInclude Include="ResourceBase.h">
       <Filter>98. Resource</Filter>
@@ -147,6 +141,12 @@
     <ClInclude Include="CameraComponent.h">
       <Filter>04. Component\CameraComponent</Filter>
     </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>00. Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcess.h">
+      <Filter>01. Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputManager.cpp">
@@ -155,14 +155,8 @@
     <ClCompile Include="TimeManager.cpp">
       <Filter>02. Manager</Filter>
     </ClCompile>
-    <ClCompile Include="GameProcess.cpp">
-      <Filter>00. Engine</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>99. Header</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>01. Game</Filter>
     </ClCompile>
     <ClCompile Include="RenderManager.cpp">
       <Filter>02. Manager</Filter>
@@ -241,6 +235,12 @@
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
       <Filter>04. Component\CameraComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>00. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcess.cpp">
+      <Filter>01. Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,6 +15,7 @@ namespace Engine
 		End,
 	};
 
+	// -------------------------------------------------------------------------
 	// 건재 : 쉐이더 클래스
 	class Shader : public ResourceBase
 	{
@@ -49,6 +50,7 @@ namespace Engine
 		ComPtr<ID3DBlob> m_psBlob = nullptr;
 	};
 
+	// 건재 : Shader의 Get & Set 함수
 	ComPtr<ID3D11InputLayout> Shader::GetInputLayout()
 	{
 		return m_InputLayout;
@@ -61,5 +63,6 @@ namespace Engine
 	{
 		return m_PixelShader;
 	}
+	// -------------------------------------------------------------------------
 }
 

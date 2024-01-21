@@ -25,7 +25,7 @@ namespace Engine
 	}
 	void StaticMeshComponent::Setting(StaticMeshComponentInfo _info)
 	{
-		// 건재 : 정보 구조체에 따라 세팅
+		// 건재 : 정보 구조체에 따라 멤버 함수 세팅
 		__super::Setting(_info.m_RenderComponentInfo);
 		m_FilePath = _info.m_FilePath;
 	}

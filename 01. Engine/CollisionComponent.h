@@ -6,6 +6,20 @@ namespace Engine
 	// 건재 : 클래스 선언
 	class CollisionComponent;
 
+	// -------------------------------------------------------------------------
+	// 건재 : 콜리전 노티파이 클래스( 인터페이스 )
+	// 건재 : 이 클래스를 상속 받는 특정 오브젝트만 이 가상함수를 쓸 수 있으며, 콜리전 컴포넌트를 쓸 수 있습니다.
+	// 건재 : 이 클래스를 상속 받은 오브젝트들은 콜리전 매니저에서 충돌 검사 후 컴포넌트에서 해당 가상 함수를 실행해줍니다.
+	class CollisionNotify
+	{
+	public:
+		virtual void OnBeginOverlap(unsigned int _otherObjectid) {}
+		virtual void OnEndOverlap(unsigned int _otherObjectid) {}
+		virtual void OnOverlap(unsigned int _otherObjectid) {}
+		virtual void OnBlock(unsigned int _otherObjectid) {}
+	};
+	// -------------------------------------------------------------------------
+
 	// 건재 : 콜라이더 타입 enum class ( 충돌 형체 )
 	enum class ColliderType
 	{
@@ -33,18 +47,6 @@ namespace Engine
 		End
 	};
 
-	// 건재 : 콜리전 노티파이 ( 인터페이스 )
-	// 건재 : 이 클래스를 상속 받는 특정 오브젝트만 이 가상함수를 쓸 수 있으며, 콜리전 컴포넌트를 쓸 수 있습니다.
-	// 건재 : 이 클래스를 상속 받은 오브젝트들은 콜리전 매니저에서 충돌 검사 후 컴포넌트에서 해당 가상 함수를 실행해줍니다.
-	class CollisionNotify
-	{
-	public:
-		virtual void OnBeginOverlap(unsigned int _otherObjectid) {}
-		virtual void OnEndOverlap(unsigned int _otherObjectid) {}
-		virtual void OnOverlap(unsigned int _otherObjectid) {}
-		virtual void OnBlock(unsigned int _otherObjectid) {}
-	};
-
 	// 건재 : 콜리전 컴포넌트 정보 구조체
 	struct CollisionComponentInfo
 	{
@@ -53,7 +55,7 @@ namespace Engine
 		CollisionType m_CollisionType;
 	};
 
-
+	// -------------------------------------------------------------------------
 	// 건재 : 콜리전 컴포넌트 클래스
 	class CollisionComponent : public SceneComponent
 	{
@@ -95,6 +97,7 @@ namespace Engine
 		friend class CollisionManager;
 	};
 
+	// 건재 : CollisionComponent의 Get & Set 함수
 	unsigned int CollisionComponent::GetID()
 	{
 		return m_ID;
@@ -127,5 +130,5 @@ namespace Engine
 	{
 		m_CollisionNotify = _collisionNotify;
 	}
-
+	// -------------------------------------------------------------------------
 }

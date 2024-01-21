@@ -3,6 +3,7 @@
 
 namespace Engine
 {
+	// 건재 : 클래스 선언
 	class SkeletonResource;
 	class AnimationResource;
 	class AnimationNode;
@@ -19,6 +20,7 @@ namespace Engine
 	};
 
 
+	// -------------------------------------------------------------------------
 	// 건재 : 노드 데이터 리소스 클래스
 	// 건재 : 특정 FBX가 가지고 있는 모든 노드 데이터들을 가진 클래스입니다.
 	class NodeDataResource : public ResourceBase
@@ -39,6 +41,7 @@ namespace Engine
 		vector<NodeData> m_NodeData;
 	};
 
+	// 건재 : NodeDataResource의 Get & Set 함수
 	const vector<NodeData>& NodeDataResource::GetNodeDataVec()
 	{
 		return m_NodeData;
@@ -51,8 +54,10 @@ namespace Engine
 	{
 		m_NodeData.push_back(_nodeData);
 	}
+	// -------------------------------------------------------------------------
 
 
+	// -------------------------------------------------------------------------
 	// 건재 : 노드 클래스
 	class Node : public enable_shared_from_this<Node>
 	{
@@ -95,7 +100,7 @@ namespace Engine
 		Matrix m_World;
 	};
 
-
+	// 건재 : Node의 Get & Set 함수
 	const NodeData& Node::GetNodaData()
 	{
 		return m_NodeData;
@@ -149,5 +154,5 @@ namespace Engine
 	{
 		return m_World;
 	}
-
+	// -------------------------------------------------------------------------
 }

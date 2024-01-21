@@ -6,7 +6,7 @@ namespace Engine
 	// 건재 : 클래스 선언
 	class CollisionComponent;
 
-
+	// -------------------------------------------------------------------------
 	// 건재 : 콜리전 매니저 ( 싱글톤 )
 	class CollisionManager
 	{
@@ -56,4 +56,5 @@ namespace Engine
 
 		return object->second;
 	}
+	// -------------------------------------------------------------------------
 }

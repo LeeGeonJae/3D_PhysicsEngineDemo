@@ -7,6 +7,7 @@
 
 namespace Engine
 {
+	// -------------------------------------------------------------------------
 	// 건재 : 입력 매니저 ( 싱글톤 )
 	// 건재 : DirectX 라이브러리에서 제공해준 것 사용
 	class InputManager
@@ -45,6 +46,7 @@ namespace Engine
 		DirectX::Keyboard::State                        m_KeyboardState;
 	};
 
+	// 건재 : InputManager의 Get & Set 함수
 	DirectX::Keyboard::State InputManager::GetKeyboardState()
 	{
 		return m_KeyboardState;
@@ -71,6 +73,7 @@ namespace Engine
 	{
 		return m_Mouse.get();
 	}
+	// -------------------------------------------------------------------------
 }
 
 #define INPUT Engine::InputManager::GetInstance()

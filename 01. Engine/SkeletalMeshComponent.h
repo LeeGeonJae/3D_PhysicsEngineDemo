@@ -18,6 +18,7 @@ namespace Engine
 		string m_FilePath;
 	};
 
+	// -------------------------------------------------------------------------
 	// 건재 : 스켈레탈 메시 컴포넌트 클래스
 	class SkeletalMeshComponent : public RenderComponent
 	{
@@ -47,4 +48,5 @@ namespace Engine
 
 		vector<shared_ptr<SkeletalMeshInstance>> m_pSkeletalMeshInstanceVec;
 	};
+	// -------------------------------------------------------------------------
 }

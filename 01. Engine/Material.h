@@ -4,6 +4,7 @@
 
 namespace Engine
 {
+    // -------------------------------------------------------------------------
     // 건재 : 머터리얼 클래스
     class Material : public ResourceBase
     {
@@ -32,7 +33,7 @@ namespace Engine
         std::shared_ptr<Texture> m_Textures[static_cast<int>(TextureType::END)];
     };
 
-
+    // 건재 : Material의 Get & Set 함수
     shared_ptr<Texture> Material::GetTexture(TextureType _textureType)
     {
         return m_Textures[static_cast<int>(_textureType)];
@@ -57,5 +58,5 @@ namespace Engine
     {
         m_EmissiveColor = _color;
     }
-    
+    // -------------------------------------------------------------------------
 }

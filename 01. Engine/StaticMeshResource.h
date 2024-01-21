@@ -17,7 +17,7 @@ namespace Engine
         Vector3 m_BiTangents;
     };
 
-
+    // -------------------------------------------------------------------------
     // 건재 : 버텍스를 갖는 스태틱 메시 클래스
     class StaticMesh
     {
@@ -51,6 +51,7 @@ namespace Engine
         ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
     };
 
+    // 건재 : StaticMesh의 Get & Set 함수
     const string& StaticMesh::GetName()
     {
         return m_Name;
@@ -79,8 +80,10 @@ namespace Engine
     {
         return m_pMaterial;
     }
+    // -------------------------------------------------------------------------
 
 
+    // -------------------------------------------------------------------------
     // 건재 : FBX 씬의 모든 스켈레탈 메시 리소스 집합을 가지고 있는 리소스 클래스
     class StaticMeshSceneResource : public ResourceBase
     {
@@ -103,6 +106,7 @@ namespace Engine
         BoundingBox m_BoundingBox;
     };
 
+    // 건재 : StaticMeshSceneResource의 Get & Set 함수
     vector<StaticMesh>& StaticMeshSceneResource::GetStaticMeshVec()
     {
         return m_StaticMeshVec;
@@ -111,4 +115,5 @@ namespace Engine
     {
         return m_BoundingBox;
     }
+    // -------------------------------------------------------------------------
 }

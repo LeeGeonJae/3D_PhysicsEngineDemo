@@ -17,7 +17,7 @@ namespace Engine
 		END
 	};
 
-
+	// -------------------------------------------------------------------------
 	// 건재 : 텍스쳐 클래스
     class Texture : public ResourceBase
     {
@@ -39,7 +39,7 @@ namespace Engine
 		TextureType m_TextureType;
     };
 
-
+	// 건재 : Texture의 Get & Set 함수
 	ComPtr< ID3D11ShaderResourceView> Texture::GetTexture()
 	{
 		return m_Texture;
@@ -52,4 +52,5 @@ namespace Engine
 	{
 		return m_TextureType;
 	}
+	// -------------------------------------------------------------------------
 }

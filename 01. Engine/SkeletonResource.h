@@ -14,8 +14,9 @@ namespace Engine
         Matrix m_OffsetMatrix;
     };
 
-
+    // -------------------------------------------------------------------------
     // 건재 : 본 구조체 집합을 담은 스켈레톤 클래스
+    // -------------------------------------------------------------------------
     class SkeletonResource : public ResourceBase
     {
     public:
@@ -34,6 +35,7 @@ namespace Engine
         unordered_map<string, shared_ptr<Bone>> m_BoneMap;
     };
 
+    // 건재 : SkeletonResource의 Get & Set 함수
     shared_ptr<Bone> SkeletonResource::FindBone(string _key)
     {
         if (m_BoneMap.find(_key) != m_BoneMap.end())

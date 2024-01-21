@@ -38,6 +38,7 @@ namespace Engine
     };
 
 
+    // -------------------------------------------------------------------------
     // 건재 : 본을 갖는 스켈레탈 메시 리소스 클래스
     class SkeletalMesh
     {
@@ -71,6 +72,7 @@ namespace Engine
         ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
     };
 
+    // 건재 : SkeletalMesh의 Get & Set 함수
     const string& SkeletalMesh::GetName()
     {
         return m_Name;
@@ -99,8 +101,10 @@ namespace Engine
     {
         return m_pMaterial;
     }
+    // -------------------------------------------------------------------------
 
 
+    // -------------------------------------------------------------------------
     // 건재 : FBX 씬의 모든 스켈레탈 메시 리소스 집합을 가지고 있는 리소스 클래스
     class SkeletalMeshSceneResource : public ResourceBase
     {
@@ -123,6 +127,7 @@ namespace Engine
         DirectX::BoundingBox m_BoundingBox;
     };
 
+    // 건재 : SkeletalMeshSceneResource의 Get & Set 함수
     vector<SkeletalMesh>& SkeletalMeshSceneResource::GetSkeletalMeshVec()
     {
         return m_SkeletalMeshVec;
@@ -131,4 +136,5 @@ namespace Engine
     {
         return m_BoundingBox;
     }
+    // -------------------------------------------------------------------------
 }

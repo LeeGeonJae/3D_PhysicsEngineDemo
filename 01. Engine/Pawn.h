@@ -14,6 +14,7 @@ namespace Engine
 		ObjectInfo m_ObjectDesc;
 	};
 
+	// -------------------------------------------------------------------------
 	// 건재 : 폰 클래스 ( 간단한 조작을 할 수 있는 기본적인 틀을 가진 클래스. 수정 중 )
 	class Pawn : public Object, public CollisionNotify
 	{
@@ -47,8 +48,11 @@ namespace Engine
 		shared_ptr<PawnController> m_pController;
 	};
 
+
+	// 건재 : Pawn의 Get & Set 함수
 	shared_ptr<PawnController> Pawn::GetController()
 	{
 		return m_pController;
 	}
+	// -------------------------------------------------------------------------
 }

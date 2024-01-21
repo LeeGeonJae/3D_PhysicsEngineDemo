@@ -25,7 +25,8 @@ namespace Engine
 	};
 
 
-	// 건재 : 애니메이션 리소스 구조체
+	// -------------------------------------------------------------------------
+	// 건재 : 애니메이션 리소스 클래스
 	class AnimationResource : public ResourceBase
 	{
 	public:
@@ -51,7 +52,7 @@ namespace Engine
 		unordered_map<string, shared_ptr<AnimationNode>> m_pAnimationNodeMap;
 	};
 
-
+	// 건재 : AnimationResource의 Get & Set 함수
 	unsigned int AnimationResource::GetFrameCount()
 	{
 		return m_FrameCount;
@@ -71,4 +72,5 @@ namespace Engine
 
 		return nullptr;
 	}
+	// -------------------------------------------------------------------------
 }

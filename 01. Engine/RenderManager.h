@@ -12,13 +12,13 @@ namespace GraphicsEngine
 
 namespace Engine
 {
-	// 클래스 선언
+	// 건재 : 클래스 선언
 	class SkeletalMeshInstance;
 	class StaticMeshInstance;
 	class Texture;
 	class Material;
 
-	// ConstantBuffer 구조체
+	// 건재 : ConstantBuffer 구조체
 	struct CB_ModelTransform
 	{
 
@@ -55,7 +55,6 @@ namespace Engine
 	{
 		Matrix Array[128];
 	};
-
 
 	// 렌더 매니저 클래스
 	class RenderManager
@@ -102,6 +101,7 @@ namespace Engine
 		//ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
 	};
 
+	// 건재 : RenderManager의 Get & Set 함수
 	shared_ptr<GraphicsEngine::Graphics> RenderManager::GetGraphics()
 	{
 		return m_Graphics;
@@ -110,6 +110,7 @@ namespace Engine
 	{
 		return m_pPipeLine;
 	}
+	// -------------------------------------------------------------------------
 }
 
 #define RENDER Engine::RenderManager::GetInstance()
