@@ -51,10 +51,7 @@ namespace Engine
 	{
 		return m_pObject.lock();
 	}
-	bool Component::GetIsDead()
-	{
-		return m_pObject.lock()->GetIsDead();
-	}
+
 	// -------------------------------------------------------------------------
 }
 

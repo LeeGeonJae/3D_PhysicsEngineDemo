@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Component.h"
 
+#include "Object.h"
+
 namespace Engine
 {
 	Component::Component()
@@ -31,4 +33,8 @@ namespace Engine
 	{
 	}
 
+	bool Component::GetIsDead()
+	{
+		return m_pObject.lock()->GetIsDead();
+	}
 }
