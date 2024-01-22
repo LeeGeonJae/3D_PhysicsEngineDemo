@@ -31,7 +31,6 @@ namespace Engine
 	private:
 		unsigned int m_ObjectId = 0;
 		unordered_map<unsigned int, shared_ptr<Object>> m_ObjectMap;
-		queue<shared_ptr<Object>> m_DeleteObjectVec;
 		queue<unsigned int> m_DeleteExpectedObjectQueue;
 	};
 
