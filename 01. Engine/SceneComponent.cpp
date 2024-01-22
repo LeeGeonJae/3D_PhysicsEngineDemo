@@ -28,7 +28,7 @@ namespace Engine
 		}
 	}
 
-	void SceneComponent::Update()
+	void SceneComponent::Update(float _deltaTime)
 	{
 		// 건재 : 계층구조로 월드 트랜스폼 배치
 		m_Local = SimpleMath::Matrix::CreateScale(m_Scale)
@@ -46,23 +46,23 @@ namespace Engine
 
 		for (auto component : m_pChildren)
 		{
-			component->Update();
+			component->Update(_deltaTime);
 		}
 	}
 
-	void SceneComponent::FixedUpdate()
+	void SceneComponent::FixedUpdate(float _deltaTime)
 	{
 		for (auto component : m_pChildren)
 		{
-			component->FixedUpdate();
+			component->FixedUpdate(_deltaTime);
 		}
 	}
 
-	void SceneComponent::LateUpdate()
+	void SceneComponent::LateUpdate(float _deltaTime)
 	{
 		for (auto component : m_pChildren)
 		{
-			component->LateUpdate();
+			component->LateUpdate(_deltaTime);
 		}
 	}
 

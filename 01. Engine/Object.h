@@ -28,9 +28,9 @@ namespace Engine
 
 	public:
 		virtual void Init();
-		virtual void Update();
-		virtual void LateUpdate();
-		virtual void FixedUpdate();
+		virtual void Update(float _deltaTime);
+		virtual void LateUpdate(float _deltaTime);
+		virtual void FixedUpdate(float _deltaTime);
 		virtual void Render();
 
 	public:
@@ -44,6 +44,9 @@ namespace Engine
 		inline void SetName(string _name);
 		inline string GetName();
 		inline const unsigned int& GetID();
+		inline bool GetIsDead();
+		inline void SetIsDead(bool _isDead);
+
 		void SetWorldTransform(Matrix _world);
 		const Matrix& GetWorldTransform();
 		Vector3 GetPosition();
@@ -56,6 +59,8 @@ namespace Engine
 	private:
 		string m_Name;
 		unsigned int m_ID;
+		bool m_bIsDead;
+
 		vector<shared_ptr<SceneComponent>> m_pMyComponents;
 		shared_ptr<SceneComponent> m_pRootComponent;
 	};
@@ -99,6 +104,14 @@ namespace Engine
 	const unsigned int& Object::GetID()
 	{
 		return m_ID;
+	}
+	bool Object::GetIsDead()
+	{
+		return m_bIsDead;
+	}
+	void Object::SetIsDead(bool _isDead)
+	{
+		m_bIsDead = _isDead;
 	}
 	// -------------------------------------------------------------------------
 }

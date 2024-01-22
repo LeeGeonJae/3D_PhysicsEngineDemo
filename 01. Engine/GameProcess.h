@@ -9,10 +9,10 @@ namespace Engine
 	{
 	public:
 		virtual void Init() abstract;
-		virtual void Update() abstract;
+		virtual void Update(float _deltaTime) abstract;
 		virtual void Render() abstract;
-		virtual void LateUpdate() abstract;
-		virtual void FixedUpdate() abstract;
+		virtual void LateUpdate(float _deltaTime) abstract;
+		virtual void FixedUpdate(float _deltaTime) abstract;
 	};
 	// -------------------------------------------------------------------------
 }

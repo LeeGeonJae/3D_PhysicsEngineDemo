@@ -142,7 +142,6 @@ namespace Engine
 			CBMaterialData.m_baseColor = material.first->GetBaseColor();
 			CBMaterialData.m_emissiveColor = material.first->GetEmissiveColor();
 
-
 			
 			for (int i = 0; i < static_cast<int>(TextureType::END); i++)
 			{
@@ -159,6 +158,7 @@ namespace Engine
 
 			for (auto& meshInstance : material.second)
 			{
+				CBModelTransformData.m_World = meshInstance->GetNode()->GetWorldTransform().Transpose();
 				DEVICE_CONTEXT->UpdateSubresource(m_pCBModelTransform.Get(), 0, nullptr, &CBModelTransformData, 0, 0);
 
 				DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());

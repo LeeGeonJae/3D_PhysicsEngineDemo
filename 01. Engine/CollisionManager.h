@@ -27,10 +27,11 @@ namespace Engine
 		template <typename T>
 		shared_ptr<T> CreateCollision();
 		inline shared_ptr<CollisionComponent> FindCollision(unsigned int _id);
+		inline void DeleteCollision(unsigned int _id);
 
 	private:
 		unsigned int m_CollisionId = 0;
-		unordered_map<unsigned int, shared_ptr<CollisionComponent>> m_CollisionMap;
+		unordered_map<unsigned int, weak_ptr<CollisionComponent>> m_CollisionMap;
 	};
 
 	// 건재 : 콜리전 생성
@@ -51,10 +52,14 @@ namespace Engine
 	// 건재 : 아이디 값을 받으면 해당 콜리전은 찾아주는 함수
 	shared_ptr<CollisionComponent> CollisionManager::FindCollision(unsigned int _id)
 	{
-		auto object = m_CollisionMap.find(_id);
-		assert(object != m_CollisionMap.end());
+		auto collision = m_CollisionMap.find(_id);
+		assert(collision != m_CollisionMap.end());
 
-		return object->second;
+		return collision->second.lock();
+	}
+	inline void CollisionManager::DeleteCollision(unsigned int _id)
+	{
+		m_CollisionMap.erase(_id);
 	}
 	// -------------------------------------------------------------------------
 }

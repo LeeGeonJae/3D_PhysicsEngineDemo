@@ -23,9 +23,9 @@ namespace Engine
 	{
 	}
 
-	void CameraComponent::Update()
+	void CameraComponent::Update(float _deltaTime)
 	{
-		__super::Update();
+		__super::Update(_deltaTime);
 
 		// °ÇÀç : Camera
 		{
@@ -37,15 +37,11 @@ namespace Engine
 		}
 	}
 
-	void CameraComponent::LateUpdate()
+	void CameraComponent::LateUpdate(float _deltaTime)
 	{
 	}
 
-	void CameraComponent::FixedUpdate()
-	{
-	}
-
-	void CameraComponent::Render()
+	void CameraComponent::FixedUpdate(float _deltaTime)
 	{
 	}
 }

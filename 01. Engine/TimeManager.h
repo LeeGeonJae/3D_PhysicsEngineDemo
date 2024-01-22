@@ -6,11 +6,13 @@ namespace Engine
 	// 건재 : 타임 매니저 클래스 ( 싱글톤 )
 	class TimeManager
 	{
-		SINGLETON(TimeManager);
+	public:
+		TimeManager();
+		~TimeManager();
+
 	public:
 		void Initialize();
 		void Update();
-		void Render();
 
 	public:
 		double GetDT() { return m_dDT; }

@@ -31,7 +31,7 @@ namespace Engine
 
 	public:
 		virtual void Init() override;
-		virtual void Update() override;
+		virtual void Update(float _deltaTime) override;
 		virtual void Render() override;
 
 	private:

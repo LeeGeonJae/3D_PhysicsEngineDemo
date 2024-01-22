@@ -4,7 +4,6 @@
 
 #include "ResourceManager.h"
 #include "RenderManager.h"
-#include "TimeManager.h"
 
 #include "AnimationResource.h"
 #include "SkeletalMeshResource.h"
@@ -66,11 +65,11 @@ namespace Engine
 		}
 	}
 
-	void SkeletalMeshComponent::Update()
+	void SkeletalMeshComponent::Update(float _deltaTime)
 	{
-		__super::Update();
+		__super::Update(_deltaTime);
 
-		m_CurrentTime += TimeManager::GetInstance()->GetfDT();
+		m_CurrentTime += _deltaTime;
 		m_pRootNode->Update(GetWorldTransform(), m_CurrentTime * 30.f);
 	}
 

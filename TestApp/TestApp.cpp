@@ -36,14 +36,14 @@ void TestApp::Init()
 		objectInfo.m_Name = "Object";
 		object->Setting(objectInfo);
 
-		std::shared_ptr<SkeletalMeshComponent> meshComponent = std::make_shared<SkeletalMeshComponent>();
-		SkeletalMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/SkinningTest.fbx";
+		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
+		StaticMeshComponentInfo meshInfo;
+		meshInfo.m_FilePath = "../Resources/FBX/zeldaPosed001.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
 		meshComponent->SetOwner(object->GetRootComponent());
-		object->SetPosition(Vector3(200.f, 0.f, 0.f));
+		object->SetPosition(Vector3(200.f, 100.f, 0.f));
 
 		m_ObjectVec.push_back(object);
 	}
@@ -81,52 +81,34 @@ void TestApp::Init()
 
 		m_ObjectVec.push_back(object);
 	}
-	/*{
-		shared_ptr<Object> object = std::make_shared<Object>(5);
-		ObjectInfo objectInfo;
-		objectInfo.m_Name = "Object";
-		object->Setting(objectInfo);
-
-		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
-		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/zeldaPosed001.fbx";
-		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
-		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
-		meshComponent->Setting(meshInfo);
-		meshComponent->SetOwner(object->GetRootComponent());
-		object->SetPosition(Vector3(100.f, 0.f, 0.f));
-
-		m_ObjectVec.push_back(object);
-	}*/
 	
 	for (auto object : m_ObjectVec)
 	{
 		object->Init();
-
 	}
 }
 
-void TestApp::Update()
+void TestApp::Update(float _deltaTime)
 {
 	for (auto object : m_ObjectVec)
 	{
-		object->Update();
+		object->Update(_deltaTime);
 	}
 }
 
-void TestApp::LateUpdate()
+void TestApp::LateUpdate(float _deltaTime)
 {
 	for (auto object : m_ObjectVec)
 	{
-		object->LateUpdate();
+		object->LateUpdate(_deltaTime);
 	}
 }
 
-void TestApp::FixedUpdate()
+void TestApp::FixedUpdate(float _deltaTime)
 {
 	for (auto object : m_ObjectVec)
 	{
-		object->FixedUpdate();
+		object->FixedUpdate(_deltaTime);
 	}
 }
 

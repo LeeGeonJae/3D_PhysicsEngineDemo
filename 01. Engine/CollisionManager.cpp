@@ -2,6 +2,8 @@
 #include "CollisionManager.h"
 
 #include "CollisionComponent.h"
+#include "ObjectManager.h"
+#include "Object.h"
 
 namespace Engine
 {
@@ -16,14 +18,14 @@ namespace Engine
 		// 건재 : 두 콜리전을 찾고 for문을 돌려 모든 콜리전 검사
 		for (auto lhsIter = m_CollisionMap.begin(); lhsIter != m_CollisionMap.end(); lhsIter++)
 		{
-			shared_ptr<CollisionComponent> lhsCollsion = lhsIter->second;
+			shared_ptr<CollisionComponent> lhsCollsion = lhsIter->second.lock();
 
 			auto rhsIter = lhsIter;
 			++rhsIter;
 
 			for (; rhsIter != m_CollisionMap.end(); rhsIter++)
 			{
-				shared_ptr<CollisionComponent> rhsCollsion = rhsIter->second;
+				shared_ptr<CollisionComponent> rhsCollsion = rhsIter->second.lock();
 
 				if (lhsCollsion->GetCollisionType() == CollisionType::Block && rhsCollsion->GetCollisionType() == CollisionType::Block)
 				{

@@ -24,10 +24,9 @@ namespace Engine
 
 	public:
 		virtual void Init();
-		virtual void Update();
-		virtual void LateUpdate();
-		virtual void FixedUpdate();
-		virtual void Render();
+		virtual void Update(float _deltaTime);
+		virtual void LateUpdate(float _deltaTime);
+		virtual void FixedUpdate(float _deltaTime);
 
 	public:
 		inline const SimpleMath::Matrix& GetViewMatrix();

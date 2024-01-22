@@ -10,6 +10,7 @@ namespace Engine
 {
 	// 건재 : 클래스 선언
 	class RenderManager;
+	class TimeManager;
 
 	// 건재 : 게임을 실행할 때 필요한 데이터 구조체
 	struct GameDesc
@@ -34,15 +35,19 @@ namespace Engine
 		GameDesc& GetGameDesc() { return m_Desc; }
 
 	private:
+		void start();
+		void loop();
+
+	private:
 		ATOM MyRegisterClass();
 		BOOL InitInstance(int _cmdshow);
-
-		void Loop();
 
 		static LRESULT CALLBACK WndProc(HWND _handle, UINT _message, WPARAM _wParam, LPARAM _lParam);
 
 	private:
 		GameDesc m_Desc;
+
+		shared_ptr<TimeManager> m_TimeManager;
 	};
 	// -------------------------------------------------------------------------
 }

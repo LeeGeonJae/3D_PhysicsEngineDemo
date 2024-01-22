@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <random>
 #include <set>
+#include <queue>
 using namespace std;
 
 // 건재 : WIN

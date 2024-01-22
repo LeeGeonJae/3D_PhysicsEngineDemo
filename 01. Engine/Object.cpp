@@ -32,19 +32,19 @@ namespace Engine
 		m_pRootComponent->Init();
 	}
 
-	void Object::Update()
+	void Object::Update(float _deltaTime)
 	{
-		m_pRootComponent->Update();
+		m_pRootComponent->Update(_deltaTime);
 	}
 
-	void Object::LateUpdate()
+	void Object::LateUpdate(float _deltaTime)
 	{
-		m_pRootComponent->LateUpdate();
+		m_pRootComponent->LateUpdate(_deltaTime);
 	}
 
-	void Object::FixedUpdate()
+	void Object::FixedUpdate(float _deltaTime)
 	{
-		m_pRootComponent->FixedUpdate();
+		m_pRootComponent->FixedUpdate(_deltaTime);
 	}
 
 	void Object::Render()

@@ -21,8 +21,7 @@ namespace Engine
 	// 건재 : ConstantBuffer 구조체
 	struct CB_ModelTransform
 	{
-
-		// 이건 어디에 쓰는거지???
+		// 건재 : 스태틱 메시 트랜스폼
 		Matrix m_World;
 	};
 

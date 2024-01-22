@@ -43,6 +43,9 @@
     <Filter Include="04. Component\CameraComponent">
       <UniqueIdentifier>{15e91458-59c6-4562-8b03-599c9f703a29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. Scene">
+      <UniqueIdentifier>{00ccb5ef-7a46-46c0-beeb-2b5e4cddf974}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputManager.h">
@@ -147,6 +150,22 @@
     <ClInclude Include="GameProcess.h">
       <Filter>01. Game</Filter>
     </ClInclude>
+    <ClInclude Include="SphereComponent.h">
+      <Filter>04. Component\CollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="OrientedBoxComponent.h">
+      <Filter>04. Component\CollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxComponent.h">
+      <Filter>04. Component\CollisionComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectManager.h">
+      <Filter>02. Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h">
+      <Filter>02. Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputManager.cpp">
@@ -241,6 +260,22 @@
     </ClCompile>
     <ClCompile Include="GameProcess.cpp">
       <Filter>01. Game</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereComponent.cpp">
+      <Filter>04. Component\CollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxComponent.cpp">
+      <Filter>04. Component\CollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="OrientedBoxComponent.cpp">
+      <Filter>04. Component\CollisionComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>02. Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>02. Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

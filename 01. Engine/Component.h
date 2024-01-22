@@ -17,9 +17,9 @@ namespace Engine
 
 	public:
 		virtual void Init();
-		virtual void Update();
-		virtual void LateUpdate();
-		virtual void FixedUpdate();
+		virtual void Update(float _deltaTime);
+		virtual void LateUpdate(float _deltaTime);
+		virtual void FixedUpdate(float _deltaTime);
 		virtual void Render();
 
 	public:
@@ -27,6 +27,7 @@ namespace Engine
 		inline const string& GetName();
 		inline void SetMyObject(weak_ptr<Object> _object);
 		inline const shared_ptr<Object> GetMyObject();
+		inline bool GetIsDead();
 
 	private:
 		string m_Name;
@@ -49,6 +50,10 @@ namespace Engine
 	const shared_ptr<Object> Component::GetMyObject()
 	{
 		return m_pObject.lock();
+	}
+	bool Component::GetIsDead()
+	{
+		return m_pObject.lock()->GetIsDead();
 	}
 	// -------------------------------------------------------------------------
 }

@@ -21,14 +21,7 @@ namespace Engine
 			return FALSE;
 
 		// 건재 : 3) 매니저 세팅 및 게임 앱 세팅
-		{
-			InputManager::GetInstance()->Initalize(m_Desc.hwnd);
-			TimeManager::GetInstance()->Initialize();
-			RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
-			ResourceManager::GetInstance()->Initalize();
-
-			m_Desc.app->Init();
-		}
+		start();
 
 		MSG msg = { 0 };
 
@@ -42,29 +35,40 @@ namespace Engine
 			}
 			else
 			{
-				Loop();
+				loop();
 			}
 		}
 
 		return msg.wParam;
 	}
 
-	// 건재 : 게임 업데이트
-	void Game::Loop()
+	void Game::start()
 	{
-		TimeManager::GetInstance()->Update();
+		m_TimeManager = make_shared<TimeManager>();
+		InputManager::GetInstance()->Initalize(m_Desc.hwnd);
+		m_TimeManager->Initialize();
+		RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
+		ResourceManager::GetInstance()->Initalize();
+
+		m_Desc.app->Init();
+	}
+
+	// 건재 : 게임 업데이트
+	void Game::loop()
+	{
+		m_TimeManager->Update();
 		InputManager::GetInstance()->Update();
 
 		static float durationTime = 0;
-		durationTime += TimeManager::GetInstance()->GetfDT();
+		durationTime += m_TimeManager->GetfDT();
 		if (durationTime > 0.0166667f)	// 건재 : 60 프레임
 		{
+			m_Desc.app->FixedUpdate(0.0166667f);
 			durationTime -= 0.0166667f;
-			m_Desc.app->FixedUpdate();
 		}
 
-		m_Desc.app->Update();
-		m_Desc.app->LateUpdate();
+		m_Desc.app->Update(m_TimeManager->GetfDT());
+		m_Desc.app->LateUpdate(m_TimeManager->GetfDT());
 
 		// ???
 		m_Desc.app->Render();

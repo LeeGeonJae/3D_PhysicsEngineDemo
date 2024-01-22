@@ -68,9 +68,9 @@ namespace Engine
 
 	}
 
-	void Pawn::Update()
+	void Pawn::Update(float _deltaTime)
 	{
-		__super::Update();
+		__super::Update(_deltaTime);
 
 		//if (m_pController == nullptr)
 		//	return;
@@ -145,15 +145,15 @@ namespace Engine
 		//ImGuiMenu::CameraAfterPosition = movement->GetAfterPosition();
 	}
 
-	void Pawn::LateUpdate()
+	void Pawn::LateUpdate(float _deltaTime)
 	{
-		__super::LateUpdate();
+		__super::LateUpdate(_deltaTime);
 
 	}
 
-	void Pawn::FixedUpdate()
+	void Pawn::FixedUpdate(float _deltaTime)
 	{
-		__super::FixedUpdate();
+		__super::FixedUpdate(_deltaTime);
 
 	}
 

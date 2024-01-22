@@ -15,15 +15,15 @@ namespace Engine
 	{
 	}
 
-	void Component::Update()
+	void Component::Update(float _deltaTime)
 	{
 	}
 
-	void Component::LateUpdate()
+	void Component::LateUpdate(float _deltaTime)
 	{
 	}
 
-	void Component::FixedUpdate()
+	void Component::FixedUpdate(float _deltaTime)
 	{
 	}
 

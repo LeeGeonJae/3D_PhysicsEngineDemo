@@ -67,7 +67,7 @@ namespace Engine
 		virtual void Setting(CollisionComponentInfo _info);
 
 	public:
-		virtual void Update();
+		virtual void Update(float _deltaTime);
 
 	public:
 		void ProcessOverlap(unsigned int _otherCollisionID);
@@ -87,7 +87,7 @@ namespace Engine
 
 	private:
 		unsigned int m_ID;
-		vector<unsigned int> m_otherCollisionID;
+		set<unsigned int> m_otherCollisionID;
 		CollisionNotify* m_CollisionNotify;
 
 		ColliderType m_ColliderType = ColliderType::End;

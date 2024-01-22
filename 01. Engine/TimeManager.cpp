@@ -3,6 +3,12 @@
 
 namespace Engine
 {
+	TimeManager::TimeManager()
+	{
+	}
+	TimeManager::~TimeManager()
+	{
+	}
 	void TimeManager::Initialize()
 	{
 		// 건재 : 현재 카운트
@@ -27,18 +33,5 @@ namespace Engine
 		if (m_dDT > (1. / 60.))
 			m_dDT = (1. / 60.);
 #endif
-	}
-
-	void TimeManager::Render()
-	{
-		++m_iCallCount;
-		m_dAcc += m_dDT;	// 건재 : DT 누적
-
-		if (m_dAcc >= 1.)
-		{
-			m_iFPS = m_iCallCount;
-			m_dAcc = 0.;
-			m_iCallCount = 0;
-		}
 	}
 }

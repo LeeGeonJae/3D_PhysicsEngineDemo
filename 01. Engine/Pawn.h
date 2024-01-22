@@ -27,9 +27,9 @@ namespace Engine
 
 	public:
 		virtual void Init();
-		virtual void Update();
-		virtual void LateUpdate();
-		virtual void FixedUpdate();
+		virtual void Update(float _deltaTime) override;
+		virtual void LateUpdate(float _deltaTime) override;
+		virtual void FixedUpdate(float _deltaTime) override;
 		virtual void Render();
 
 	public:

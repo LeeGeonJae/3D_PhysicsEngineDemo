@@ -24,7 +24,7 @@ namespace Engine
 		void Setting(MovementComponentInfo _info);
 
 	public:
-		virtual void Update() override;
+		virtual void Update(float _deltaTime) override;
 		void AddInputVector(const Vector3& input);
 
 	public:

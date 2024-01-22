@@ -17,6 +17,7 @@ namespace Engine
 	// 건재 : 리소스 매니저 클래스 ( 싱글톤 )
 	class ResourceManager
 	{
+		friend class GameManager;
 	private:
 		ResourceManager() {}
 	public:

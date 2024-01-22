@@ -2,6 +2,8 @@
 #include "CollisionComponent.h"
 
 #include "CollisionManager.h"
+#include "ObjectManager.h"
+
 #include "Object.h"
 
 namespace Engine
@@ -25,9 +27,22 @@ namespace Engine
 		m_CollisionNotify = _info.m_CollisionNotify;
 	}
 
-	void CollisionComponent::Update()
+	void CollisionComponent::Update(float _deltaTime)
 	{
-		__super::Update();
+		__super::Update(_deltaTime);
+
+		// 건재 : 해당 콜리전을 가지고 있는 오브젝트가 삭제 예정이라면 제거
+		for (const auto& otherCollisionID : m_otherCollisionID)
+		{
+			// 건재 : 충돌중인 콜리전이 제거 되었다면 콜리전 매니저에서 관리해주던 콜리전 삭제
+			auto collision = CollisionManager::GetInstance()->FindCollision(otherCollisionID);
+
+			if (collision->GetIsDead())
+			{
+				m_otherCollisionID.erase(otherCollisionID);
+				CollisionManager::GetInstance()->DeleteCollision(otherCollisionID);
+			}
+		}
 	}
 
 	void CollisionComponent::ProcessOverlap(unsigned int _otherCollisionID)
@@ -47,7 +62,7 @@ namespace Engine
 		}
 
 		// 건재 : 충돌 중인 콜리전 아이디가 없으면 BeginOverlap 함수 실행
-		m_otherCollisionID.push_back(_otherCollisionID);
+		m_otherCollisionID.insert(_otherCollisionID);
 		auto otherCollision = CollisionManager::GetInstance()->FindCollision(_otherCollisionID);
 		m_CollisionNotify->OnBeginOverlap(otherCollision->GetMyObject()->GetID());
 	}
@@ -68,12 +83,12 @@ namespace Engine
 
 		auto otherCollision = CollisionManager::GetInstance()->FindCollision(_otherCollisionID);
 
-		for (int i = 0; i < m_otherCollisionID.size(); i++)
+		for (const auto& otherCollisionID : m_otherCollisionID)
 		{
 			// 건재 : 충돌중인 콜리전이 제거 되었을 때 EndOverlap 함수 실행
-			if (_otherCollisionID == m_otherCollisionID[i])
+			if (otherCollisionID == _otherCollisionID)
 			{
-				m_otherCollisionID.erase(m_otherCollisionID.begin() + i);
+				m_otherCollisionID.erase(otherCollisionID);
 				m_CollisionNotify->OnEndOverlap(otherCollision->GetMyObject()->GetID());
 			}
 		}
