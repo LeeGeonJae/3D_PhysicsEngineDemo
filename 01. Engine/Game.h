@@ -11,6 +11,8 @@ namespace Engine
 	// 건재 : 클래스 선언
 	class RenderManager;
 	class TimeManager;
+	class ObjectManager;
+	class SceneManager;
 
 	// 건재 : 게임을 실행할 때 필요한 데이터 구조체
 	struct GameDesc
@@ -48,6 +50,8 @@ namespace Engine
 		GameDesc m_Desc;
 
 		shared_ptr<TimeManager> m_TimeManager;
+		shared_ptr<ObjectManager> m_ObjectManager;
+		shared_ptr<SceneManager> m_SceneManager;
 	};
 	// -------------------------------------------------------------------------
 }

@@ -4,10 +4,13 @@
 #include "ResourceBase.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
+#include "RenderManager.h"
 
 #include "Object.h"
 #include "SkeletalMeshComponent.h"
 #include "StaticMeshComponent.h"
+
+#include "../02. GraphicsEngine/Graphics.h"
 
 
 void TestApp::Init()
@@ -81,7 +84,7 @@ void TestApp::Init()
 
 		m_ObjectVec.push_back(object);
 	}
-	
+
 	for (auto object : m_ObjectVec)
 	{
 		object->Init();

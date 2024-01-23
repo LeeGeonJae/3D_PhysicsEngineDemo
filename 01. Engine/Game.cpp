@@ -5,6 +5,14 @@
 #include "TimeManager.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
+#include "SceneManager.h"
+#include "ObjectManager.h"
+
+#include <imgui.h>
+
+constexpr float FIXED_TIME = 1.f / 60.f;
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace Engine
 {
@@ -45,10 +53,11 @@ namespace Engine
 	void Game::start()
 	{
 		m_TimeManager = make_shared<TimeManager>();
-		InputManager::GetInstance()->Initalize(m_Desc.hwnd);
 		m_TimeManager->Initialize();
+		InputManager::GetInstance()->Initalize(m_Desc.hwnd);
 		RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
 		ResourceManager::GetInstance()->Initalize();
+		SceneManager::GetInstance()->Initalize();
 
 		m_Desc.app->Init();
 	}
@@ -56,24 +65,27 @@ namespace Engine
 	// 건재 : 게임 업데이트
 	void Game::loop()
 	{
-		m_TimeManager->Update();
-		InputManager::GetInstance()->Update();
-
 		static float durationTime = 0;
 		durationTime += m_TimeManager->GetfDT();
-		if (durationTime > 0.0166667f)	// 건재 : 60 프레임
+		if (durationTime > FIXED_TIME)	// 건재 : 60 프레임
 		{
-			m_Desc.app->FixedUpdate(0.0166667f);
-			durationTime -= 0.0166667f;
+			m_Desc.app->FixedUpdate(FIXED_TIME);
+			SceneManager::GetInstance()->FixedUpdate(FIXED_TIME);
+			durationTime -= FIXED_TIME;
 		}
 
+		m_TimeManager->Update();
+		InputManager::GetInstance()->Update();
 		m_Desc.app->Update(m_TimeManager->GetfDT());
-		m_Desc.app->LateUpdate(m_TimeManager->GetfDT());
-
-		// ???
-		m_Desc.app->Render();
-
 		RenderManager::GetInstance()->Update();
+		ObjectManager::GetInstance()->Update();
+		SceneManager::GetInstance()->Update(m_TimeManager->GetfDT());
+
+		m_Desc.app->LateUpdate(m_TimeManager->GetfDT());
+		SceneManager::GetInstance()->LateUpdate(m_TimeManager->GetfDT());
+		m_Desc.app->Render();
+		SceneManager::GetInstance()->Render();
+
 		RenderManager::GetInstance()->Render();
 	}
 
@@ -81,23 +93,23 @@ namespace Engine
 	// 건재 : 윈도우 창 세팅 ( WinApi )
 	ATOM Game::MyRegisterClass()
 	{
-		WNDCLASSEXW wcex;
+			WNDCLASSEXW wcex;
 
-		wcex.cbSize = sizeof(WNDCLASSEX);
+			wcex.cbSize = sizeof(WNDCLASSEX);
 
-		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = WndProc;
-		wcex.cbClsExtra = 0;
-		wcex.cbWndExtra = 0;
-		wcex.hInstance = m_Desc.hInstance;
-		wcex.hIcon = ::LoadIcon(NULL, IDI_WINLOGO);
-		wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
-		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-		wcex.lpszMenuName = NULL;
-		wcex.lpszClassName = m_Desc.appName.c_str();
-		wcex.hIconSm = wcex.hIcon;
+			wcex.style = CS_HREDRAW | CS_VREDRAW;
+			wcex.lpfnWndProc = WndProc;
+			wcex.cbClsExtra = 0;
+			wcex.cbWndExtra = 0;
+			wcex.hInstance = m_Desc.hInstance;
+			wcex.hIcon = ::LoadIcon(NULL, IDI_WINLOGO);
+			wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+			wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+			wcex.lpszMenuName = NULL;
+			wcex.lpszClassName = m_Desc.appName.c_str();
+			wcex.hIconSm = wcex.hIcon;
 
-		return RegisterClassExW(&wcex);
+			return RegisterClassExW(&wcex);
 	}
 
 	BOOL Game::InitInstance(int _cmdShow)
@@ -117,18 +129,43 @@ namespace Engine
 		return TRUE;
 	}
 
+
 	LRESULT CALLBACK Game::WndProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 	{
+		if (ImGui_ImplWin32_WndProcHandler(handle, message, wParam, lParam))
+			return true;
+
 		switch (message)
 		{
-		case WM_SIZE:
-			break;
-		case WM_CLOSE:
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
+		case WM_ACTIVATEAPP:
+			DirectX::Keyboard::ProcessMessage(message, wParam, lParam);
+			DirectX::Mouse::ProcessMessage(message, wParam, lParam);
+			break;
+		case WM_INPUT:
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MOUSEWHEEL:
+		case WM_XBUTTONDOWN:
+		case WM_XBUTTONUP:
+		case WM_MOUSEHOVER:
+			Mouse::ProcessMessage(message, wParam, lParam);
+			break;
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_SYSKEYUP:
+			Keyboard::ProcessMessage(message, wParam, lParam);
+			break;
 		default:
-			return ::DefWindowProc(handle, message, wParam, lParam);
+			return DefWindowProc(handle, message, wParam, lParam);
 		}
+		return 0;
 	}
 }

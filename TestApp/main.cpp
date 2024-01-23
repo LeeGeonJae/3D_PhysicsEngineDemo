@@ -1,6 +1,21 @@
 #include "Game.h"
 #include "TestApp.h"
 
+LRESULT CALLBACK WndProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_SIZE:
+		break;
+	case WM_CLOSE:
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return ::DefWindowProc(handle, message, wParam, lParam);
+	}
+}
+
 // main함수 실행
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,

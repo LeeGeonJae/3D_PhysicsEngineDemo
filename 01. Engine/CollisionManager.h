@@ -35,7 +35,7 @@ namespace Engine
 	};
 
 	// 건재 : 콜리전 생성
-	// 건재 : 콜리전 생성 시에 콜리전 아이디 배정하고 콜리전 컴포넌트 관리해주기 위한 함수
+	// 건재 : 콜리전 생성 시에 콜리전 아이디 배정하고 콜리전 컴포넌트 관리해주기 위한 템플릿 함수
 	template <typename T>
 	inline shared_ptr<T> CollisionManager::CreateCollision()
 	{

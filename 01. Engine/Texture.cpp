@@ -41,7 +41,7 @@ namespace Engine
 			assert(SUCCEEDED(hr));
 		}
 
-		hr = ::CreateShaderResourceView(RENDER->GetGraphics()->GetDevice().Get(), img.GetImages(), img.GetImageCount(), md, m_Texture.GetAddressOf());
+		hr = ::CreateShaderResourceView(DEVICE.Get(), img.GetImages(), img.GetImageCount(), md, m_Texture.GetAddressOf());
 	}
 
 	void Texture::LoadEmbeddedTexture(const aiTexture* _embeddedTexture)

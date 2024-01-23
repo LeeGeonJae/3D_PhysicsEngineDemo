@@ -9,10 +9,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01.Engine", "01. Engine\Eng
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00.GraphicsEngine", "02. GraphicsEngine\GraphicsEngine.vcxproj", "{2407EBEE-D4D0-4E45-9BF6-43508DB4B831}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HLSL", "HLSL", "{4DA9A50B-FB46-4F2C-818B-3E75C230718F}"
-	ProjectSection(SolutionItems) = preProject
-		Resources\Shader\Defalut.hlsl = Resources\Shader\Defalut.hlsl
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{4DA9A50B-FB46-4F2C-818B-3E75C230718F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestAppSumin", "TestAppSumin\TestAppSumin.vcxproj", "{054790A1-16EA-4AAD-B364-2D586F082C5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{8CE97C31-D489-412B-B094-9F5C76E07D9C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LevelEditor", "LevelEditor\LevelEditor.vcxproj", "{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,9 +49,31 @@ Global
 		{2407EBEE-D4D0-4E45-9BF6-43508DB4B831}.Release|x64.Build.0 = Release|x64
 		{2407EBEE-D4D0-4E45-9BF6-43508DB4B831}.Release|x86.ActiveCfg = Release|Win32
 		{2407EBEE-D4D0-4E45-9BF6-43508DB4B831}.Release|x86.Build.0 = Release|Win32
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Debug|x64.ActiveCfg = Debug|x64
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Debug|x64.Build.0 = Debug|x64
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Debug|x86.ActiveCfg = Debug|Win32
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Debug|x86.Build.0 = Debug|Win32
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Release|x64.ActiveCfg = Release|x64
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Release|x64.Build.0 = Release|x64
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Release|x86.ActiveCfg = Release|Win32
+		{054790A1-16EA-4AAD-B364-2D586F082C5A}.Release|x86.Build.0 = Release|Win32
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Debug|x64.ActiveCfg = Debug|x64
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Debug|x64.Build.0 = Debug|x64
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Debug|x86.ActiveCfg = Debug|Win32
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Debug|x86.Build.0 = Debug|Win32
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Release|x64.ActiveCfg = Release|x64
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Release|x64.Build.0 = Release|x64
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Release|x86.ActiveCfg = Release|Win32
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{550E2C8A-D7FD-4B34-A6B4-5C56E57281B7} = {4DA9A50B-FB46-4F2C-818B-3E75C230718F}
+		{2407EBEE-D4D0-4E45-9BF6-43508DB4B831} = {4DA9A50B-FB46-4F2C-818B-3E75C230718F}
+		{054790A1-16EA-4AAD-B364-2D586F082C5A} = {8CE97C31-D489-412B-B094-9F5C76E07D9C}
+		{0022F8EE-ED56-44E6-8508-F8D9AC9DF764} = {8CE97C31-D489-412B-B094-9F5C76E07D9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECCC285F-2655-45E5-A36E-E984BA021882}
