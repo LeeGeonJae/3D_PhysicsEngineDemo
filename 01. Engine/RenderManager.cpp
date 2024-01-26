@@ -36,8 +36,8 @@ namespace Engine
 
 	void RenderManager::Update()
 	{
-		Vector3 eye = Vector3(0.f, 300.f, -600.f);
-		Vector3 target = Vector3(0.f, 0.f, 0.f);
+		Vector3 eye = Vector3(0.f, 100.f, -400.f);
+		Vector3 target = Vector3(eye.x, eye.y, 0.f);
 		Vector3 up = Vector3(0.f, 1.f, 0.f);
 		m_CBCameraData.m_CameraPosition = eye;
 		m_CBCameraData.m_View = XMMatrixLookAtLH(eye, target, up);

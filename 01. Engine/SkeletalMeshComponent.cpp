@@ -83,9 +83,14 @@ namespace Engine
 		// 노드에 애니메이션노드, 본, 부모 세팅
 		for (auto currentNode : _nodeVec)
 		{
+			shared_ptr<AnimationNode> animationNode = nullptr;
+			shared_ptr<Bone> bone = nullptr;
+
 			// 애니메이션 및 본 노드에 세팅
-			shared_ptr<AnimationNode> animationNode = _animationResource->FindAnimationNode(currentNode->GetNodaData().m_Name);
-			shared_ptr<Bone> bone = _skeletonResource->FindBone(currentNode->GetNodaData().m_Name);
+			if (_animationResource != nullptr)
+				animationNode = _animationResource->FindAnimationNode(currentNode->GetNodaData().m_Name);
+			if (_skeletonResource != nullptr)
+				bone = _skeletonResource->FindBone(currentNode->GetNodaData().m_Name);
 
 			if (animationNode != nullptr)
 				currentNode->SetAnimationNode(animationNode);

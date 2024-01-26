@@ -19,6 +19,7 @@ namespace Engine
 		RESOURCE->Load("../Resources/FBX/Dying.fbx");
 		RESOURCE->Load("../Resources/FBX/cerberus_test.fbx");
 		RESOURCE->Load("../Resources/FBX/zeldaPosed001.fbx");
+		RESOURCE->Load("../Resources/FBX/PBR_Test.fbx");
 
 		shared_ptr<Shader> skeletalMeshShader = Create<Shader>("SkeletalMeshShader");
 		shared_ptr<Shader> staticMeshShader = Create<Shader>("StaticMeshShader");

@@ -23,9 +23,9 @@ void TestApp::Init()
 		objectInfo.m_Name = "Object";
 		object->Setting(objectInfo);
 
-		std::shared_ptr<SkeletalMeshComponent> meshComponent = std::make_shared<SkeletalMeshComponent>();
-		SkeletalMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/SkinningTest.fbx";
+		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
+		StaticMeshComponentInfo meshInfo;
+		meshInfo.m_FilePath = "../Resources/FBX/PBR_Test.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
@@ -41,7 +41,7 @@ void TestApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/zeldaPosed001.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/PBR_Test.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
