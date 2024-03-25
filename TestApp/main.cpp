@@ -29,8 +29,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	desc.appName = L"TestApp";
 	desc.hInstance = hInstance;
 	desc.hwnd = NULL;
-	desc.width = 800;
-	desc.height = 600;
+	desc.width = 1920;
+	desc.height = 1080;
 	desc.clearColor = Color(0.f, 0.5f, 0.5f, 0.5);
 	desc.app = make_shared<TestApp>();
 

@@ -56,7 +56,7 @@ namespace Engine
 			if (_otherCollisionID == id)
 			{
 				auto otherCollision = CollisionManager::GetInstance()->FindCollision(_otherCollisionID);
-				m_CollisionNotify->OnOverlap(otherCollision->GetMyObject()->GetID());
+				m_CollisionNotify->OnOverlap(otherCollision->GetMyObject().lock()->GetID());
 				return;
 			}
 		}
@@ -64,7 +64,7 @@ namespace Engine
 		// 건재 : 충돌 중인 콜리전 아이디가 없으면 BeginOverlap 함수 실행
 		m_otherCollisionID.insert(_otherCollisionID);
 		auto otherCollision = CollisionManager::GetInstance()->FindCollision(_otherCollisionID);
-		m_CollisionNotify->OnBeginOverlap(otherCollision->GetMyObject()->GetID());
+		m_CollisionNotify->OnBeginOverlap(otherCollision->GetMyObject().lock()->GetID());
 	}
 
 	void CollisionComponent::ProcessBlock(unsigned int _otherCollisionID)
@@ -74,7 +74,7 @@ namespace Engine
 		m_CollisionStateCurrent = CollisionState::Block;
 
 		auto otherCollision = CollisionManager::GetInstance()->FindCollision(_otherCollisionID);
-		m_CollisionNotify->OnBlock(otherCollision->GetMyObject()->GetID());
+		m_CollisionNotify->OnBlock(otherCollision->GetMyObject().lock()->GetID());
 	}
 
 	void CollisionComponent::ProcessEscape(unsigned int _otherCollisionID)
@@ -89,7 +89,7 @@ namespace Engine
 			if (otherCollisionID == _otherCollisionID)
 			{
 				m_otherCollisionID.erase(otherCollisionID);
-				m_CollisionNotify->OnEndOverlap(otherCollision->GetMyObject()->GetID());
+				m_CollisionNotify->OnEndOverlap(otherCollision->GetMyObject().lock()->GetID());
 			}
 		}
 

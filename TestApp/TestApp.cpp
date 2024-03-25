@@ -1,14 +1,14 @@
 #include "pch.h"
 #include "TestApp.h"
 
-#include "ResourceBase.h"
 #include "InputManager.h"
-#include "ResourceManager.h"
-#include "RenderManager.h"
 
 #include "Object.h"
+#include "Pawn.h"
 #include "SkeletalMeshComponent.h"
 #include "StaticMeshComponent.h"
+#include "MovementComponent.h"
+#include "PawnController.h"
 
 #include "../02. GraphicsEngine/Graphics.h"
 
@@ -18,6 +18,14 @@ void TestApp::Init()
 	using namespace Engine;
 
 	{
+		shared_ptr<Pawn> pawn = std::make_shared<Pawn>(1);
+		PawnInfo pawnInfo;
+		pawnInfo.m_ObjectDesc.m_Name = "Object";
+		pawn->Setting(pawnInfo);
+
+		m_ObjectVec.push_back(pawn);
+	}
+	{
 		shared_ptr<Object> object = std::make_shared<Object>(1);
 		ObjectInfo objectInfo;
 		objectInfo.m_Name = "Object";
@@ -25,7 +33,7 @@ void TestApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/PBR_Test.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/cerberus_test.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
@@ -41,7 +49,7 @@ void TestApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/PBR_Test.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/cerberus_test.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);

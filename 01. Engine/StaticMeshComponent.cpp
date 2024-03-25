@@ -34,16 +34,16 @@ namespace Engine
 		__super::Init();
 
 		// 건재 : 리소스매니저에서 리소스들 찾기
-		m_pStaticMesheScene = RESOURCE->Find<StaticMeshSceneResource>(m_FilePath);
-		m_pShader = RESOURCE->Find<Shader>("StaticMeshShader");
-		shared_ptr<NodeDataResource> nodeDataResource = RESOURCE->Find<NodeDataResource>(m_FilePath);
-		shared_ptr<AnimationResource> animationResource = RESOURCE->Find<AnimationResource>(m_FilePath);
+		m_pStaticMesheScene = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>(m_FilePath);
+		m_pShader = RESOURCE->Find<GraphicsEngine::Shader>("StaticMeshShader");
+		shared_ptr<GraphicsEngine::NodeDataResource> nodeDataResource = RESOURCE->Find<GraphicsEngine::NodeDataResource>(m_FilePath);
+		shared_ptr<GraphicsEngine::AnimationResource> animationResource = RESOURCE->Find<GraphicsEngine::AnimationResource>(m_FilePath);
 
 		// 건재 : 노드 갯수만큼 생성하고 노드 데이타 세팅
 		m_pNodeVec.reserve(nodeDataResource->GetNodeDataVec().size());
 		for (auto nodeData : nodeDataResource->GetNodeDataVec())
 		{
-			shared_ptr<Node> node = make_shared<Node>();
+			shared_ptr<GraphicsEngine::Node> node = make_shared<GraphicsEngine::Node>();
 			node->SetNodeData(nodeData);
 			node->SetLocalTransform(nodeData.m_LocalMatrix);
 
@@ -56,7 +56,7 @@ namespace Engine
 		// 건재 : 스태틱 메시 씬 리소스가 가지고 있는 스태틱 메시 갯수에 따라 스태틱 메시 인스턴스 생성
 		for (int i = 0; i < m_pStaticMesheScene->GetStaticMeshVec().size(); i++)
 		{
-			shared_ptr<StaticMeshInstance> meshInstance = make_shared<StaticMeshInstance>();
+			shared_ptr<GraphicsEngine::StaticMeshInstance> meshInstance = make_shared<GraphicsEngine::StaticMeshInstance>();
 			meshInstance->Create(&m_pStaticMesheScene->GetStaticMeshVec()[i], m_pStaticMesheScene->GetStaticMeshVec()[i].GetMaterial().get(), m_pNodeVec);
 			m_pStaticMeshInstanceVec.push_back(meshInstance);
 		}
@@ -80,7 +80,7 @@ namespace Engine
 		}
 	}
 
-	void StaticMeshComponent::NodeSetting(shared_ptr<AnimationResource> _animationResource, vector<shared_ptr<Node>>& _nodeVec, shared_ptr<Node>& _rootNode)
+	void StaticMeshComponent::NodeSetting(shared_ptr<GraphicsEngine::AnimationResource> _animationResource, vector<shared_ptr<GraphicsEngine::Node>>& _nodeVec, shared_ptr<GraphicsEngine::Node>& _rootNode)
 	{
 		// 노드에 애니메이션노드, 부모 세팅
 		for (auto currentNode : _nodeVec)
@@ -88,7 +88,7 @@ namespace Engine
 			// 애니메이션을 노드에 세팅
 			if (_animationResource != nullptr)
 			{
-				shared_ptr<AnimationNode> animationNode = _animationResource->FindAnimationNode(currentNode->GetNodaData().m_Name);
+				shared_ptr<GraphicsEngine::AnimationNode> animationNode = _animationResource->FindAnimationNode(currentNode->GetNodaData().m_Name);
 
 				if (animationNode != nullptr)
 					currentNode->SetAnimationNode(animationNode);

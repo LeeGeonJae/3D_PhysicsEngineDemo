@@ -139,6 +139,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include;$(SolutionDir)02. GraphicsEngine</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -149,21 +150,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationResource.h" />
     <ClInclude Include="BoxComponent.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Component.h" />
-    <ClInclude Include="Define.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameProcess.h" />
-    <ClInclude Include="Helper.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Material.h" />
     <ClInclude Include="MovementComponent.h" />
-    <ClInclude Include="Node.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="OrientedBoxComponent.h" />
@@ -171,27 +167,15 @@
     <ClInclude Include="PawnController.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderComponent.h" />
-    <ClInclude Include="RenderManager.h" />
-    <ClInclude Include="ResourceBase.h" />
-    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneComponent.h" />
     <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalMeshComponent.h" />
-    <ClInclude Include="SkeletalMeshInstance.h" />
-    <ClInclude Include="SkeletalMeshResource.h" />
-    <ClInclude Include="SkeletonResource.h" />
     <ClInclude Include="SphereComponent.h" />
     <ClInclude Include="StaticMeshComponent.h" />
-    <ClInclude Include="StaticMeshInstance.h" />
-    <ClInclude Include="StaticMeshResource.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="TimeManager.h" />
-    <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationResource.cpp" />
     <ClCompile Include="BoxComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CollisionComponent.cpp" />
@@ -199,11 +183,8 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameProcess.cpp" />
-    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
-    <ClCompile Include="Node.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="OrientedBoxComponent.cpp" />
@@ -216,40 +197,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="RenderComponent.cpp" />
-    <ClCompile Include="RenderManager.cpp" />
-    <ClCompile Include="ResourceBase.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneComponent.cpp" />
     <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletalMeshComponent.cpp" />
-    <ClCompile Include="SkeletalMeshInstance.cpp" />
-    <ClCompile Include="SkeletalMeshResource.cpp" />
-    <ClCompile Include="SkeletonResource.cpp" />
     <ClCompile Include="SphereComponent.cpp" />
     <ClCompile Include="StaticMeshComponent.cpp" />
-    <ClCompile Include="StaticMeshInstance.cpp" />
-    <ClCompile Include="StaticMeshResource.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\02. GraphicsEngine\GraphicsEngine.vcxproj">
       <Project>{2407ebee-d4d0-4e45-9bf6-43508db4b831}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\Resources\Shader\SkeletalMeshShader.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="..\Resources\Shader\StaticMeshShader.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

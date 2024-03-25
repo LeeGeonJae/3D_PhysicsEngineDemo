@@ -55,8 +55,8 @@ namespace Engine
 		m_TimeManager = make_shared<TimeManager>();
 		m_TimeManager->Initialize();
 		InputManager::GetInstance()->Initalize(m_Desc.hwnd);
-		RenderManager::GetInstance()->Initalize(m_Desc.hwnd);
-		ResourceManager::GetInstance()->Initalize();
+		RENDER->Initalize(m_Desc.hwnd, m_Desc.height, m_Desc.width, m_Desc.clearColor);
+		RESOURCE->Initalize();
 		SceneManager::GetInstance()->Initalize();
 
 		m_Desc.app->Init();
@@ -77,7 +77,7 @@ namespace Engine
 		m_TimeManager->Update();
 		InputManager::GetInstance()->Update();
 		m_Desc.app->Update(m_TimeManager->GetfDT());
-		RenderManager::GetInstance()->Update();
+		RENDER->Update();
 		ObjectManager::GetInstance()->Update();
 		SceneManager::GetInstance()->Update(m_TimeManager->GetfDT());
 
@@ -86,7 +86,7 @@ namespace Engine
 		m_Desc.app->Render();
 		SceneManager::GetInstance()->Render();
 
-		RenderManager::GetInstance()->Render();
+		RENDER->Render();
 	}
 
 

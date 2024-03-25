@@ -15,7 +15,6 @@ namespace Engine
 		Vector3 m_Scale = Vector3::One;
 	};
 
-	// -------------------------------------------------------------------------
 	// 건재 : 씬 컴포넌트 클래스
 	// 건재 : 기본 컴포넌트에 트랜스폼이 더해진 컴포넌트로 위치 계층구조를 가지고 있는 컴포넌트
 	class SceneComponent : public Component, public enable_shared_from_this<SceneComponent>
@@ -36,7 +35,7 @@ namespace Engine
 
 	public:
 		template <typename T>
-		inline vector<shared_ptr<T>> FindComponent();
+		inline vector<weak_ptr<T>> FindComponent();
 		inline const vector<shared_ptr<SceneComponent>>& GetChildrenComponent();
 		inline void SetComponent(shared_ptr<SceneComponent> _component);
 
@@ -67,7 +66,7 @@ namespace Engine
 
 	// 건재 : 원하는 타입의 자식 컴포넌트들을 가져오는 GetComponent
 	template <typename T> 
-	inline vector<shared_ptr<T>> SceneComponent::FindComponent()
+	inline vector<weak_ptr<T>> SceneComponent::FindComponent()
 	{
 		bool bIsBase = std::is_base_of<Component, T>::value;
 		assert(bIsBase == true);
@@ -142,7 +141,4 @@ namespace Engine
 	{
 		return m_pOwner;
 	}
-	// -------------------------------------------------------------------------
 }
-
-

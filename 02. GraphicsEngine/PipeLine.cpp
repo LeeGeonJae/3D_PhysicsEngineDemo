@@ -67,19 +67,12 @@ namespace GraphicsEngine
 
 	}
 
-	void PipeLine::Update()
-	{
-
-	}
-
 	void PipeLine::StateSetDefault()
 	{
 		SetRasterizerState(m_DefaultRasterizerState);
 		SetSamplerState(m_DefaultSamplerState);
 		SetBlendState(m_DefaultBlendState);
 	}
-
-	
 
 	void PipeLine::SetSamplerState(ComPtr<ID3D11SamplerState> _SS)
 	{

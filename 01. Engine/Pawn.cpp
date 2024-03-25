@@ -6,6 +6,7 @@
 #include "CameraComponent.h"
 #include "MovementComponent.h"
 #include "PawnController.h"
+#include <RenderManager.h>
 
 namespace Engine
 {
@@ -23,21 +24,23 @@ namespace Engine
 
 	void Pawn::Setting(PawnInfo info)
 	{
-		//Object::Setting(info.m_ObjectDesc);
+		Object::Setting(info.m_ObjectDesc);
 
-		//// 카메라 컴포넌트
-		//shared_ptr<CameraComponent> camera = make_shared<CameraComponent>();
-		//CameraComponentInfo cameraInfo;
-		//cameraInfo.m_SceneComponentInfo.m_Name = "CameraComponent";
-		//camera->Setting(cameraInfo);
+		// 카메라 컴포넌트
+		shared_ptr<CameraComponent> camera = make_shared<CameraComponent>();
+		CameraComponentInfo cameraInfo;
+		cameraInfo.m_SceneComponentInfo.m_Name = "CameraComponent";
+		cameraInfo.m_SceneComponentInfo.m_Position = Vector3(0.f, 0.f, -400.f);
+		camera->Setting(cameraInfo);
+		camera->SetOwner(GetRootComponent());
 
-		//// 무브먼트 컴포넌트
-		//shared_ptr<MovementComponent> movement = make_shared<MovementComponent>();
-		//MovementComponentInfo movementInfo;
-		//movementInfo.m_Name = "MovementComponent";
-		//movementInfo.m_MaxSpeed = 400.f;
-		//movementInfo.m_Acceleration = 2.f;
-		//movement->Setting(movementInfo);
+		// 무브먼트 컴포넌트
+		shared_ptr<MovementComponent> movement = make_shared<MovementComponent>();
+		MovementComponentInfo movementInfo;
+		movementInfo.m_Name = "MovementComponent";
+		movementInfo.m_MaxSpeed = 400.f;
+		movementInfo.m_Acceleration = 2.f;
+		movement->Setting(movementInfo);
 
 		//// 콜리전 컴포넌트
 		//shared_ptr<SphereComponent> sphere = CollisionManager::GetInstance()->CreateCollision<SphereComponent>();
@@ -50,16 +53,14 @@ namespace Engine
 		//sphereComponentInfo.m_BoundingSphere.Radius = 5.f;
 		//sphere->Setting(sphereComponentInfo);
 
-		//// 오브젝트에 컴포넌트 세팅
-		//SetComponent(camera);
+		// 오브젝트에 컴포넌트 세팅
+		SetComponent(camera);
+		SetComponent(movement);
 		//SetComponent(sphere);
-		//SetComponent(movement);
 
-		//// 폰 컨트롤러 세팅
-		//shared_ptr<PawnController> pawnController = make_shared<PawnController>();
-		//pawnController->SetPawn(shared_from_this());
-
-		//RenderManager::GetInstance()->SetCamera(camera);
+		// 폰 컨트롤러 세팅
+		shared_ptr<PawnController> pawnController = make_shared<PawnController>();
+		pawnController->SetPawn(shared_from_this());
 	}
 
 	void Pawn::Init()
@@ -72,12 +73,12 @@ namespace Engine
 	{
 		__super::Update(_deltaTime);
 
-		//if (m_pController == nullptr)
-		//	return;
+		if (m_pController == nullptr)
+			return;
 
-		//shared_ptr<CameraComponent> camera = GetComponent<CameraComponent>()[0];
-		//shared_ptr<MovementComponent> movement = GetComponent<MovementComponent>()[0];
-		//shared_ptr<SphereComponent> sphere = GetComponent<SphereComponent>()[0];
+		shared_ptr<CameraComponent> camera = FindComponent<CameraComponent>()[0].lock();
+		shared_ptr<MovementComponent> movement = FindComponent<MovementComponent>()[0].lock();
+		//shared_ptr<SphereComponent> sphere = FindComponent<SphereComponent>()[0].lock();
 
 		//if (ImGuiMenu::IsBlockNotOverlap)
 		//{
@@ -88,61 +89,58 @@ namespace Engine
 		//	sphere->SetCollisionType(CollisionType::Overlap);
 		//}
 
-		//float fowardScale = 0.0f, rightScale = 0.0f, upScale = 0.0f;
-		//float speed = 400.f;
+		float fowardScale = 0.0f, rightScale = 0.0f, upScale = 0.0f;
+		float speed = 400.f;
 
-		//SimpleMath::Matrix rotMatrix = SimpleMath::Matrix::CreateFromYawPitchRoll(m_pController->GetYaw(), m_pController->GetPitch(), 0.0f);
-		//SimpleMath::Vector3 forward = Vector3(rotMatrix._31, rotMatrix._32, rotMatrix._33);
-		//SimpleMath::Vector3 right = rotMatrix.Right();
+		SimpleMath::Matrix rotMatrix = SimpleMath::Matrix::CreateFromYawPitchRoll(m_pController->GetYaw(), m_pController->GetPitch(), 0.0f);
+		SimpleMath::Vector3 forward = Vector3(rotMatrix._31, rotMatrix._32, rotMatrix._33);
+		SimpleMath::Vector3 right = rotMatrix.Right();
 
-		//SimpleMath::Vector3 inputVector = SimpleMath::Vector3::Zero;
+		SimpleMath::Vector3 inputVector = SimpleMath::Vector3::Zero;
 
-		//if (InputManager::GetInstance()->GetKeyboardStateTracker().IsKeyPressed(Keyboard::Keys::R))
-		//{
-		//	SetWorldTransform(eMath::Matrix::Identity);
-		//	m_pController->SetPitch(0.0f);
-		//	m_pController->SetYaw(0.0f);
-		//}
+		if (InputManager::GetInstance()->GetKeyboardStateTracker().IsKeyPressed(Keyboard::Keys::R))
+		{
+			SetWorldTransform(SimpleMath::Matrix::Identity);
+			m_pController->SetPitch(0.0f);
+			m_pController->SetYaw(0.0f);
+		}
 
-		//if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::W))
-		//{
-		//	movement->AddInputVector(forward);
-		//}
-		//else if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::S))
-		//{
-		//	movement->AddInputVector(-forward);
-		//}
+		if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::W))
+		{
+			movement->AddInputVector(forward);
+		}
+		else if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::S))
+		{
+			movement->AddInputVector(-forward);
+		}
 
-		//if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::A))
-		//{
-		//	movement->AddInputVector(-right);
-		//}
-		//else if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::D))
-		//{
-		//	movement->AddInputVector(right);
-		//}
+		if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::A))
+		{
+			movement->AddInputVector(-right);
+		}
+		else if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::D))
+		{
+			movement->AddInputVector(right);
+		}
 
-		//if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Q))
-		//{
-		//	movement->AddInputVector(-Vector3::Up);
-		//}
-		//else if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::E))
-		//{
-		//	movement->AddInputVector(Vector3::Up);
-		//}
+		if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Q))
+		{
+			movement->AddInputVector(-Vector3::Up);
+		}
+		else if (InputManager::GetInstance()->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::E))
+		{
+			movement->AddInputVector(Vector3::Up);
+		}
 
-		//InputManager::GetInstance()->m_Mouse->SetMode(InputManager::GetInstance()->GetMouseState().rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
-		//if (InputManager::GetInstance()->GetMouseState().positionMode == Mouse::MODE_RELATIVE)
-		//{
-		//	Vector3 delta = Vector3(float(InputManager::GetInstance()->GetMouseState().x), float(InputManager::GetInstance()->GetMouseState().y), 0.f) * ROTATION_GAIN;
-		//	m_pController->AddPitch(delta.y);
-		//	m_pController->AddYaw(delta.x);
+		InputManager::GetInstance()->m_Mouse->SetMode(InputManager::GetInstance()->GetMouseState().rightButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
+		if (InputManager::GetInstance()->GetMouseState().positionMode == Mouse::MODE_RELATIVE)
+		{
+			Vector3 delta = Vector3(float(InputManager::GetInstance()->GetMouseState().x), float(InputManager::GetInstance()->GetMouseState().y), 0.f) * ROTATION_GAIN;
+			m_pController->AddPitch(delta.y);
+			m_pController->AddYaw(delta.x);
 
-		//	SetRotation(Vector3(m_pController->GetPitch(), m_pController->GetYaw(), 0.0f));
-		//}
-
-		//ImGuiMenu::CameraBeforePosition = movement->GetBeforePosition();
-		//ImGuiMenu::CameraAfterPosition = movement->GetAfterPosition();
+			SetRotation(Vector3(m_pController->GetPitch(), m_pController->GetYaw(), 0.0f));
+		}
 	}
 
 	void Pawn::LateUpdate(float _deltaTime)
@@ -170,7 +168,7 @@ namespace Engine
 
 	void Pawn::UnController()
 	{
-		//m_pController = nullptr;
+		m_pController = nullptr;
 	}
 
 	void Pawn::OnBeginOverlap(unsigned int _otherObjectid)

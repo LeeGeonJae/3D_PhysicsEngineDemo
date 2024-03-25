@@ -15,11 +15,8 @@ namespace GraphicsEngine
 
 	public:
 		void Initalize(ComPtr<ID3D11Device> _device, ComPtr<ID3D11DeviceContext> _deviceContext, UINT _textureNum);
-		void Update();
-
 		
 	public:
-
 		void SetTexture(UINT _index, ComPtr<ID3D11ShaderResourceView> _textures)
 		{
 			if (m_pTexture[_index] != _textures)

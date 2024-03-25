@@ -6,9 +6,6 @@ namespace Engine
 	class Object;
 	class Pawn;
 
-
-	// -------------------------------------------------------------------------
-	// 건재 : 폰 콘트롤러 클래스( 회전각 Pitch, Yaw 값 저장, 카메라 회전시 필요 )
 	class PawnController : public enable_shared_from_this<PawnController>
 	{
 	public:
@@ -55,5 +52,4 @@ namespace Engine
 	{
 		return m_pPawn.lock();
 	}
-	// -------------------------------------------------------------------------
 }

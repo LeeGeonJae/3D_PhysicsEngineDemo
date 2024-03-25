@@ -1,16 +1,18 @@
 #pragma once
 #include "RenderComponent.h"
 
-namespace Engine
+namespace GraphicsEngine
 {
-	// 건재 : 클래스 선언
 	class Node;
 	class SkeletalMeshSceneResource;
 	class Shader;
 	class SkeletalMeshInstance;
 	class AnimationResource;
 	class SkeletonResource;
+}
 
+namespace Engine
+{
 	// 건재 : 스켈레탈메시 컴포넌트 정보 구조체
 	struct SkeletalMeshComponentInfo
 	{
@@ -35,18 +37,18 @@ namespace Engine
 		virtual void Render() override;
 
 	private:
-		void NodeSetting(shared_ptr<AnimationResource> _animationResource, shared_ptr<SkeletonResource> _skeletonResource, vector<shared_ptr<Node>>& _nodeVec, shared_ptr<Node>& _rootNode);
+		void NodeSetting(shared_ptr<GraphicsEngine::AnimationResource> _animationResource, shared_ptr<GraphicsEngine::SkeletonResource> _skeletonResource, vector<shared_ptr<GraphicsEngine::Node>>& _nodeVec, shared_ptr<GraphicsEngine::Node>& _rootNode);
 
 	private:
 		string m_FilePath;
 		float m_CurrentTime = 0.f;
 
-		shared_ptr<Node> m_pRootNode;
-		vector<shared_ptr<Node>> m_pNodeVec;
-		shared_ptr<SkeletalMeshSceneResource> m_pSkeletalMeshes;
-		shared_ptr<Shader> m_pShader;
+		shared_ptr<GraphicsEngine::Node> m_pRootNode;
+		vector<shared_ptr<GraphicsEngine::Node>> m_pNodeVec;
+		shared_ptr<GraphicsEngine::SkeletalMeshSceneResource> m_pSkeletalMeshes;
+		shared_ptr<GraphicsEngine::Shader> m_pShader;
 
-		vector<shared_ptr<SkeletalMeshInstance>> m_pSkeletalMeshInstanceVec;
+		vector<shared_ptr<GraphicsEngine::SkeletalMeshInstance>> m_pSkeletalMeshInstanceVec;
 	};
 	// -------------------------------------------------------------------------
 }

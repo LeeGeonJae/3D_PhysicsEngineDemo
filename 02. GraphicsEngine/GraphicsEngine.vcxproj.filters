@@ -1,40 +1,153 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Graphics">
+    <Filter Include="01.Graphics">
       <UniqueIdentifier>{89847066-bc7f-46d4-943b-d4dfe97c8559}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header">
+    <Filter Include="01.Graphics\PipeLine">
+      <UniqueIdentifier>{96188de0-c4d4-4f20-ac82-032b2d80c75a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.Header">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Graphics\PipeLine">
-      <UniqueIdentifier>{96188de0-c4d4-4f20-ac82-032b2d80c75a}</UniqueIdentifier>
+    <Filter Include="03.Manager">
+      <UniqueIdentifier>{1f94e6f4-edc3-419f-8a49-66a73fdc8312}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98.Resource">
+      <UniqueIdentifier>{f94a11c2-9157-4059-a3f2-288d75fbfc70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="98.Resource\Resource">
+      <UniqueIdentifier>{d4c39958-37a8-4a1f-a618-846b11da0d7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="99.Shader">
+      <UniqueIdentifier>{711e599c-1e7b-426d-95fd-cf2e6794db05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Instance">
+      <UniqueIdentifier>{c40712c0-8e9b-439c-bf93-a933a8ed4b9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h">
-      <Filter>Graphics</Filter>
+      <Filter>01.Graphics</Filter>
     </ClInclude>
     <ClInclude Include="PipeLine.h">
-      <Filter>Graphics\PipeLine</Filter>
+      <Filter>01.Graphics\PipeLine</Filter>
     </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>Header</Filter>
+    <ClInclude Include="Define.h">
+      <Filter>02.Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>02.Header</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Header</Filter>
+      <Filter>02.Header</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>02.Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBase.h">
+      <Filter>98.Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationResource.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMeshResource.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonResource.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshResource.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>98.Resource\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>03.Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>03.Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>02.Header</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalMeshInstance.h">
+      <Filter>04.Instance</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshInstance.h">
+      <Filter>04.Instance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Header</Filter>
-    </ClCompile>
     <ClCompile Include="Graphics.cpp">
-      <Filter>Graphics</Filter>
+      <Filter>01.Graphics</Filter>
     </ClCompile>
     <ClCompile Include="PipeLine.cpp">
-      <Filter>Graphics\PipeLine</Filter>
+      <Filter>01.Graphics\PipeLine</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>02.Header</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBase.cpp">
+      <Filter>98.Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationResource.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMeshResource.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletonResource.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshResource.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>98.Resource\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>03.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>03.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>02.Header</Filter>
+    </ClCompile>
+    <ClCompile Include="SkeletalMeshInstance.cpp">
+      <Filter>04.Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshInstance.cpp">
+      <Filter>04.Instance</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Resources\Shader\StaticMeshShader.hlsl">
+      <Filter>99.Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Resources\Shader\SkeletalMeshShader.hlsl">
+      <Filter>99.Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

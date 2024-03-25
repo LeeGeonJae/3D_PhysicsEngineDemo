@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MovementComponent.h"
 
+#include "SceneComponent.h"
 #include "CollisionComponent.h"
 #include "Object.h"
 
@@ -9,6 +10,7 @@ namespace Engine
 	MovementComponent::MovementComponent()
 	{
 		m_MaxSpeed = 400.f;
+		m_Velocity = 400.f;
 	}
 
 	MovementComponent::~MovementComponent()
@@ -34,9 +36,9 @@ namespace Engine
 		// 건재 : 입력이 들어왔을 때
 		if (m_InputVector.Length() > 0.f)
 		{
-			m_PositionBefore = GetMyObject()->GetPosition();
+			m_PositionBefore = GetMyObject().lock()->GetPosition();
 			m_PositionAfter = m_PositionBefore + m_InputVector * m_Velocity * _deltaTime;
-			GetMyObject()->SetPosition(m_PositionAfter);
+			GetMyObject().lock()->SetPosition(m_PositionAfter);
 			m_InputVector = Vector3::Zero;
 		}
 	}

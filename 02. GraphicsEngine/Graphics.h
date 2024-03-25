@@ -31,6 +31,8 @@ namespace GraphicsEngine
 	public:
 		inline ComPtr<ID3D11Device> GetDevice();
 		inline ComPtr<ID3D11DeviceContext> GetDeviceContext();
+		inline float GetHieght();
+		inline float GetWidth();
 
 		std::weak_ptr<PipeLine> m_pPipeLine;
 
@@ -57,5 +59,13 @@ namespace GraphicsEngine
 	ComPtr<ID3D11DeviceContext> Graphics::GetDeviceContext()
 	{
 		return m_DeviceContext;
+	}
+	float Graphics::GetHieght()
+	{
+		return m_Height;
+	}
+	float Graphics::GetWidth()
+	{
+		return m_Width;
 	}
 }

@@ -46,8 +46,6 @@ cbuffer CB_DirectionLight : register(b2)
     float3 DirectionColor ;
 };
 
-
-
 cbuffer CB_Material : register(b11)
 {
     float3 baseColor;
