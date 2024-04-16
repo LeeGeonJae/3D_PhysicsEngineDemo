@@ -26,6 +26,12 @@
     <Filter Include="04.Instance">
       <UniqueIdentifier>{c40712c0-8e9b-439c-bf93-a933a8ed4b9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.ImGui">
+      <UniqueIdentifier>{63785077-a5e7-4370-be91-8c210cffea5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.DebugDraw">
+      <UniqueIdentifier>{a031d872-4eec-4c0c-b978-d977f82f9db4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h">
@@ -88,6 +94,12 @@
     <ClInclude Include="StaticMeshInstance.h">
       <Filter>04.Instance</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiTool.h">
+      <Filter>97.ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDraw.h">
+      <Filter>96.DebugDraw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp">
@@ -140,6 +152,12 @@
     </ClCompile>
     <ClCompile Include="StaticMeshInstance.cpp">
       <Filter>04.Instance</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiTool.cpp">
+      <Filter>97.ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugDraw.cpp">
+      <Filter>96.DebugDraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

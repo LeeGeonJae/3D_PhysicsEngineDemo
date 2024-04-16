@@ -46,6 +46,18 @@ cbuffer CB_DirectionLight : register(b2)
     float3 DirectionColor ;
 };
 
+cbuffer CB_MatrixPalette : register(b3)
+{
+    int bIsValidDiffuseMap;
+    int bIsValidNormalMap;
+    int bIsValidSpecularMap;
+    int bIsValidOpcityMap;
+    int bIsValidEmissiveMap;
+    int bIsValidMetalnessMap;
+    int bIsValidRoughnessMap;
+    int bIsValidCubeMap;
+};
+
 cbuffer CB_Material : register(b11)
 {
     float3 baseColor;
@@ -155,13 +167,13 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float metalness = 0.f;
     
     //텍스처
-    //if (bIsValidDiffuseMap)
+    if (bIsValidDiffuseMap)
     albedo = texture0.Sample(sampler0, input.mUV).rgb + baseColor.rgb;
     //러프니스
-    //if (bIsValidRoughnessMap)
+    if (bIsValidRoughnessMap)
         roughness = roughness0.Sample(sampler0, input.mUV).r;
     //메탈릭
-    //if (bIsValidMetalnessMap)
+    if (bIsValidMetalnessMap)
         metalness = metalness0.Sample(sampler0, input.mUV).r;
     
     if (roughness <= 0)

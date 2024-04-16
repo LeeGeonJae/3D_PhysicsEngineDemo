@@ -1,11 +1,36 @@
 #pragma once
 #include "GameProcess.h"
 
+#include <PxPhysics.h>
+#include <PxPhysicsAPI.h>
+
+#pragma comment(lib, "../Lib/physX/deb/LowLevel_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/LowLevelAABB_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/LowLevelDynamics_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysX_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXCharacterKinematic_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXCommon_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXCooking_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXExtensions_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXFoundation_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXPvdSDK_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXTask_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXVehicle_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PhysXVehicle2_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/PVDRuntime_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/SceneQuery_static_64.lib")
+#pragma comment(lib, "../Lib/physX/deb/SimulationController_static_64.lib")
+
 // Engine 정적 라이브러리 프로젝트 내의 모든 클래스들은 namespace Engine을 썼으므로 클래스 선언 할 때에는 
 // namespace Engine을 포함해야지 쓸 수 있습니다.
 namespace Engine
 {
 	class Object;
+}
+
+namespace PhysicsEngine
+{
+	class PhysX;
 }
 
 // 게임 프로세스 클래스를 상속 받아야 사용할 수 있습니다.
@@ -20,4 +45,5 @@ public:
 
 public:
 	vector<shared_ptr<Engine::Object>> m_ObjectVec;
+	shared_ptr<PhysicsEngine::PhysX> m_PhysX;
 };

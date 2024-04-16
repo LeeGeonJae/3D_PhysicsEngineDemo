@@ -155,13 +155,13 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float metalness = 0.5f;
     
     //텍스처
-    if (bIsValidDiffuseMap)
+    //if (bIsValidDiffuseMap)
         albedo = texture0.Sample(sampler0, input.mUV).rgb;
     // 러프니스
-    if (bIsValidRoughnessMap)
+    //if (bIsValidRoughnessMap)
         roughness = roughness0.Sample(sampler0, input.mUV).r;
     // 메탈릭
-    if (bIsValidMetalnessMap)
+    //if (bIsValidMetalnessMap)
         metalness = metalness0.Sample(sampler0, input.mUV).r;
     
     if (roughness <= 0)
@@ -205,24 +205,22 @@ float4 PS(VS_OUTPUT input) : SV_Target
         float3 F0 = lerp(0.04f, albedo, metalness);
     
     // 빛 ( 빛의 양에 따라 for문 돌리는거 추가해야함 )
-        {
-            float3 Lh = normalize(-lightDir + Lo);
+        float3 Lh = normalize(-lightDir + Lo);
 
-            float cosLi = max(0.0, dot(Normal, -lightDir));
-            float cosLh = max(0.0, dot(Normal, Lh));
+        float cosLi = max(0.0, dot(Normal, -lightDir));
+        float cosLh = max(0.0, dot(Normal, Lh));
         
-            float3 F = FresnelReflection(max(0.0, dot(Lh, Lo)), F0);
-            float D = ndfGGX(cosLh, roughness);
-            float G = gaSchlickGGX(cosLi, cosLo, roughness);
+        float3 F = FresnelReflection(max(0.0, dot(Lh, Lo)), F0);
+        float D = ndfGGX(cosLh, roughness);
+        float G = gaSchlickGGX(cosLi, cosLo, roughness);
 
-            float3 kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), metalness);
+        float3 kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), metalness);
         
-            float3 diffuseBRDF = kd * albedo;
+        float3 diffuseBRDF = kd * albedo;
         
-            float3 specularBRDF = (F * D * G) / (4.0 * cosLi * cosLo);
+        float3 specularBRDF = (F * D * G) / (4.0 * cosLi * cosLo);
         
-            directLighting += (diffuseBRDF + specularBRDF) * DirectionColor.rgb * cosLi;
-        }
+        directLighting += (diffuseBRDF + specularBRDF) * DirectionColor.rgb * cosLi;
     }
     
     // 오파시티 맵이 있으면 해당 오파시티 맵의 알파값에 따라 픽셀 버리기

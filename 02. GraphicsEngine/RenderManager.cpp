@@ -4,6 +4,7 @@
 
 #include "Graphics.h"
 #include "PipeLine.h"
+#include "ImGuiTool.h"
 
 #include "SkeletalMeshInstance.h"
 #include "SkeletalMeshResource.h"
@@ -18,35 +19,37 @@ namespace GraphicsEngine
 {
 	void RenderManager::Initalize(HWND _hwnd, float _height, float _width, Color _color)
 	{
-		m_Graphics = make_shared<GraphicsEngine::Graphics>();
-		m_pPipeLine = make_shared<GraphicsEngine::PipeLine>();
+		m_pGraphics = make_shared<Graphics>();
+		m_pPipeLine = make_shared<PipeLine>();
+		m_pImGuiTool = make_shared<ImGuiTool>();
 		
 		GraphicsEngine::GraphicsInfo graphicsinfo;
 		graphicsinfo.m_Height = _height;
 		graphicsinfo.m_Width = _width;
 		graphicsinfo.m_hwnd = _hwnd;
 		graphicsinfo.m_ClearColor = _color;
-		m_Graphics->Initalize(graphicsinfo);
-		m_pPipeLine->Initalize(m_Graphics->GetDevice(), m_Graphics->GetDeviceContext(), static_cast<UINT>(TextureType::END));
+		m_pGraphics->Initalize(graphicsinfo);
+		m_pPipeLine->Initalize(m_pGraphics->GetDevice(), m_pGraphics->GetDeviceContext(), static_cast<UINT>(TextureType::END));
+		m_pImGuiTool->Init(_hwnd, m_pGraphics->GetDevice(), m_pGraphics->GetDeviceContext());
+
+		m_pImGuiTool->SetFloat3("DirectionColor", (float*) & (m_CBDirectionLightData.m_DircetionColor), -1.f, 1.f);
+		m_pImGuiTool->SetFloat3("Light Direction", (float*) & (m_CBDirectionLightData.m_Direction), -1.f, 1.f);
 
 		// 카메라 세팅
-		Vector3 eye = Vector3(0.f, 100.f, -400.f);
-		Vector3 target = Vector3(eye.x, eye.y, 0.f);
-		Vector3 up = Vector3(0.f, 1.f, 0.f);
-		m_CBCameraData.m_CameraPosition = eye;
-		m_CBCameraData.m_View = XMMatrixLookAtLH(eye, target, up);
-		m_CBCameraData.m_Projection = XMMatrixPerspectiveFovLH((45.f * 3.14f / 180.f), m_Graphics->GetWidth() / m_Graphics->GetHieght(), 0.1f, 50000.f);
-		m_CBCameraData.m_View = m_CBCameraData.m_View.Transpose();
-		m_CBCameraData.m_Projection = m_CBCameraData.m_Projection.Transpose();
+		//Vector3 eye = Vector3(0.f, 100.f, -400.f);
+		//Vector3 target = Vector3(eye.x, eye.y, 0.f);
+		//Vector3 up = Vector3(0.f, 1.f, 0.f);
+		//m_CBCameraData.m_CameraPosition = eye;
+		//m_CBCameraData.m_View = XMMatrixLookAtLH(eye, target, up);
+		//m_CBCameraData.m_Projection = XMMatrixPerspectiveFovLH((45.f * 3.14f / 180.f), m_pGraphics->GetWidth() / m_pGraphics->GetHieght(), 0.1f, 50000.f);
+		//m_CBCameraData.m_View = m_CBCameraData.m_View.Transpose();
+		//m_CBCameraData.m_Projection = m_CBCameraData.m_Projection.Transpose();
 
 		createConstantBuffer();
 	}
 
 	void RenderManager::Update()
 	{
-		m_CBDirectionLightData.m_DircetionColor = Vector3(0.1f, 1.f, 1.f);
-		m_CBDirectionLightData.m_Direction = Vector3(0.0f, 0.f, -1.0f);
-
 		DEVICE_CONTEXT->UpdateSubresource(m_pCBCamera.Get(), 0, nullptr, &m_CBCameraData, 0, 0);
 		DEVICE_CONTEXT->UpdateSubresource(m_pCBDirectionLight.Get(), 0, nullptr, &m_CBDirectionLightData, 0, 0);
 
@@ -58,13 +61,15 @@ namespace GraphicsEngine
 
 	void RenderManager::Render()
 	{
-		m_Graphics->RenderBegin();
+		m_pGraphics->RenderBegin();
 
 		m_pPipeLine->StateSetDefault();
 		SortSkeletalMeshInstance();
 		renderStaticMeshInstance();
 
-		m_Graphics->RenderEnd();
+		m_pImGuiTool->Render();
+
+		m_pGraphics->RenderEnd();
 	}
 
 	void RenderManager::SortSkeletalMeshInstance()
@@ -103,7 +108,6 @@ namespace GraphicsEngine
 
 			for (auto& meshInstance : material.second)
 			{
-				
 				meshInstance->UpdateMatrixPallete(&CBMatrixPaletteData);
 				DEVICE_CONTEXT->UpdateSubresource(m_pCBBoneTransformPallete.Get(), 0, nullptr, &CBMatrixPaletteData, 0, 0);
 				DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
@@ -168,8 +172,8 @@ namespace GraphicsEngine
 				DEVICE_CONTEXT->DrawIndexed(static_cast<UINT>(meshInstance->GetStaticMesh()->GetIndices().size()), 0, 0);
 			}
 		}
+
 		m_pStaticMeshInstanceVec.clear();
-		
 	}
 
 	void RenderManager::SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance)
@@ -210,6 +214,10 @@ namespace GraphicsEngine
 
 		bd.ByteWidth = sizeof(CB_MatrixPalette);
 		hr = DEVICE->CreateBuffer(&bd, nullptr, m_pCBBoneTransformPallete.GetAddressOf());
+		assert(SUCCEEDED(hr));
+
+		bd.ByteWidth = sizeof(CB_UseTextureMap);
+		hr = DEVICE->CreateBuffer(&bd, nullptr, m_pCBbIsTexture.GetAddressOf());
 		assert(SUCCEEDED(hr));
 	}
 }

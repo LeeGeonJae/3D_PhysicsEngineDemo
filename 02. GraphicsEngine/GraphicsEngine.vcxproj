@@ -148,10 +148,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationResource.h" />
+    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="ImGuiTool.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="pch.h" />
@@ -170,8 +172,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationResource.cpp" />
+    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="ImGuiTool.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="pch.cpp">

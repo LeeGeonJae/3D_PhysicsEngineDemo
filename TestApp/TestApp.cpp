@@ -11,14 +11,20 @@
 #include "PawnController.h"
 
 #include "../02. GraphicsEngine/Graphics.h"
+#include "../02. PhysXEngine/PhysX.h"
 
 
 void TestApp::Init()
 {
 	using namespace Engine;
 
+	__super::Init();
+
+	m_PhysX = make_shared<PhysicsEngine::PhysX>();
+	m_PhysX->Init();
+
 	{
-		shared_ptr<Pawn> pawn = std::make_shared<Pawn>(1);
+		shared_ptr<Pawn> pawn = std::make_shared<Pawn>(10000);
 		PawnInfo pawnInfo;
 		pawnInfo.m_ObjectDesc.m_Name = "Object";
 		pawn->Setting(pawnInfo);
@@ -26,7 +32,7 @@ void TestApp::Init()
 		m_ObjectVec.push_back(pawn);
 	}
 	{
-		shared_ptr<Object> object = std::make_shared<Object>(1);
+		shared_ptr<Object> object = std::make_shared<Object>(0);
 		ObjectInfo objectInfo;
 		objectInfo.m_Name = "Object";
 		object->Setting(objectInfo);
@@ -38,11 +44,12 @@ void TestApp::Init()
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
 		meshComponent->SetOwner(object->GetRootComponent());
+		object->SetPosition(Vector3(200.f, 200.f, 0.f));
 
 		m_ObjectVec.push_back(object);
 	}
 	{
-		shared_ptr<Object> object = std::make_shared<Object>(2);
+		shared_ptr<Object> object = std::make_shared<Object>(0);
 		ObjectInfo objectInfo;
 		objectInfo.m_Name = "Object";
 		object->Setting(objectInfo);
@@ -59,7 +66,7 @@ void TestApp::Init()
 		m_ObjectVec.push_back(object);
 	}
 	{
-		shared_ptr<Object> object = std::make_shared<Object>(3);
+		shared_ptr<Object> object = std::make_shared<Object>(0);
 		ObjectInfo objectInfo;
 		objectInfo.m_Name = "Object";
 		object->Setting(objectInfo);
@@ -76,7 +83,7 @@ void TestApp::Init()
 		m_ObjectVec.push_back(object);
 	}
 	{
-		shared_ptr<Object> object = std::make_shared<Object>(4);
+		shared_ptr<Object> object = std::make_shared<Object>(0);
 		ObjectInfo objectInfo;
 		objectInfo.m_Name = "Object";
 		object->Setting(objectInfo);
@@ -93,6 +100,28 @@ void TestApp::Init()
 		m_ObjectVec.push_back(object);
 	}
 
+	int count = 1;
+	for (auto body : m_PhysX->GetPxBodies())
+	{
+		shared_ptr<Object> object = std::make_shared<Object>(count);
+		ObjectInfo objectInfo;
+		objectInfo.m_Name = "PhysicsObject";
+		object->Setting(objectInfo);
+
+		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
+		StaticMeshComponentInfo meshInfo;
+		meshInfo.m_FilePath = "../Resources/FBX/cerberus_test.fbx";
+		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
+		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "PhysicsMeshComponent";
+		meshComponent->Setting(meshInfo);
+		meshComponent->SetOwner(object->GetRootComponent());
+		object->SetPosition(Vector3(body->getGlobalPose().p.x, body->getGlobalPose().p.y, -body->getGlobalPose().p.z));
+		object->SetScale(Vector3(0.3f, 0.3f, 0.3f));
+
+		m_ObjectVec.push_back(object);
+		count++;
+	}
+
 	for (auto object : m_ObjectVec)
 	{
 		object->Init();
@@ -101,10 +130,29 @@ void TestApp::Init()
 
 void TestApp::Update(float _deltaTime)
 {
+	__super::Update(_deltaTime);
+
+	int count = 1;
+	for (auto body : m_PhysX->GetPxBodies())
+	{
+		for (auto object : m_ObjectVec)
+		{
+			if (object->GetID() == count)
+			{
+				object->SetPosition(Vector3(body->getGlobalPose().p.x, body->getGlobalPose().p.y, -body->getGlobalPose().p.z));
+				break;
+			}
+		}
+
+		count++;
+	}
+
 	for (auto object : m_ObjectVec)
 	{
 		object->Update(_deltaTime);
 	}
+
+	m_PhysX->Update(_deltaTime);
 }
 
 void TestApp::LateUpdate(float _deltaTime)
