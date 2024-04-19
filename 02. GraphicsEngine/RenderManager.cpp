@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
+#include "DebugDraw.h"
 
 #include "Graphics.h"
 #include "PipeLine.h"
@@ -17,7 +18,7 @@
 
 namespace GraphicsEngine
 {
-	void RenderManager::Initalize(HWND _hwnd, float _height, float _width, Color _color)
+	void RenderManager::Initalize(HWND _hwnd, float _height, float _width, DirectX::SimpleMath::Color _color)
 	{
 		m_pGraphics = make_shared<Graphics>();
 		m_pPipeLine = make_shared<PipeLine>();
@@ -35,15 +36,7 @@ namespace GraphicsEngine
 		m_pImGuiTool->SetFloat3("DirectionColor", (float*) & (m_CBDirectionLightData.m_DircetionColor), -1.f, 1.f);
 		m_pImGuiTool->SetFloat3("Light Direction", (float*) & (m_CBDirectionLightData.m_Direction), -1.f, 1.f);
 
-		// 카메라 세팅
-		//Vector3 eye = Vector3(0.f, 100.f, -400.f);
-		//Vector3 target = Vector3(eye.x, eye.y, 0.f);
-		//Vector3 up = Vector3(0.f, 1.f, 0.f);
-		//m_CBCameraData.m_CameraPosition = eye;
-		//m_CBCameraData.m_View = XMMatrixLookAtLH(eye, target, up);
-		//m_CBCameraData.m_Projection = XMMatrixPerspectiveFovLH((45.f * 3.14f / 180.f), m_pGraphics->GetWidth() / m_pGraphics->GetHieght(), 0.1f, 50000.f);
-		//m_CBCameraData.m_View = m_CBCameraData.m_View.Transpose();
-		//m_CBCameraData.m_Projection = m_CBCameraData.m_Projection.Transpose();
+		DebugDraw::Initialize(DEVICE, m_pGraphics->GetDeviceContext());
 
 		createConstantBuffer();
 	}
@@ -67,9 +60,47 @@ namespace GraphicsEngine
 		SortSkeletalMeshInstance();
 		renderStaticMeshInstance();
 
+		RenderDebug();
 		m_pImGuiTool->Render();
 
 		m_pGraphics->RenderEnd();
+	}
+
+	void RenderManager::RenderDebug()
+	{
+		DebugDraw::g_BatchEffect->Apply(m_pGraphics->GetDeviceContext().Get());
+		DebugDraw::g_BatchEffect->SetView(m_CBCameraData.m_View.Transpose());
+		DebugDraw::g_BatchEffect->SetProjection(m_CBCameraData.m_Projection.Transpose());
+
+		m_pGraphics->GetDeviceContext()->IASetInputLayout(DebugDraw::g_pBatchInputLayout.Get());
+
+		DebugDraw::g_Batch->Begin();
+
+		{
+			for (auto boundingBox : m_DebugBoxes)
+			{
+				DebugDraw::Draw(DebugDraw::g_Batch.get(), *boundingBox.get(), DirectX::Colors::Yellow);
+			}
+			for (auto boindingSphere : m_DebugSpheres)
+			{
+				DebugDraw::Draw(DebugDraw::g_Batch.get(), *boindingSphere.get(), DirectX::Colors::Yellow);
+			}
+			for (auto Line : m_DebugLines)
+			{
+				DebugDraw::DrawRay(DebugDraw::g_Batch.get(), Line->Pos0, Line->Pos1 - Line->Pos0, false, Line->Color);
+			}
+			for (auto triangle : m_DebugTriangle)
+			{
+				DebugDraw::DrawTriangle(DebugDraw::g_Batch.get(), triangle[0], triangle[1], triangle[2], DirectX::Colors::Yellow);
+			}
+		}
+
+		DebugDraw::g_Batch->End();
+
+		m_DebugBoxes.clear();
+		m_DebugSpheres.clear();
+		m_DebugLines.clear();
+		m_DebugTriangle.clear();
 	}
 
 	void RenderManager::SortSkeletalMeshInstance()

@@ -33,6 +33,7 @@ namespace Engine
 		// 건재 : 계층구조로 월드 트랜스폼 배치
 		m_Local = SimpleMath::Matrix::CreateScale(m_Scale)
 			* SimpleMath::Matrix::CreateFromYawPitchRoll(m_Rotation)
+			* SimpleMath::Matrix::CreateFromQuaternion(m_Quternion)
 			* SimpleMath::Matrix::CreateTranslation(m_Position);
 
 		if (m_pOwner.lock() != nullptr)

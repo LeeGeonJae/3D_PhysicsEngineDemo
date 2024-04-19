@@ -63,15 +63,23 @@ namespace GraphicsEngine
 		Matrix Array[128];
 	};
 
+	struct DebugLineData
+	{
+		Vector3 Pos0;
+		Vector3 Pos1;
+		DirectX::SimpleMath::Color Color;
+	};
+
 	// 렌더 매니저 클래스
 	class RenderManager
 	{
 		SINGLETON(RenderManager)
 
 	public:
-		void Initalize(HWND _hwnd, float _height, float _width, Color _color);
+		void Initalize(HWND _hwnd, float _height, float _width, DirectX::SimpleMath::Color _color);
 		void Update();
 		void Render();
+		void RenderDebug();
 
 	private:
 		void SortSkeletalMeshInstance();
@@ -86,8 +94,13 @@ namespace GraphicsEngine
 		inline shared_ptr<ImGuiTool> GetImGuiTool();
 		inline void SetCamera(CB_Camera&& _camera);
 		void SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance);
-
 		void SetStaticMeshInstance(shared_ptr<StaticMeshInstance> _meshInstance);
+
+	public:
+		inline void AddDebugBox(shared_ptr<DirectX::BoundingOrientedBox> _boundingBox);
+		inline void AddDebugSphere(shared_ptr<DirectX::BoundingSphere> _boundingSphere);
+		inline void AddDebugLine(shared_ptr<DebugLineData> _line);
+		inline void AddDebugTriangle(vector<Vector3> _triangle);
 
 	private:
 		shared_ptr<Graphics> m_pGraphics;
@@ -108,6 +121,12 @@ namespace GraphicsEngine
 		ComPtr<ID3D11Buffer> m_pCBBoneTransformPallete = nullptr;	// 상수 버퍼: 방향광
 		ComPtr<ID3D11Buffer> m_pCBbIsTexture = nullptr;				// 상수 버퍼: 방향광
 		//ConstantBuffer<CB_MatrixPalette> m_cbMatrixPallete; // DirectXTK의 상수버퍼 클래스 활용
+
+	private:
+		vector<shared_ptr<DirectX::BoundingOrientedBox>> m_DebugBoxes;
+		vector<shared_ptr<DirectX::BoundingSphere>> m_DebugSpheres;
+		vector<shared_ptr<DebugLineData>> m_DebugLines;
+		vector<vector<Vector3>> m_DebugTriangle;
 	};
 
 	// 건재 : RenderManager의 Get & Set 함수
@@ -126,6 +145,22 @@ namespace GraphicsEngine
 	void RenderManager::SetCamera(CB_Camera&& _camera)
 	{
 		m_CBCameraData = _camera;
+	}
+	void RenderManager::AddDebugBox(shared_ptr<DirectX::BoundingOrientedBox> _boundingBox)
+	{
+		m_DebugBoxes.push_back(_boundingBox);
+	}
+	void RenderManager::AddDebugSphere(shared_ptr<DirectX::BoundingSphere> _boundingSphere)
+	{
+		m_DebugSpheres.push_back(_boundingSphere);
+	}
+	void RenderManager::AddDebugLine(shared_ptr<DebugLineData> _line)
+	{
+		m_DebugLines.push_back(_line);
+	}
+	inline void RenderManager::AddDebugTriangle(vector<Vector3> _triangle)
+	{
+		m_DebugTriangle.push_back(_triangle);
 	}
 }
 

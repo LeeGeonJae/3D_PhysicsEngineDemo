@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "PhysX.h"
 
+#include "iostream"
+
 namespace PhysicsEngine
 {
 	PhysX::PhysX()
@@ -66,17 +68,39 @@ namespace PhysicsEngine
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
 		m_Scene->addActor(*m_groundPlane);
 
+		// 컨벡스 메시 생성
+		const physx::PxVec3 convexVerts[] = { physx::PxVec3(0, 5, 0), physx::PxVec3(5, 0, 0), physx::PxVec3(-5, 0, 0), physx::PxVec3(0, 0, 5), physx::PxVec3(0, 0, -5) };
+		physx::PxConvexMeshDesc convexdesc;
+		convexdesc.points.count = 5;
+		convexdesc.points.stride = sizeof(physx::PxVec3);
+		convexdesc.points.data = convexVerts;
+		convexdesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+		physx::PxTolerancesScale scale;
+		physx::PxCookingParams params(scale);
+
+		physx::PxDefaultMemoryOutputStream buf;
+		physx::PxConvexMeshCookingResult::Enum result;
+		if (!PxCookConvexMesh(params, convexdesc, buf, &result))
+			std::cout << "컨벡스 메시 cooking 실패!" << std::endl;
+		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+		physx::PxConvexMesh* convexMesh = m_Physics->createConvexMesh(input);
+
 		float halfExtent = 5.f;
 		physx::PxU32 size = 20;
+
+		physx::PxTriangleMeshDesc desc;
+		desc.flags = physx::PxMeshFlag::e16_BIT_INDICES;
 
 		const physx::PxTransform t(physx::PxVec3(0));
 		for (physx::PxU32 i = 0; i < size; i++)
 		{
 			for (physx::PxU32 j = 0; j < size - i; j++)
 			{
-				physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_Material);
+				physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
 				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2+1), 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
+				Shape->setFlag(physx::PxShapeFlag::eVISUALIZATION, true);
 				body->attachShape(*Shape);
 				physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.f);
 				m_Scene->addActor(*body);
@@ -97,7 +121,8 @@ namespace PhysicsEngine
 
 	void PhysX::Update(float elapsedTime)
 	{
-		m_Scene->simulate(elapsedTime);
+		m_Scene->simulate(elapsedTime * 2);
 		m_Scene->fetchResults(true);
+		m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
 	}
 }

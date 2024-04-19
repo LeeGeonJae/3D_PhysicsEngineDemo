@@ -48,6 +48,8 @@ namespace Engine
 		inline const Vector3& GetPosition();
 		inline void SetRotation(Vector3 _rotation);
 		inline const Vector3& GetRotation();
+		inline void SetQuaternion(Quaternion _quternion);
+		inline const Quaternion& GetQuaternion();
 		inline void SetScale(Vector3 _scale);
 		inline const Vector3& GetScale();
 		inline void SetOwner(shared_ptr<SceneComponent> _owner);
@@ -61,6 +63,7 @@ namespace Engine
 		Matrix m_Local;
 		Vector3 m_Position;
 		Vector3 m_Rotation;
+		Quaternion m_Quternion;
 		Vector3 m_Scale;
 	};
 
@@ -123,6 +126,14 @@ namespace Engine
 	const Vector3& SceneComponent::GetRotation()
 	{
 		return m_Rotation;
+	}
+	void SceneComponent::SetQuaternion(Quaternion _quternion)
+	{
+		m_Quternion = _quternion;
+	}
+	const Quaternion& SceneComponent::GetQuaternion()
+	{
+		return m_Quternion;
 	}
 	void SceneComponent::SetScale(Vector3 _scale)
 	{

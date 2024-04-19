@@ -52,6 +52,8 @@ namespace Engine
 		void SetPosition(Vector3 _position);
 		const Vector3& GetRotation();
 		void SetRotation(Vector3 _rotation);
+		const Quaternion& GetQuternion();
+		void SetQuternion(Quaternion _quaternion);
 		const Vector3& GetScale();
 		void SetScale(Vector3 _scale);
 

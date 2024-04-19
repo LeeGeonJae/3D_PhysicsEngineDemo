@@ -18,9 +18,9 @@ namespace PhysicsEngine
 		void Update(float elapsedTime);
 
 	public:
-		inline const physx::PxScene* GetPxScene();
-		inline const std::vector<physx::PxShape*>& GetPxShapes();
-		inline const std::vector<physx::PxRigidBody*>& GetPxBodies();
+		inline physx::PxScene* GetPxScene();
+		inline std::vector<physx::PxShape*>& GetPxShapes();
+		inline std::vector<physx::PxRigidBody*>& GetPxBodies();
 
 	private:
 		physx::PxDefaultAllocator		m_DefaultAllocatorCallback;
@@ -51,17 +51,17 @@ namespace PhysicsEngine
 
 	};
 
-	const physx::PxScene* PhysX::GetPxScene()
+	physx::PxScene* PhysX::GetPxScene()
 	{
 		return m_Scene;
 	}
 
-	const std::vector<physx::PxShape*>& PhysX::GetPxShapes()
+	std::vector<physx::PxShape*>& PhysX::GetPxShapes()
 	{
 		return m_Shapes;
 	}
 
-	const std::vector<physx::PxRigidBody*>& PhysX::GetPxBodies()
+	std::vector<physx::PxRigidBody*>& PhysX::GetPxBodies()
 	{
 		return m_Bodies;
 	}

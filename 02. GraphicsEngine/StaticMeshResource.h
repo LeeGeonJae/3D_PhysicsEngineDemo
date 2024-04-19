@@ -6,7 +6,6 @@ namespace GraphicsEngine
     // 건재 : 클래스 선언
     class Material;
 
-
     // 건재 : 기본 버텍스 구조체
     struct Vertex
     {

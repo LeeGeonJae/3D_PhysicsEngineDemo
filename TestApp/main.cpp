@@ -3,6 +3,10 @@
 #include "Game.h"
 #include "TestApp.h"
 
+#ifdef _DEBUG
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#endif
+
 LRESULT CALLBACK WndProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)

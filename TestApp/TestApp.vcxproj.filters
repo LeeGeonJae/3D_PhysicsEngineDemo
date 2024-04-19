@@ -21,9 +21,15 @@
     <ClCompile Include="TestApp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="DebugShape.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestApp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugShape.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

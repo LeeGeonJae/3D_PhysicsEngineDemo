@@ -245,5 +245,5 @@ float4 PS(VS_OUTPUT input) : SV_Target
     finalColor.rgb = sqrt(finalColor.rgb);
     
     //(³­¹Ý»ç±¤ + Á÷Á¢±¤ + ÁÖº¯±¤)
-    return texture0.Sample(sampler0, input.mUV);
+    return float4(albedo, 1.f);
 }

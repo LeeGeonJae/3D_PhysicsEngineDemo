@@ -114,6 +114,14 @@ namespace Engine
 	{
 		m_pRootComponent->SetRotation(_rotation);
 	}
+	const Quaternion& Object::GetQuternion()
+	{
+		return m_pRootComponent->GetQuaternion();
+	}
+	void Object::SetQuternion(Quaternion _quaternion)
+	{
+		m_pRootComponent->SetQuaternion(_quaternion);
+	}
 	const Vector3& Object::GetScale()
 	{
 		return m_pRootComponent->GetScale();
