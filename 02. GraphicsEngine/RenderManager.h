@@ -96,6 +96,10 @@ namespace GraphicsEngine
 		void SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance);
 		void SetStaticMeshInstance(shared_ptr<StaticMeshInstance> _meshInstance);
 
+		//?   Util     ///
+		void GetVideoMemoryInfo(std::string& out);							// 비디오 메모리 데이터 구하기
+		void GetSystemMemoryInfo(std::string& out);							// 시스템 메모리 데이터 구하기
+
 	public:
 		inline void AddDebugBox(shared_ptr<DirectX::BoundingOrientedBox> _boundingBox);
 		inline void AddDebugSphere(shared_ptr<DirectX::BoundingSphere> _boundingSphere);
@@ -106,6 +110,9 @@ namespace GraphicsEngine
 		shared_ptr<Graphics> m_pGraphics;
 		shared_ptr<PipeLine> m_pPipeLine;
 		shared_ptr<ImGuiTool> m_pImGuiTool;
+
+		ComPtr<IDXGIFactory4> m_pDXGIFactory;		// DXGI팩토리
+		ComPtr<IDXGIAdapter3> m_pDXGIAdapter;		// 비디오카드 정보에 접근 가능한 인터페이스
 
 		std::unordered_map<Material* ,vector<shared_ptr<SkeletalMeshInstance>>> m_pSkeletalMeshInstanceVec;
 		std::unordered_map<Material*, vector<shared_ptr<StaticMeshInstance>>> m_pStaticMeshInstanceVec;

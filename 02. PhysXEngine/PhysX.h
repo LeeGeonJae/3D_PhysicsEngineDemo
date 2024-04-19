@@ -22,6 +22,9 @@ namespace PhysicsEngine
 		inline std::vector<physx::PxShape*>& GetPxShapes();
 		inline std::vector<physx::PxRigidBody*>& GetPxBodies();
 
+	public:
+		inline void AddVertexPosition(physx::PxVec3 _vertex);
+
 	private:
 		physx::PxDefaultAllocator		m_DefaultAllocatorCallback;
 		physx::PxDefaultErrorCallback	m_DefaultErrorCallback;
@@ -43,7 +46,7 @@ namespace PhysicsEngine
 		std::vector<physx::PxRigidBody*> m_Bodies;
 		// init physX
 
-
+		std::vector<physx::PxVec3> m_ModelVertices;
 		// create simulation
 
 
@@ -55,14 +58,16 @@ namespace PhysicsEngine
 	{
 		return m_Scene;
 	}
-
 	std::vector<physx::PxShape*>& PhysX::GetPxShapes()
 	{
 		return m_Shapes;
 	}
-
 	std::vector<physx::PxRigidBody*>& PhysX::GetPxBodies()
 	{
 		return m_Bodies;
+	}
+	void PhysX::AddVertexPosition(physx::PxVec3 _vertex)
+	{
+		m_ModelVertices.push_back(_vertex);
 	}
 } 

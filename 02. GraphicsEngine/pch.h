@@ -42,9 +42,12 @@ using namespace std;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
+#include <dxgi1_4.h>
+
 // Libs
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment (lib, "DXGI.lib")  // for  CreateDXGIFactory1 함수
 
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTex/DirectXTex_debug.lib")

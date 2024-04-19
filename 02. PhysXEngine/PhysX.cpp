@@ -68,12 +68,14 @@ namespace PhysicsEngine
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
 		m_Scene->addActor(*m_groundPlane);
 
+		const physx::PxVec3 convexVerts[] = { physx::PxVec3(0,10,0),physx::PxVec3(10,0,0),physx::PxVec3(-10,0,0),physx::PxVec3(0,0,10), physx::PxVec3(0,0,-10) };
+
 		// 컨벡스 메시 생성
-		const physx::PxVec3 convexVerts[] = { physx::PxVec3(0, 5, 0), physx::PxVec3(5, 0, 0), physx::PxVec3(-5, 0, 0), physx::PxVec3(0, 0, 5), physx::PxVec3(0, 0, -5) };
 		physx::PxConvexMeshDesc convexdesc;
-		convexdesc.points.count = 5;
+		convexdesc.points.count = m_ModelVertices.size();
 		convexdesc.points.stride = sizeof(physx::PxVec3);
-		convexdesc.points.data = convexVerts;
+		convexdesc.vertexLimit = 20;
+		convexdesc.points.data = m_ModelVertices.data();
 		convexdesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
 
 		physx::PxTolerancesScale scale;
@@ -97,10 +99,10 @@ namespace PhysicsEngine
 		{
 			for (physx::PxU32 j = 0; j < size - i; j++)
 			{
-				physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
+				physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_Material);
 				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2+1), 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
-				Shape->setFlag(physx::PxShapeFlag::eVISUALIZATION, true);
+				Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 				body->attachShape(*Shape);
 				physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.f);
 				m_Scene->addActor(*body);
@@ -109,9 +111,11 @@ namespace PhysicsEngine
 			}
 		}
 
-		physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(halfExtent * 10, halfExtent * 10, halfExtent * 10), *m_Material);
-		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(0), physx::PxReal(150), 0) * halfExtent);
+		physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
+		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(0), physx::PxReal(150), 0) * halfExtent, physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
 		physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
+		Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		body->attachShape(*Shape);
 		physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.f);
 		m_Scene->addActor(*body);

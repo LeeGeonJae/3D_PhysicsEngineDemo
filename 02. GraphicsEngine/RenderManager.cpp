@@ -15,11 +15,21 @@
 #include "Texture.h"
 #include "Material.h"
 #include "Node.h"
+#include <Psapi.h>
+
 
 namespace GraphicsEngine
 {
 	void RenderManager::Initalize(HWND _hwnd, float _height, float _width, DirectX::SimpleMath::Color _color)
 	{
+		HRESULT hr = 0;
+
+		// Create DXGI factory
+		hr = CreateDXGIFactory1(__uuidof(IDXGIFactory4), (void**)m_pDXGIFactory.GetAddressOf());
+		assert(SUCCEEDED(hr));
+		hr = m_pDXGIFactory->EnumAdapters(0, reinterpret_cast<IDXGIAdapter**>(m_pDXGIAdapter.GetAddressOf()));
+		assert(SUCCEEDED(hr));
+
 		m_pGraphics = make_shared<Graphics>();
 		m_pPipeLine = make_shared<PipeLine>();
 		m_pImGuiTool = make_shared<ImGuiTool>();
@@ -250,5 +260,25 @@ namespace GraphicsEngine
 		bd.ByteWidth = sizeof(CB_UseTextureMap);
 		hr = DEVICE->CreateBuffer(&bd, nullptr, m_pCBbIsTexture.GetAddressOf());
 		assert(SUCCEEDED(hr));
+	}
+
+	/// 비디오 메모리 읽기 ///
+	void RenderManager::GetVideoMemoryInfo(std::string& out)
+	{
+		DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
+		m_pDXGIAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
+
+		out = std::to_string(videoMemoryInfo.CurrentUsage / 1024 / 1024) + " MB" + " / " + std::to_string(videoMemoryInfo.Budget / 1024 / 1024) + " MB";
+	}
+
+
+	/// 시스템 메모리 읽기 ///
+	void RenderManager::GetSystemMemoryInfo(std::string& out)
+	{
+		HANDLE hProcess = GetCurrentProcess();
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		pmc.cb = sizeof(PROCESS_MEMORY_COUNTERS_EX);
+		GetProcessMemoryInfo(hProcess, (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+		out = std::to_string((pmc.PagefileUsage) / 1024 / 1024) + " MB";
 	}
 }

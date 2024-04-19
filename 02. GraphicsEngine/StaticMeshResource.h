@@ -83,7 +83,7 @@ namespace GraphicsEngine
 
 
     // -------------------------------------------------------------------------
-    // 건재 : FBX 씬의 모든 스켈레탈 메시 리소스 집합을 가지고 있는 리소스 클래스
+    // 건재 : FBX 씬의 모든 스태틱 메시 리소스 집합을 가지고 있는 리소스 클래스
     class StaticMeshSceneResource : public ResourceBase
     {
     public:
