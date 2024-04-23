@@ -103,6 +103,10 @@ namespace GraphicsEngine
 			{
 				DebugDraw::DrawTriangle(DebugDraw::g_Batch.get(), triangle[0], triangle[1], triangle[2], DirectX::Colors::Yellow);
 			}
+			for (auto point : m_DebugPoints)
+			{
+				DebugDraw::DrawRay(DebugDraw::g_Batch.get(), *point.get(), *point.get(), true, DirectX::Colors::Red);
+			}
 		}
 
 		DebugDraw::g_Batch->End();

@@ -22,6 +22,8 @@ namespace GraphicsEngine
 		RESOURCE->Load("../Resources/FBX/PBR_Test.fbx");
 		RESOURCE->Load("../Resources/FBX/box.fbx");
 		RESOURCE->Load("../Resources/FBX/Tree.fbx");
+		RESOURCE->Load("../Resources/FBX/Monkey.fbx");
+		RESOURCE->Load("../Resources/FBX/Vampire.fbx");
 
 		shared_ptr<Shader> skeletalMeshShader = Create<Shader>("SkeletalMeshShader");
 		shared_ptr<Shader> staticMeshShader = Create<Shader>("StaticMeshShader");

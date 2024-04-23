@@ -2,9 +2,55 @@
 #include "PhysX.h"
 
 #include "iostream"
+#include "PhysicsSimulationEventCallback.h"
+#include "ActorUserData.h"
 
 namespace PhysicsEngine
 {
+	enum ObjectType
+	{
+		OBJECT_TYPE_A = (1 << 0),
+		OBJECT_TYPE_B = (1 << 1),
+		OBJECT_TYPE_C = (1 << 2),
+	};
+
+	physx::PxFilterFlags CustomSimulationFilterShader(
+		physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+	{
+		//
+		// 쌍에 대해 CCD를 활성화하고 초기 및 CCD 연락처에 대한 연락처 보고서를 요청합니다.
+		// 또한 접점별 정보를 제공하고 행위자에게 정보를 제공합니다
+		// 접촉할 때 포즈를 취합니다.
+		//
+
+		// 필터 셰이더 로직 ( 트리거 )
+		if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+		{
+			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+			return physx::PxFilterFlag::eDEFAULT;
+		}
+
+		// 필터 데이터 충돌 체크 ( 시뮬레이션 )
+		if (((filterData0.word1 & filterData1.word0) > 0) && ((filterData1.word1 & filterData0.word0) > 0))
+		{
+			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
+				| physx::PxPairFlag::eDETECT_CCD_CONTACT
+				| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
+				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+				| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
+				| physx::PxPairFlag::eCONTACT_EVENT_POSE;
+			return physx::PxFilterFlag::eDEFAULT;
+		}
+		else
+		{
+			pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
+			return physx::PxFilterFlag::eSUPPRESS;
+		}
+	}
+
 	PhysX::PhysX()
 	{
 
@@ -15,8 +61,41 @@ namespace PhysicsEngine
 
 	}
 
+	physx::PxFilterFlags myFilterShader(
+		physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize)
+	{
+		// 필터 셰이더 로직
+		if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
+		{
+			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+			return physx::PxFilterFlag::eDEFAULT;
+		}
+
+		pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
+		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
+
+		return physx::PxFilterFlag::eDEFAULT;
+	}
+
+
 	void PhysX::Init()
 	{
+		// 오브젝트 타입에 대한 필터 데이터 정의
+		physx::PxFilterData filterDataA;
+		filterDataA.word0 = OBJECT_TYPE_A;
+		filterDataA.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B | OBJECT_TYPE_C;
+
+		physx::PxFilterData filterDataB;
+		filterDataB.word0 = OBJECT_TYPE_B;
+		filterDataB.word1 = OBJECT_TYPE_B | OBJECT_TYPE_C;
+
+		physx::PxFilterData filterDataC;
+		filterDataC.word0 = OBJECT_TYPE_C;
+		filterDataC.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B;
+
+
 		// PhysX Foundation을 생성하고 초기화합니다.
 		m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_DefaultAllocatorCallback, m_DefaultErrorCallback);
 
@@ -47,9 +126,15 @@ namespace PhysicsEngine
 		// CPU 디스패처를 생성하고 설정합니다.
 		m_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2); // CPU 디스패처를 생성합니다.
 
+		
+		m_MyEventCallback = new PhysicsSimulationEventCallback;
+		physx::PxPairFlags pairFlags = physx::PxPairFlags();
+
 		// Scene 설명자에 CPU 디스패처와 필터 셰이더를 설정합니다.
 		sceneDesc.cpuDispatcher = m_Dispatcher; // Scene 설명자에 CPU 디스패처를 설정합니다.
-		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader; // Scene 설명자에 필터 셰이더를 설정합니다.
+		sceneDesc.filterShader = CustomSimulationFilterShader;
+		sceneDesc.simulationEventCallback = m_MyEventCallback;		// 콜백 함수 등록
+
 
 		// PhysX Physics에서 Scene을 생성합니다.
 		m_Scene = m_Physics->createScene(sceneDesc); // Scene을 생성합니다.
@@ -66,6 +151,10 @@ namespace PhysicsEngine
 		// 시뮬레이션 생성
 		m_Material = m_Physics->createMaterial(0.5f, 0.5f, 0.6f);
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
+		physx::PxShape* shape;
+		m_groundPlane->getShapes(&shape, sizeof(physx::PxShape));
+		shape->setSimulationFilterData(filterDataC);
+
 		m_Scene->addActor(*m_groundPlane);
 
 		const physx::PxVec3 convexVerts[] = { physx::PxVec3(0,10,0),physx::PxVec3(10,0,0),physx::PxVec3(-10,0,0),physx::PxVec3(0,0,10), physx::PxVec3(0,0,-10) };
@@ -89,7 +178,7 @@ namespace PhysicsEngine
 		physx::PxConvexMesh* convexMesh = m_Physics->createConvexMesh(input);
 
 		float halfExtent = 5.f;
-		physx::PxU32 size = 20;
+		physx::PxU32 size = 1;
 
 		physx::PxTriangleMeshDesc desc;
 		desc.flags = physx::PxMeshFlag::e16_BIT_INDICES;
@@ -99,24 +188,33 @@ namespace PhysicsEngine
 		{
 			for (physx::PxU32 j = 0; j < size - i; j++)
 			{
+				ActorUserData* data = new ActorUserData(ActorType::PLAYER);
 				physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_Material);
 				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2+1), 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 				Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+				//Shape->userData = data;
+				Shape->setSimulationFilterData(filterDataB);
 				body->attachShape(*Shape);
 				physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.f);
+				Shape->setContactOffset(0.001f);
+
 				m_Scene->addActor(*body);
 				m_Shapes.push_back(Shape);
 				m_Bodies.push_back(body);
 			}
 		}
 
+		ActorUserData* data = new ActorUserData(ActorType::MONSTER);
 		physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
-		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(0), physx::PxReal(150), 0) * halfExtent, physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
+		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(150), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
 		physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 		Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 		//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		Shape->setContactOffset(0.001f);
+		Shape->setSimulationFilterData(filterDataA);
 		body->attachShape(*Shape);
+
 		physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.f);
 		m_Scene->addActor(*body);
 		m_Shapes.push_back(Shape);
@@ -125,8 +223,8 @@ namespace PhysicsEngine
 
 	void PhysX::Update(float elapsedTime)
 	{
-		m_Scene->simulate(elapsedTime * 2);
+		m_Scene->simulate(elapsedTime);
 		m_Scene->fetchResults(true);
-		m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
+		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
 	}
 }

@@ -14,7 +14,11 @@
 
 #include "../02. GraphicsEngine/Graphics.h"
 #include "../02. GraphicsEngine/RenderManager.h"
+#include "../02. GraphicsEngine/ResourceManager.h"
+#include "../02. GraphicsEngine/StaticMeshResource.h"
+#include "../02. GraphicsEngine/SkeletalMeshResource.h"
 #include "../02. PhysXEngine/PhysX.h"
+#include "../02. PhysXEngine/PhysicsSimulationEventCallback.h"
 
 
 void TestApp::Init()
@@ -24,7 +28,6 @@ void TestApp::Init()
 	__super::Init();
 
 	m_PhysX = make_shared<PhysicsEngine::PhysX>();
-	m_PhysX->Init();
 
 	{
 		shared_ptr<Pawn> pawn = std::make_shared<Pawn>(10000);
@@ -42,16 +45,31 @@ void TestApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/Tree.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/cerberus_test.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
 		meshComponent->SetOwner(object->GetRootComponent());
 		object->SetPosition(Vector3(200.f, 200.f, 0.f));
-		object->SetScale(Vector3(10.f, 10.f, 10.f));
+		object->SetScale(Vector3(0.1f, 0.1f, 0.1f));
 
 		m_ObjectVec.push_back(object);
+
+		shared_ptr< GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/zeldaPosed001.fbx");
+		for (auto& mesh : staticMesh->GetStaticMeshVec())
+		{
+			for (const auto& vertices : mesh.GetVertices())
+			{
+				physx::PxVec3 vertex;
+				vertex.x = -vertices.m_Position.x;
+				vertex.y = -vertices.m_Position.y;
+				vertex.z = -vertices.m_Position.z;
+				m_PhysX->AddVertexPosition(vertex);
+			}
+		}
 	}
+
+	m_PhysX->Init();
 
 	int count = 1;
 	for (auto body : m_PhysX->GetPxBodies())
@@ -63,7 +81,7 @@ void TestApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/box.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/zeldaPosed001.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "PhysicsMeshComponent";
 		meshComponent->Setting(meshInfo);
@@ -143,13 +161,36 @@ void TestApp::Update(float _deltaTime)
 			DebugConvexMesh(body, shape);
 		}
 	}
+	for (auto point : PhysicsEngine::PhysicsSimulationEventCallback::CollisionPoints)
+	{
+		shared_ptr<DirectX::BoundingSphere> box = make_shared<DirectX::BoundingSphere>();
+
+		shared_ptr<Vector3> debugPoint = make_shared<Vector3>();
+		debugPoint->x = point.x;
+		debugPoint->y = point.y;
+		debugPoint->z = -point.z;
+
+		box->Center.x = point.x;
+		box->Center.y = point.y;
+		box->Center.z = -point.z;
+		box->Radius = 0.5f;
+
+		RENDER->AddDebugSphere(box);
+	}
 
 	for (auto object : m_ObjectVec)
 	{
 		object->Update(_deltaTime);
 	}
 
-	m_PhysX->Update(_deltaTime);
+	static float FixedTime = 0;
+	FixedTime += _deltaTime;
+
+	if (FixedTime >= 1 / 60.f)
+	{
+		m_PhysX->Update(FixedTime);
+		FixedTime -= 1 / 60.f;
+	}
 }
 
 void TestApp::LateUpdate(float _deltaTime)

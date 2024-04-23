@@ -104,6 +104,7 @@ namespace GraphicsEngine
 		inline void AddDebugBox(shared_ptr<DirectX::BoundingOrientedBox> _boundingBox);
 		inline void AddDebugSphere(shared_ptr<DirectX::BoundingSphere> _boundingSphere);
 		inline void AddDebugLine(shared_ptr<DebugLineData> _line);
+		inline void AddDebugPoint(shared_ptr<Vector3> _point);
 		inline void AddDebugTriangle(vector<Vector3> _triangle);
 
 	private:
@@ -134,6 +135,7 @@ namespace GraphicsEngine
 		vector<shared_ptr<DirectX::BoundingSphere>> m_DebugSpheres;
 		vector<shared_ptr<DebugLineData>> m_DebugLines;
 		vector<vector<Vector3>> m_DebugTriangle;
+		vector<shared_ptr<Vector3>> m_DebugPoints;
 	};
 
 	// 건재 : RenderManager의 Get & Set 함수
@@ -164,6 +166,10 @@ namespace GraphicsEngine
 	void RenderManager::AddDebugLine(shared_ptr<DebugLineData> _line)
 	{
 		m_DebugLines.push_back(_line);
+	}
+	void RenderManager::AddDebugPoint(shared_ptr<Vector3> _point)
+	{
+		m_DebugPoints.push_back(_point);
 	}
 	inline void RenderManager::AddDebugTriangle(vector<Vector3> _triangle)
 	{

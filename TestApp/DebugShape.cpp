@@ -38,7 +38,7 @@ void CopyDirectXMatrixToPxTransform(const DirectX::XMMATRIX& dxMatrix, physx::Px
 }
 
 // 물리 데이터를 통해서 디버그 데이터 출력하기
-void DebugCapsule(physx::PxRigidBody* _body, physx::PxShape* _shape)
+void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape)
 {
 	const physx::PxCapsuleGeometry& capsuleGeometry = static_cast<const physx::PxCapsuleGeometry&>(_shape->getGeometry());
 	Matrix dxMatrix;
@@ -85,7 +85,7 @@ void DebugCapsule(physx::PxRigidBody* _body, physx::PxShape* _shape)
 }
 
 // 
-void DebugBox(physx::PxRigidBody* _body, physx::PxShape* _shape)
+void DebugBox(physx::PxRigidActor* _body, physx::PxShape* _shape)
 {
 	shared_ptr<DirectX::BoundingOrientedBox> orientBox = make_shared<DirectX::BoundingOrientedBox>();
 	const physx::PxBoxGeometry& boxGeometry = static_cast<const physx::PxBoxGeometry&>(_shape->getGeometry());
@@ -105,7 +105,7 @@ void DebugBox(physx::PxRigidBody* _body, physx::PxShape* _shape)
 	RENDER->AddDebugBox(orientBox);
 }
 
-void DebugSphere(physx::PxRigidBody* _body, physx::PxShape* _shape)
+void DebugSphere(physx::PxRigidActor* _body, physx::PxShape* _shape)
 {
 	shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
 	const physx::PxSphereGeometry& sphereGeometry = static_cast<const physx::PxSphereGeometry&>(_shape->getGeometry());
@@ -119,35 +119,44 @@ void DebugSphere(physx::PxRigidBody* _body, physx::PxShape* _shape)
 	RENDER->AddDebugSphere(sphere);
 }
 
-void DebugConvexMesh(physx::PxRigidBody* _body, physx::PxShape* _shape)
+void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
 {
 	const physx::PxConvexMeshGeometry& convexMeshGeometry = static_cast<const physx::PxConvexMeshGeometry&>(_shape->getGeometry());
+
 
 	Matrix dxMatrix;
 	Matrix matrix;
 	CopyPxTransformToDirectXMatrix(_body->getGlobalPose(), dxMatrix);
 
-	for (physx::PxU32 i = 0; i < convexMeshGeometry.convexMesh->getNbPolygons(); i++)
+	// PxConvexMesh에서 정점 및 인덱스 정보 얻기
+	const physx::PxVec3* convexMeshVertices = convexMeshGeometry.convexMesh->getVertices();
+	const physx::PxU32 vertexCount = convexMeshGeometry.convexMesh->getNbVertices();
+
+	const physx::PxU8* convexMeshIndices = convexMeshGeometry.convexMesh->getIndexBuffer();
+	const physx::PxU32 indexCount = convexMeshGeometry.convexMesh->getNbPolygons() * 5;
+
+	for (int i = 0; i < indexCount; i += 3)
 	{
-		// PxConvexMesh에서 정점 및 인덱스 정보 얻기
-		const physx::PxVec3* convexMeshVertices = convexMeshGeometry.convexMesh->getVertices();
-		const physx::PxU32 vertexCount = convexMeshGeometry.convexMesh->getNbVertices();
-
-		const physx::PxU8* convexMeshIndices = convexMeshGeometry.convexMesh->getIndexBuffer();
-		const physx::PxU32 indexCount = convexMeshGeometry.convexMesh->getNbPolygons() * 3;
-
 		vector<Vector3> vertices(3);
+		physx::PxU32 index0 = convexMeshIndices[i];
+		physx::PxU32 index1 = convexMeshIndices[i + 1];
+		physx::PxU32 index2 = convexMeshIndices[i + 2];
 
-		for (int j = 0; j < 3; j++)
-		{
-			int startIndex = i * 3;
+		vertices[0].x = -convexMeshVertices[convexMeshIndices[index0]].x;
+		vertices[0].y = -convexMeshVertices[convexMeshIndices[index0]].y;
+		vertices[0].z = -convexMeshVertices[convexMeshIndices[index0]].z;
 
-			vertices[j].x = convexMeshVertices[convexMeshIndices[startIndex + j]].x;
-			vertices[j].y = -convexMeshVertices[convexMeshIndices[startIndex + j]].y;
-			vertices[j].z = convexMeshVertices[convexMeshIndices[startIndex + j]].z;
+		vertices[1].x = -convexMeshVertices[convexMeshIndices[index1]].x;
+		vertices[1].y = -convexMeshVertices[convexMeshIndices[index1]].y;
+		vertices[1].z = -convexMeshVertices[convexMeshIndices[index1]].z;
 
-			vertices[j] = Vector3::Transform(vertices[j], dxMatrix);
-		}
+		vertices[2].x = -convexMeshVertices[convexMeshIndices[index2]].x;
+		vertices[2].y = -convexMeshVertices[convexMeshIndices[index2]].y;
+		vertices[2].z = -convexMeshVertices[convexMeshIndices[index2]].z;
+
+		vertices[0] = Vector3::Transform(vertices[0], dxMatrix);
+		vertices[1] = Vector3::Transform(vertices[1], dxMatrix);
+		vertices[2] = Vector3::Transform(vertices[2], dxMatrix);
 
 		RENDER->AddDebugTriangle(vertices);
 	}

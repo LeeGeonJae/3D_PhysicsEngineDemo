@@ -2,7 +2,7 @@
 
 void CopyPxTransformToDirectXMatrix(const physx::PxTransform& pxTransform, Matrix& dxMatrix);
 void CopyDirectXMatrixToPxTransform(const DirectX::XMMATRIX& dxMatrix, physx::PxTransform& pxTransform);
-void DebugCapsule(physx::PxRigidBody* _body, physx::PxShape* _shape);
-void DebugBox(physx::PxRigidBody* _body, physx::PxShape* _shape);
-void DebugSphere(physx::PxRigidBody* _body, physx::PxShape* _shape);
-void DebugConvexMesh(physx::PxRigidBody* _body, physx::PxShape* _shape);
+void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void DebugBox(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void DebugSphere(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape);

@@ -7,6 +7,8 @@
 
 namespace PhysicsEngine
 {
+	class PhysicsSimulationEventCallback;
+
 	class PhysX
 	{
 	public:
@@ -20,7 +22,7 @@ namespace PhysicsEngine
 	public:
 		inline physx::PxScene* GetPxScene();
 		inline std::vector<physx::PxShape*>& GetPxShapes();
-		inline std::vector<physx::PxRigidBody*>& GetPxBodies();
+		inline std::vector<physx::PxRigidActor*>& GetPxBodies();
 
 	public:
 		inline void AddVertexPosition(physx::PxVec3 _vertex);
@@ -42,13 +44,13 @@ namespace PhysicsEngine
 		physx::PxPvdSceneClient*		m_pvdClient = nullptr;
 		physx::PxRigidStatic*			m_groundPlane = nullptr;
 
-		std::vector<physx::PxShape*>	m_Shapes;
-		std::vector<physx::PxRigidBody*> m_Bodies;
 		// init physX
+		std::vector<physx::PxShape*>	m_Shapes;
+		std::vector<physx::PxRigidActor*> m_Bodies;
 
 		std::vector<physx::PxVec3> m_ModelVertices;
 		// create simulation
-
+		PhysicsSimulationEventCallback* m_MyEventCallback;
 
 		// run simulation
 
@@ -62,7 +64,7 @@ namespace PhysicsEngine
 	{
 		return m_Shapes;
 	}
-	std::vector<physx::PxRigidBody*>& PhysX::GetPxBodies()
+	std::vector<physx::PxRigidActor*>& PhysX::GetPxBodies()
 	{
 		return m_Bodies;
 	}
