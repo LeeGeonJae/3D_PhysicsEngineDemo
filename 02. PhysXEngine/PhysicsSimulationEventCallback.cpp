@@ -36,64 +36,107 @@ namespace PhysicsEngine
 
 	void PhysicsSimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
 	{
-		std::vector<physx::PxContactPairPoint> contactPoints;
-
-		physx::PxTransform spherePose(physx::PxIdentity);
-		physx::PxU32 nextPairIndex = 0xfffffffff;
-
-		physx::PxContactPairExtraDataIterator iter(pairHeader.extraDataStream, pairHeader.extraDataStreamSize);
-		bool hasItemSet = iter.nextItemSet();
-		if (hasItemSet)
-			nextPairIndex = iter.contactPairIndex;
-
-		for (physx::PxU32 i = 0; i < nbPairs; i++)
+		/// ENTER_COLLISION 충돌 이벤트 실행
+		if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
 		{
-			const physx::PxContactPair& cp = pairs[i];
+			ActorUserData* myData = (ActorUserData*)pairHeader.actors[0]->userData;
+			ActorUserData* otherData = (ActorUserData*)pairHeader.actors[1]->userData;
 
-			// 충돌 시 동적 물체의 자세를 취합니다.
-			if (nextPairIndex == i)
+			std::cout << "=====================================================" << std::endl;
+			if (myData->GetActorType() == ActorType::MONSTER)
 			{
-				if (pairHeader.actors[0]->is<physx::PxRigidDynamic>())
-					spherePose = iter.eventPose->globalPose[0];
-				else
-					spherePose = iter.eventPose->globalPose[1];
-
-				//ActorUserData* data = static_cast<ActorUserData*>(pairHeader.actors[i]->is<physx::PxShape>()->userData);
-				//
-				//if (data->GetActorType() == ActorType::PLAYER)
-				//{
-				//	std::cout << "Player" << std::endl;
-				//}
-
-				//std::cout << "오브젝트 위치 (" << spherePose.p.x << ", " << spherePose.p.y << ", " << spherePose.p.z << ")" << std::endl;
-
-				hasItemSet = iter.nextItemSet();
-				if (hasItemSet)
-					nextPairIndex = iter.contactPairIndex;
+				std::cout << "I'm Monster!! Begin Collision" << std::endl;
 			}
-
-			if (cp.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+			if (myData->GetActorType() == ActorType::PLAYER)
 			{
-				physx::PxU32 contactCount = cp.contactCount;
-				contactPoints.resize(contactCount);
-				cp.extractContacts(&contactPoints[0], contactCount);
-
-				for (physx::PxU32 j = 0; j < contactCount; j++)
-				{
-					CollisionPoints.push_back(contactPoints[j].position);
-
-					std::cout << "==========================================================================" << std::endl;
-					std::cout << "위치 : (" << contactPoints[j].position.x << ", " << contactPoints[j].position.y << ", " << contactPoints[j].position.z << ")" << std::endl;
-					std::cout << "충돌 : (" << contactPoints[j].impulse.x << ", " << contactPoints[j].impulse.y << ", " << contactPoints[j].impulse.z << ")" << std::endl;
-					std::cout << "==========================================================================" << std::endl;
-				}
+				std::cout << "I'm Player!! Begin Collision" << std::endl;
 			}
+			if (myData->GetActorType() == ActorType::TILE)
+			{
+				std::cout << "I'm Tile!! Begin Collision" << std::endl;
+			}
+			if (otherData->GetActorType() == ActorType::MONSTER)
+			{
+				std::cout << "You're Monster!! Begin Collision" << std::endl;
+			}
+			if (otherData->GetActorType() == ActorType::PLAYER)
+			{
+				std::cout << "You're Player!! Begin Collision" << std::endl;
+			}
+			if (otherData->GetActorType() == ActorType::TILE)
+			{
+				std::cout << "I'm Tile!! Begin Collision" << std::endl;
+			}
+			std::cout << "=====================================================" << std::endl;
 		}
+
+		/// END_COLLISION 충돌 이벤트 실행
+		else if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+		{
+			ActorUserData* myData = (ActorUserData*)pairHeader.actors[0]->userData;
+			ActorUserData* otherData = (ActorUserData*)pairHeader.actors[1]->userData;
+
+			std::cout << "=====================================================" << std::endl;
+			if (myData->GetActorType() == ActorType::MONSTER)
+			{
+				std::cout << "I'm Monster!! End Collision" << std::endl;
+			}
+			if (myData->GetActorType() == ActorType::PLAYER)
+			{
+				std::cout << "I'm Player!! End Collision" << std::endl;
+			}
+			if (myData->GetActorType() == ActorType::TILE)
+			{
+				std::cout << "I'm Tile!! End Collision" << std::endl;
+			}
+			if (otherData->GetActorType() == ActorType::MONSTER)
+			{
+				std::cout << "You're Monster!! End Collision" << std::endl;
+			}
+			if (otherData->GetActorType() == ActorType::PLAYER)
+			{
+				std::cout << "You're Player!! End Collision" << std::endl;
+			}
+			if (otherData->GetActorType() == ActorType::TILE)
+			{
+				std::cout << "I'm Tile!! End Collision" << std::endl;
+			}
+			std::cout << "=====================================================" << std::endl;
+		}
+
+		///// ON_COLLSION 충돌 이벤트 실행
+		//else if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+		//{
+		//	ActorUserData* myData = (ActorUserData*)pairHeader.actors[0]->userData;
+		//	ActorUserData* otherData = (ActorUserData*)pairHeader.actors[1]->userData;
+
+		//	if (myData->GetActorType() == ActorType::MONSTER)
+		//	{
+		//		std::cout << "Monster!! On Collision" << std::endl;
+		//	}
+		//	if (myData->GetActorType() == ActorType::PLAYER)
+		//	{
+		//		std::cout << "Player!! On Collision" << std::endl;
+		//	}
+		//}
 	}
 
 	void PhysicsSimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 	{
-		std::cout << "OnTrigger" << std::endl;
+		//std::cout << "OnTrigger" << std::endl;
+
+		//ActorUserData* data = (ActorUserData*)pairs->triggerActor->userData;
+
+		//if (pairs->status == physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		//	std::cout << "eNOTIFY_TOUCH_FOUND" << std::endl;
+
+		//if (pairs->status == physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+		//	std::cout << "eNOTIFY_TOUCH_LOST" << std::endl;
+
+		//if (data->GetActorType() == ActorType::MONSTER)
+		//{
+		//	std::cout << "Monster!!!!" << std::endl;
+		//}
 	}
 
 	void PhysicsSimulationEventCallback::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)

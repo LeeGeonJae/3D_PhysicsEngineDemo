@@ -1,9 +1,14 @@
 #pragma once
-#include <PxPhysicsAPI.h>
+#include <physx/PxPhysicsAPI.h>
 #include <vector>
 
 namespace PhysicsEngine
 {
+	struct CollisionInfomation
+	{
+
+	};
+
 	class PhysicsSimulationEventCallback : public physx::PxSimulationEventCallback
 	{
 	public:

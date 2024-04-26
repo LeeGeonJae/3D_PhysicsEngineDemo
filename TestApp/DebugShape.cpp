@@ -84,7 +84,6 @@ void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape)
 	RENDER->AddDebugSphere(sphere1);
 }
 
-// 
 void DebugBox(physx::PxRigidActor* _body, physx::PxShape* _shape)
 {
 	shared_ptr<DirectX::BoundingOrientedBox> orientBox = make_shared<DirectX::BoundingOrientedBox>();
@@ -133,31 +132,30 @@ void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
 	const physx::PxU32 vertexCount = convexMeshGeometry.convexMesh->getNbVertices();
 
 	const physx::PxU8* convexMeshIndices = convexMeshGeometry.convexMesh->getIndexBuffer();
-	const physx::PxU32 indexCount = convexMeshGeometry.convexMesh->getNbPolygons() * 5;
+	const physx::PxU32 PolygonCount = convexMeshGeometry.convexMesh->getNbPolygons();
 
-	for (int i = 0; i < indexCount; i += 3)
+	for (int i = 0; i < PolygonCount - 1; i++)
 	{
-		vector<Vector3> vertices(3);
-		physx::PxU32 index0 = convexMeshIndices[i];
-		physx::PxU32 index1 = convexMeshIndices[i + 1];
-		physx::PxU32 index2 = convexMeshIndices[i + 2];
+		physx::PxHullPolygon polygon;
+		convexMeshGeometry.convexMesh->getPolygonData(i, polygon);
+		int vertexTotalNumber = polygon.mNbVerts;
+		int startIndexNumber = polygon.mIndexBase;
 
-		vertices[0].x = -convexMeshVertices[convexMeshIndices[index0]].x;
-		vertices[0].y = -convexMeshVertices[convexMeshIndices[index0]].y;
-		vertices[0].z = -convexMeshVertices[convexMeshIndices[index0]].z;
+		vector<Vector3> vertices;
+		vertices.reserve(vertexTotalNumber);
 
-		vertices[1].x = -convexMeshVertices[convexMeshIndices[index1]].x;
-		vertices[1].y = -convexMeshVertices[convexMeshIndices[index1]].y;
-		vertices[1].z = -convexMeshVertices[convexMeshIndices[index1]].z;
+		for (int j = 0; j < vertexTotalNumber; j++)
+		{
+			Vector3 vertex;
+			vertex.x = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].x;
+			vertex.y = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].y;
+			vertex.z = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].z;
 
-		vertices[2].x = -convexMeshVertices[convexMeshIndices[index2]].x;
-		vertices[2].y = -convexMeshVertices[convexMeshIndices[index2]].y;
-		vertices[2].z = -convexMeshVertices[convexMeshIndices[index2]].z;
+			vertex = Vector3::Transform(vertex, dxMatrix);
 
-		vertices[0] = Vector3::Transform(vertices[0], dxMatrix);
-		vertices[1] = Vector3::Transform(vertices[1], dxMatrix);
-		vertices[2] = Vector3::Transform(vertices[2], dxMatrix);
+			vertices.push_back(vertex);
+		}
 
-		RENDER->AddDebugTriangle(vertices);
+		RENDER->AddDebugPolygon(vertices);
 	}
 }

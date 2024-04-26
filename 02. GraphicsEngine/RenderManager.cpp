@@ -41,10 +41,10 @@ namespace GraphicsEngine
 		graphicsinfo.m_ClearColor = _color;
 		m_pGraphics->Initalize(graphicsinfo);
 		m_pPipeLine->Initalize(m_pGraphics->GetDevice(), m_pGraphics->GetDeviceContext(), static_cast<UINT>(TextureType::END));
-		m_pImGuiTool->Init(_hwnd, m_pGraphics->GetDevice(), m_pGraphics->GetDeviceContext());
+		//m_pImGuiTool->Init(_hwnd, m_pGraphics->GetDevice(), m_pGraphics->GetDeviceContext());
 
-		m_pImGuiTool->SetFloat3("DirectionColor", (float*) & (m_CBDirectionLightData.m_DircetionColor), -1.f, 1.f);
-		m_pImGuiTool->SetFloat3("Light Direction", (float*) & (m_CBDirectionLightData.m_Direction), -1.f, 1.f);
+		//m_pImGuiTool->SetFloat3("DirectionColor", (float*) & (m_CBDirectionLightData.m_DircetionColor), -1.f, 1.f);
+		//m_pImGuiTool->SetFloat3("Light Direction", (float*) & (m_CBDirectionLightData.m_Direction), -1.f, 1.f);
 
 		DebugDraw::Initialize(DEVICE, m_pGraphics->GetDeviceContext());
 
@@ -71,7 +71,7 @@ namespace GraphicsEngine
 		renderStaticMeshInstance();
 
 		RenderDebug();
-		m_pImGuiTool->Render();
+		//m_pImGuiTool->Render();
 
 		m_pGraphics->RenderEnd();
 	}
@@ -99,9 +99,18 @@ namespace GraphicsEngine
 			{
 				DebugDraw::DrawRay(DebugDraw::g_Batch.get(), Line->Pos0, Line->Pos1 - Line->Pos0, false, Line->Color);
 			}
-			for (auto triangle : m_DebugTriangle)
+			for (auto polygon : m_DebugPolygon)
 			{
-				DebugDraw::DrawTriangle(DebugDraw::g_Batch.get(), triangle[0], triangle[1], triangle[2], DirectX::Colors::Yellow);
+				for (int i = 0; i < polygon.size(); i++)
+				{
+					if (i + 1 >= polygon.size())
+					{
+						DebugDraw::DrawRay(DebugDraw::g_Batch.get(), polygon[i], polygon[0] - polygon[i], false,  DirectX::Colors::Yellow);
+						break;
+					}
+
+					DebugDraw::DrawRay(DebugDraw::g_Batch.get(), polygon[i], polygon[i + 1] - polygon[i], false, DirectX::Colors::Yellow);
+				}
 			}
 			for (auto point : m_DebugPoints)
 			{
@@ -114,7 +123,7 @@ namespace GraphicsEngine
 		m_DebugBoxes.clear();
 		m_DebugSpheres.clear();
 		m_DebugLines.clear();
-		m_DebugTriangle.clear();
+		m_DebugPolygon.clear();
 	}
 
 	void RenderManager::SortSkeletalMeshInstance()

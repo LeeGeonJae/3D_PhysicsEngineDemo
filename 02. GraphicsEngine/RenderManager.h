@@ -105,7 +105,7 @@ namespace GraphicsEngine
 		inline void AddDebugSphere(shared_ptr<DirectX::BoundingSphere> _boundingSphere);
 		inline void AddDebugLine(shared_ptr<DebugLineData> _line);
 		inline void AddDebugPoint(shared_ptr<Vector3> _point);
-		inline void AddDebugTriangle(vector<Vector3> _triangle);
+		inline void AddDebugPolygon(vector<Vector3> _triangle);
 
 	private:
 		shared_ptr<Graphics> m_pGraphics;
@@ -134,7 +134,7 @@ namespace GraphicsEngine
 		vector<shared_ptr<DirectX::BoundingOrientedBox>> m_DebugBoxes;
 		vector<shared_ptr<DirectX::BoundingSphere>> m_DebugSpheres;
 		vector<shared_ptr<DebugLineData>> m_DebugLines;
-		vector<vector<Vector3>> m_DebugTriangle;
+		vector<vector<Vector3>> m_DebugPolygon;
 		vector<shared_ptr<Vector3>> m_DebugPoints;
 	};
 
@@ -171,9 +171,9 @@ namespace GraphicsEngine
 	{
 		m_DebugPoints.push_back(_point);
 	}
-	inline void RenderManager::AddDebugTriangle(vector<Vector3> _triangle)
+	inline void RenderManager::AddDebugPolygon(vector<Vector3> _triangle)
 	{
-		m_DebugTriangle.push_back(_triangle);
+		m_DebugPolygon.push_back(_triangle);
 	}
 }
 

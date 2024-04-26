@@ -1,7 +1,7 @@
 #pragma once
 
-#include <PxPhysics.h>
-#include <PxPhysicsAPI.h>
+#include <physx\PxPhysics.h>
+#include <physx\PxPhysicsAPI.h>
 
 #include <vector>
 
@@ -53,7 +53,7 @@ namespace PhysicsEngine
 		PhysicsSimulationEventCallback* m_MyEventCallback;
 
 		// run simulation
-
+		physx::PxRigidDynamic* m_DynamicBody;
 	};
 
 	physx::PxScene* PhysX::GetPxScene()

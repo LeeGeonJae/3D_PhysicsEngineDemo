@@ -41,8 +41,8 @@ using namespace std;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
-#include <PxPhysics.h>
-#include <PxPhysicsAPI.h>
+#include <physx/PxPhysics.h>
+#include <physx/PxPhysicsAPI.h>
 
 // Libs
 #pragma comment(lib, "d3d11.lib")

@@ -4,6 +4,7 @@
 #include "iostream"
 #include "PhysicsSimulationEventCallback.h"
 #include "ActorUserData.h"
+#include <cassert>
 
 namespace PhysicsEngine
 {
@@ -28,7 +29,11 @@ namespace PhysicsEngine
 		// 필터 셰이더 로직 ( 트리거 )
 		if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 		{
-			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT
+				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+
 			return physx::PxFilterFlag::eDEFAULT;
 		}
 
@@ -41,7 +46,8 @@ namespace PhysicsEngine
 				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
 				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
 				| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
-				| physx::PxPairFlag::eCONTACT_EVENT_POSE;
+				| physx::PxPairFlag::eCONTACT_EVENT_POSE
+				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 			return physx::PxFilterFlag::eDEFAULT;
 		}
 		else
@@ -95,7 +101,7 @@ namespace PhysicsEngine
 		filterDataC.word0 = OBJECT_TYPE_C;
 		filterDataC.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B;
 
-
+		
 		// PhysX Foundation을 생성하고 초기화합니다.
 		m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_DefaultAllocatorCallback, m_DefaultErrorCallback);
 
@@ -133,11 +139,12 @@ namespace PhysicsEngine
 		// Scene 설명자에 CPU 디스패처와 필터 셰이더를 설정합니다.
 		sceneDesc.cpuDispatcher = m_Dispatcher; // Scene 설명자에 CPU 디스패처를 설정합니다.
 		sceneDesc.filterShader = CustomSimulationFilterShader;
-		sceneDesc.simulationEventCallback = m_MyEventCallback;		// 콜백 함수 등록
+		sceneDesc.simulationEventCallback = m_MyEventCallback;		// 클래스 등록
 
 
 		// PhysX Physics에서 Scene을 생성합니다.
 		m_Scene = m_Physics->createScene(sceneDesc); // Scene을 생성합니다.
+		assert(m_Scene);
 
 		// 
 		m_pvdClient = m_Scene->getScenePvdClient();
@@ -149,12 +156,14 @@ namespace PhysicsEngine
 		}
 
 		// 시뮬레이션 생성
-		m_Material = m_Physics->createMaterial(0.5f, 0.5f, 0.6f);
+		ActorUserData* data1 = new ActorUserData(ActorType::TILE);
+		ActorUserData* data2 = new ActorUserData(ActorType::MONSTER);
+		m_Material = m_Physics->createMaterial(1000.5f, 10000.5f, 0.f);
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
 		physx::PxShape* shape;
 		m_groundPlane->getShapes(&shape, sizeof(physx::PxShape));
 		shape->setSimulationFilterData(filterDataC);
-
+		m_groundPlane->userData = data1;
 		m_Scene->addActor(*m_groundPlane);
 
 		const physx::PxVec3 convexVerts[] = { physx::PxVec3(0,10,0),physx::PxVec3(10,0,0),physx::PxVec3(-10,0,0),physx::PxVec3(0,0,10), physx::PxVec3(0,0,-10) };
@@ -164,6 +173,7 @@ namespace PhysicsEngine
 		convexdesc.points.count = m_ModelVertices.size();
 		convexdesc.points.stride = sizeof(physx::PxVec3);
 		convexdesc.vertexLimit = 20;
+		convexdesc.polygonLimit = 10;
 		convexdesc.points.data = m_ModelVertices.data();
 		convexdesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
 
@@ -172,16 +182,13 @@ namespace PhysicsEngine
 
 		physx::PxDefaultMemoryOutputStream buf;
 		physx::PxConvexMeshCookingResult::Enum result;
-		if (!PxCookConvexMesh(params, convexdesc, buf, &result))
-			std::cout << "컨벡스 메시 cooking 실패!" << std::endl;
+		assert(PxCookConvexMesh(params, convexdesc, buf, &result));
 		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
 		physx::PxConvexMesh* convexMesh = m_Physics->createConvexMesh(input);
 
+
 		float halfExtent = 5.f;
 		physx::PxU32 size = 1;
-
-		physx::PxTriangleMeshDesc desc;
-		desc.flags = physx::PxMeshFlag::e16_BIT_INDICES;
 
 		const physx::PxTransform t(physx::PxVec3(0));
 		for (physx::PxU32 i = 0; i < size; i++)
@@ -193,29 +200,31 @@ namespace PhysicsEngine
 				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2+1), 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 				Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-				//Shape->userData = data;
+				//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+				body->userData = data;
 				Shape->setSimulationFilterData(filterDataB);
 				body->attachShape(*Shape);
-				physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.f);
+				physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
 				Shape->setContactOffset(0.001f);
 
 				m_Scene->addActor(*body);
 				m_Shapes.push_back(Shape);
 				m_Bodies.push_back(body);
+
 			}
 		}
 
-		ActorUserData* data = new ActorUserData(ActorType::MONSTER);
 		physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
 		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(150), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
 		physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 		Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 		//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		body->userData = data2;
 		Shape->setContactOffset(0.001f);
-		Shape->setSimulationFilterData(filterDataA);
+		Shape->setSimulationFilterData(filterDataB);
 		body->attachShape(*Shape);
 
-		physx::PxRigidBodyExt::updateMassAndInertia(*body, 10.f);
+		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
 		m_Scene->addActor(*body);
 		m_Shapes.push_back(Shape);
 		m_Bodies.push_back(body);
