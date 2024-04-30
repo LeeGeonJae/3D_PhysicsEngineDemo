@@ -4,6 +4,7 @@
 #include <physx\PxPhysicsAPI.h>
 
 #include <vector>
+#include <directxtk/SimpleMath.h>
 
 namespace PhysicsEngine
 {
@@ -19,10 +20,16 @@ namespace PhysicsEngine
 		void Init();
 		void Update(float elapsedTime);
 
+		void CreateActor();
+		void CreateCharactorController();
+
+		void move(DirectX::SimpleMath::Vector3& direction, float deltaTime);
+
 	public:
 		inline physx::PxScene* GetPxScene();
 		inline std::vector<physx::PxShape*>& GetPxShapes();
 		inline std::vector<physx::PxRigidActor*>& GetPxBodies();
+		inline physx::PxController* GetCharactorController();
 
 	public:
 		inline void AddVertexPosition(physx::PxVec3 _vertex);
@@ -44,6 +51,11 @@ namespace PhysicsEngine
 		physx::PxPvdSceneClient*		m_pvdClient = nullptr;
 		physx::PxRigidStatic*			m_groundPlane = nullptr;
 
+		physx::PxControllerManager*		m_ControllerManager = nullptr;
+		physx::PxController*			m_CharactorController = nullptr;
+		float m_Speed = 500.f;
+		float m_Deceleration = 100.f;
+
 		// init physX
 		std::vector<physx::PxShape*>	m_Shapes;
 		std::vector<physx::PxRigidActor*> m_Bodies;
@@ -54,6 +66,7 @@ namespace PhysicsEngine
 
 		// run simulation
 		physx::PxRigidDynamic* m_DynamicBody;
+
 	};
 
 	physx::PxScene* PhysX::GetPxScene()
@@ -71,5 +84,9 @@ namespace PhysicsEngine
 	void PhysX::AddVertexPosition(physx::PxVec3 _vertex)
 	{
 		m_ModelVertices.push_back(_vertex);
+	}
+	physx::PxController* PhysX::GetCharactorController()
+	{
+		return m_CharactorController;
 	}
 } 

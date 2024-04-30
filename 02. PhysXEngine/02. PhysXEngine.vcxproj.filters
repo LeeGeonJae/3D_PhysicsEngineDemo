@@ -30,6 +30,15 @@
     <ClInclude Include="ActorUserData.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="PhsicsCharactorEventCallback.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CharactorController.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CharactorMovement.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PhysX.cpp">
@@ -42,6 +51,15 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ActorUserData.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="PhsicsCharactorEventCallback.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CharactorController.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CharactorMovement.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,6 +19,7 @@
 #include "../02. GraphicsEngine/SkeletalMeshResource.h"
 #include "../02. PhysXEngine/PhysX.h"
 #include "../02. PhysXEngine/PhysicsSimulationEventCallback.h"
+#include "../01. Engine/InputManager.h"
 
 
 void TestApp::Init()
@@ -178,6 +179,44 @@ void TestApp::Update(float _deltaTime)
 		RENDER->AddDebugSphere(box);
 	}
 
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Left))
+	{
+		Vector3 direction = Vector3(-1.f, 0.f, 0.f);
+
+		m_PhysX->move(direction, _deltaTime);
+
+		m_PhysX->GetPxScene()->removeActor(*m_PhysX->GetPxBodies()[0]);
+		m_PhysX->Update(_deltaTime);
+	}
+	else if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Right))
+	{
+		Vector3 direction = Vector3(1.f, 0.f, 0.f);
+
+		m_PhysX->move(direction, _deltaTime);
+	}
+	else if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Up))
+	{
+		Vector3 direction = Vector3(0.f, 0.f, 1.f);
+
+		m_PhysX->move(direction, _deltaTime);
+	}
+	else if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Down))
+	{
+		Vector3 direction = Vector3(0.f, 0.f, -1.f);
+
+		m_PhysX->move(direction, _deltaTime);
+	}
+	else
+	{
+		Vector3 direction{};
+		m_PhysX->move(direction, _deltaTime);
+	}
+
+	physx::PxRigidActor* charactorBody = m_PhysX->GetCharactorController()->getActor();
+	physx::PxShape* shape;
+	charactorBody->getShapes(&shape, sizeof(shape));
+	DebugCapsule(charactorBody, shape);
+
 	for (auto object : m_ObjectVec)
 	{
 		object->Update(_deltaTime);
@@ -185,12 +224,12 @@ void TestApp::Update(float _deltaTime)
 
 	static float FixedTime = 0;
 	FixedTime += _deltaTime;
-
-	if (FixedTime >= 1 / 60.f)
-	{
-		m_PhysX->Update(FixedTime);
-		FixedTime -= 1 / 60.f;
-	}
+	m_PhysX->Update(_deltaTime);
+	//if (FixedTime >= 1 / 60.f)
+	//{
+	//	m_PhysX->Update(FixedTime);
+	//	FixedTime -= 1 / 60.f;
+	//}
 }
 
 void TestApp::LateUpdate(float _deltaTime)

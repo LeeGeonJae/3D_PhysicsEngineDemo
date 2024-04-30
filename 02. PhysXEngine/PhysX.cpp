@@ -88,20 +88,6 @@ namespace PhysicsEngine
 
 	void PhysX::Init()
 	{
-		// 오브젝트 타입에 대한 필터 데이터 정의
-		physx::PxFilterData filterDataA;
-		filterDataA.word0 = OBJECT_TYPE_A;
-		filterDataA.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B | OBJECT_TYPE_C;
-
-		physx::PxFilterData filterDataB;
-		filterDataB.word0 = OBJECT_TYPE_B;
-		filterDataB.word1 = OBJECT_TYPE_B | OBJECT_TYPE_C;
-
-		physx::PxFilterData filterDataC;
-		filterDataC.word0 = OBJECT_TYPE_C;
-		filterDataC.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B;
-
-		
 		// PhysX Foundation을 생성하고 초기화합니다.
 		m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_DefaultAllocatorCallback, m_DefaultErrorCallback);
 
@@ -155,10 +141,36 @@ namespace PhysicsEngine
 			m_pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 		}
 
+		CreateActor();
+		CreateCharactorController();
+	}
+
+	void PhysX::Update(float elapsedTime)
+	{
+		m_Scene->simulate(elapsedTime);
+		m_Scene->fetchResults(true);
+		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
+	}
+
+	void PhysX::CreateActor()
+	{
+		// 오브젝트 타입에 대한 필터 데이터 정의
+		physx::PxFilterData filterDataA;
+		filterDataA.word0 = OBJECT_TYPE_A;
+		filterDataA.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B | OBJECT_TYPE_C;
+
+		physx::PxFilterData filterDataB;
+		filterDataB.word0 = OBJECT_TYPE_B;
+		filterDataB.word1 = OBJECT_TYPE_B | OBJECT_TYPE_C;
+
+		physx::PxFilterData filterDataC;
+		filterDataC.word0 = OBJECT_TYPE_C;
+		filterDataC.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B;
+
 		// 시뮬레이션 생성
 		ActorUserData* data1 = new ActorUserData(ActorType::TILE);
 		ActorUserData* data2 = new ActorUserData(ActorType::MONSTER);
-		m_Material = m_Physics->createMaterial(1000.5f, 10000.5f, 0.f);
+		m_Material = m_Physics->createMaterial(1.f, 1.f, 1.f);
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
 		physx::PxShape* shape;
 		m_groundPlane->getShapes(&shape, sizeof(physx::PxShape));
@@ -197,14 +209,14 @@ namespace PhysicsEngine
 			{
 				ActorUserData* data = new ActorUserData(ActorType::PLAYER);
 				physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_Material);
-				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2+1), 0) * halfExtent);
+				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1), 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 				Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-				//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+				//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 				body->userData = data;
-				Shape->setSimulationFilterData(filterDataB);
+				Shape->setSimulationFilterData(filterDataC);
 				body->attachShape(*Shape);
-				physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
+				assert(physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f));
 				Shape->setContactOffset(0.001f);
 
 				m_Scene->addActor(*body);
@@ -224,16 +236,57 @@ namespace PhysicsEngine
 		Shape->setSimulationFilterData(filterDataB);
 		body->attachShape(*Shape);
 
-		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
+		//physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
 		m_Scene->addActor(*body);
 		m_Shapes.push_back(Shape);
 		m_Bodies.push_back(body);
+
 	}
 
-	void PhysX::Update(float elapsedTime)
+	void PhysX::CreateCharactorController()
 	{
-		m_Scene->simulate(elapsedTime);
-		m_Scene->fetchResults(true);
-		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
+		m_ControllerManager = PxCreateControllerManager(*m_Scene);
+
+		physx::PxBoxControllerDesc desc;
+		desc.halfHeight = 10.f;
+		desc.halfSideExtent = 5.f;
+		desc.halfForwardExtent = 5.f;
+		desc.contactOffset = 0.01f;
+		desc.stepOffset = 0.f;
+		//desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
+		//desc.nonWalkableMode = physx::PxControllerNonWalkableMode::ePREVENT_CLIMBING_AND_FORCE_SLIDING;
+		desc.slopeLimit = 0.f;
+		desc.maxJumpHeight = 20.f;
+		desc.position = physx::PxExtendedVec3(0.f, 10.f, -100.f);
+		desc.material = m_Material;
+
+		m_CharactorController = m_ControllerManager->createController(desc);
+	}
+
+	void PhysX::move(DirectX::SimpleMath::Vector3& direction, float deltaTime)
+	{
+		physx::PxVec3 Direction;
+
+		Direction.x = direction.x;
+		Direction.y = direction.y;
+		Direction.z = -direction.z;
+
+		static float charactorVelocity = 0;
+		if (direction.x == 0 && direction.z == 0)
+		{
+			charactorVelocity = charactorVelocity - m_Deceleration * deltaTime;
+		}
+		else
+		{
+			charactorVelocity = charactorVelocity + m_Speed * deltaTime;
+		}
+
+		if (charactorVelocity >= 0.0001f)
+		{
+			m_CharactorController->move(Direction, 0.0001f, deltaTime, NULL);
+
+			physx::PxExtendedVec3 position = m_CharactorController->getPosition();
+			std::cout << "Controller position after move: " << position.x << ", " << position.y << ", " << position.z << std::endl;
+		}
 	}
 }

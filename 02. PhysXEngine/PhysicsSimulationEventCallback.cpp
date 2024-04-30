@@ -123,7 +123,7 @@ namespace PhysicsEngine
 
 	void PhysicsSimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 	{
-		//std::cout << "OnTrigger" << std::endl;
+		std::cout << "OnTrigger" << std::endl;
 
 		//ActorUserData* data = (ActorUserData*)pairs->triggerActor->userData;
 
