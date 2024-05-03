@@ -157,6 +157,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhsicsCharactorEventCallback.h" />
+    <ClInclude Include="PhsicsCharactorHitReportCallback.h" />
     <ClInclude Include="PhysicsSimulationEventCallback.h" />
     <ClInclude Include="PhysX.h" />
   </ItemGroup>
@@ -171,6 +172,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PhsicsCharactorEventCallback.cpp" />
+    <ClCompile Include="PhsicsCharactorHitReportCallback.cpp" />
     <ClCompile Include="PhysicsSimulationEventCallback.cpp" />
     <ClCompile Include="PhysX.cpp" />
   </ItemGroup>

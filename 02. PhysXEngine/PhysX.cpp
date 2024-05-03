@@ -4,6 +4,7 @@
 #include "iostream"
 #include "PhysicsSimulationEventCallback.h"
 #include "ActorUserData.h"
+#include "CharactorController.h"
 #include <cassert>
 
 namespace PhysicsEngine
@@ -147,6 +148,8 @@ namespace PhysicsEngine
 
 	void PhysX::Update(float elapsedTime)
 	{
+		m_CharactorController->Update(elapsedTime);
+
 		m_Scene->simulate(elapsedTime);
 		m_Scene->fetchResults(true);
 		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
@@ -177,8 +180,6 @@ namespace PhysicsEngine
 		shape->setSimulationFilterData(filterDataC);
 		m_groundPlane->userData = data1;
 		m_Scene->addActor(*m_groundPlane);
-
-		const physx::PxVec3 convexVerts[] = { physx::PxVec3(0,10,0),physx::PxVec3(10,0,0),physx::PxVec3(-10,0,0),physx::PxVec3(0,0,10), physx::PxVec3(0,0,-10) };
 
 		// 컨벡스 메시 생성
 		physx::PxConvexMeshDesc convexdesc;
@@ -236,57 +237,22 @@ namespace PhysicsEngine
 		Shape->setSimulationFilterData(filterDataB);
 		body->attachShape(*Shape);
 
-		//physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
+		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
 		m_Scene->addActor(*body);
 		m_Shapes.push_back(Shape);
 		m_Bodies.push_back(body);
-
 	}
 
 	void PhysX::CreateCharactorController()
 	{
 		m_ControllerManager = PxCreateControllerManager(*m_Scene);
-
-		physx::PxBoxControllerDesc desc;
-		desc.halfHeight = 10.f;
-		desc.halfSideExtent = 5.f;
-		desc.halfForwardExtent = 5.f;
-		desc.contactOffset = 0.01f;
-		desc.stepOffset = 0.f;
-		//desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
-		//desc.nonWalkableMode = physx::PxControllerNonWalkableMode::ePREVENT_CLIMBING_AND_FORCE_SLIDING;
-		desc.slopeLimit = 0.f;
-		desc.maxJumpHeight = 20.f;
-		desc.position = physx::PxExtendedVec3(0.f, 10.f, -100.f);
-		desc.material = m_Material;
-
-		m_CharactorController = m_ControllerManager->createController(desc);
+		m_CharactorController = std::make_shared<CharactorController>();
+		m_CharactorController->Initialzie(m_Material, m_ControllerManager);
+		m_ControllerManager->setDebugRenderingFlags(physx::PxControllerDebugRenderFlag::eALL);
 	}
 
-	void PhysX::move(DirectX::SimpleMath::Vector3& direction, float deltaTime)
+	void PhysX::move(DirectX::SimpleMath::Vector3& direction)
 	{
-		physx::PxVec3 Direction;
-
-		Direction.x = direction.x;
-		Direction.y = direction.y;
-		Direction.z = -direction.z;
-
-		static float charactorVelocity = 0;
-		if (direction.x == 0 && direction.z == 0)
-		{
-			charactorVelocity = charactorVelocity - m_Deceleration * deltaTime;
-		}
-		else
-		{
-			charactorVelocity = charactorVelocity + m_Speed * deltaTime;
-		}
-
-		if (charactorVelocity >= 0.0001f)
-		{
-			m_CharactorController->move(Direction, 0.0001f, deltaTime, NULL);
-
-			physx::PxExtendedVec3 position = m_CharactorController->getPosition();
-			std::cout << "Controller position after move: " << position.x << ", " << position.y << ", " << position.z << std::endl;
-		}
+		m_CharactorController->AddDirection(direction);
 	}
 }
