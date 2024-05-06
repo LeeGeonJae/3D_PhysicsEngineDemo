@@ -3,6 +3,8 @@
 
 namespace PhysicsEngine
 {
+	class CharactorMovement;
+
 	class PhsicsCharactorHitReportCallback : public physx::PxUserControllerHitReport
 	{
 	public:
@@ -14,8 +16,15 @@ namespace PhysicsEngine
 		virtual void onControllerHit(const physx::PxControllersHit& hit) override;
 		virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) override;
 
+	public:
+		inline void SetIsFall(CharactorMovement* charactorMovement);
+
 	private:
-
-
+		CharactorMovement* m_CharactorMovement;;
 	};
+
+	void PhsicsCharactorHitReportCallback::SetIsFall(CharactorMovement* charactorMovement)
+	{
+		m_CharactorMovement = charactorMovement;
+	}
 }

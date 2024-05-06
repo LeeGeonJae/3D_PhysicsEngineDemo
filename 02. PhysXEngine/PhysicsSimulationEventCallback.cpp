@@ -42,6 +42,9 @@ namespace PhysicsEngine
 			ActorUserData* myData = (ActorUserData*)pairHeader.actors[0]->userData;
 			ActorUserData* otherData = (ActorUserData*)pairHeader.actors[1]->userData;
 
+			if (myData == nullptr || otherData == nullptr)
+				return;
+
 			std::cout << "=====================================================" << std::endl;
 			if (myData->GetActorType() == ActorType::MONSTER)
 			{
@@ -75,6 +78,9 @@ namespace PhysicsEngine
 		{
 			ActorUserData* myData = (ActorUserData*)pairHeader.actors[0]->userData;
 			ActorUserData* otherData = (ActorUserData*)pairHeader.actors[1]->userData;
+
+			if (myData == nullptr || otherData == nullptr)
+				return;
 
 			std::cout << "=====================================================" << std::endl;
 			if (myData->GetActorType() == ActorType::MONSTER)

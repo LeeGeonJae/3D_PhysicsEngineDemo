@@ -32,8 +32,8 @@
   @{
 */
 
-#include <geometry/PxCustomGeometry.h>
-#include <geometry/PxGjkQuery.h>
+//#include <geometry/PxCustomGeometry.h>
+//#include <geometry/PxGjkQuery.h>
 
 #if !PX_DOXYGEN
 namespace physx
@@ -53,7 +53,7 @@ class PxCustomGeometryExt
 public:
 
 	/// \cond PRIVATE
-	struct BaseConvexCallbacks : PxCustomGeometry::Callbacks, PxGjkQuery::Support
+	struct BaseConvexCallbacks : PxCustomGeometry::Callbacks/*, PxGjkQuery::Support*/
 	{
 		BaseConvexCallbacks(float _margin) : margin(_margin) {}
 

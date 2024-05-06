@@ -21,6 +21,7 @@ namespace PhysicsEngine
 		float StaticFriction;
 		float DynamicFriction;
 		float JumpSpeed;
+		float JumpXZAcceleration;
 		float JumpDeceleration;
 		float Gravity;
 	};
@@ -35,6 +36,7 @@ namespace PhysicsEngine
 
 		void Update(DirectX::SimpleMath::Vector3& inputVector, float deltaTime);
 		bool Compute(float deltaTime);
+		void Jump();
 
 		void CopyDirectionToPxVec3(physx::PxVec3& direction);
 		void LimitVelocity();
@@ -48,6 +50,7 @@ namespace PhysicsEngine
 		inline const float& GetJumpSpeed();
 		inline const float& GetJumpDeceleration();
 		inline const float& GetGravity();
+		inline const bool& GetIsFall();
 		inline void SetMaxSpeed(const float& maxSpeed);
 		inline void SetAcceleration(const float& acceleration);
 		inline void SetStaticFriction(const float& staticFriction);
@@ -55,9 +58,10 @@ namespace PhysicsEngine
 		inline void SetJumpSpeed(const float& jumpSpeed);
 		inline void SetJumpDeceleration(const float& jumpDeceleration);
 		inline void SetGravity(const float& gravity);
+		inline void SetIsFall(const bool& isFall);
 
 	private:
-		CharactorState m_CharactorState;
+		bool mIsFall;
 
 		DirectX::SimpleMath::Vector3 m_Velocity;
 		DirectX::SimpleMath::Vector3 m_Direction;
@@ -68,6 +72,7 @@ namespace PhysicsEngine
 		float m_StaticFriction;
 		float m_DynamicFriction;
 		float m_JumpSpeed;
+		float m_JumpXZAcceleration;
 		float m_JumpDeceleration;
 		float m_Gravity;
 		float m_MinDistance;
@@ -112,6 +117,10 @@ namespace PhysicsEngine
 	{
 		return m_Gravity;
 	}
+	inline const bool& CharactorMovement::GetIsFall()
+	{
+		return mIsFall;
+	}
 	void CharactorMovement::SetMaxSpeed(const float& maxSpeed)
 	{
 		m_MaxSpeed = maxSpeed;
@@ -139,6 +148,11 @@ namespace PhysicsEngine
 	void CharactorMovement::SetGravity(const float& gravity)
 	{
 		m_Gravity = gravity;
+	}
+
+	inline void CharactorMovement::SetIsFall(const bool& isFall)
+	{
+		mIsFall = isFall;
 	}
 
 #pragma endregion

@@ -201,7 +201,7 @@ namespace PhysicsEngine
 
 
 		float halfExtent = 5.f;
-		physx::PxU32 size = 1;
+		physx::PxU32 size = 5;
 
 		const physx::PxTransform t(physx::PxVec3(0));
 		for (physx::PxU32 i = 0; i < size; i++)
@@ -210,12 +210,12 @@ namespace PhysicsEngine
 			{
 				ActorUserData* data = new ActorUserData(ActorType::PLAYER);
 				physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_Material);
-				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1), 0) * halfExtent);
+				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1) , 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 				Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-				//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+				Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
 				body->userData = data;
-				Shape->setSimulationFilterData(filterDataC);
+				Shape->setSimulationFilterData(filterDataB);
 				body->attachShape(*Shape);
 				assert(physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f));
 				Shape->setContactOffset(0.001f);
@@ -231,7 +231,7 @@ namespace PhysicsEngine
 		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(150), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
 		physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 		Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-		//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
 		body->userData = data2;
 		Shape->setContactOffset(0.001f);
 		Shape->setSimulationFilterData(filterDataB);
@@ -249,9 +249,15 @@ namespace PhysicsEngine
 		m_CharactorController = std::make_shared<CharactorController>();
 		m_CharactorController->Initialzie(m_Material, m_ControllerManager);
 		m_ControllerManager->setDebugRenderingFlags(physx::PxControllerDebugRenderFlag::eALL);
+		m_ControllerManager->createObstacleContext();
 	}
 
 	void PhysX::move(DirectX::SimpleMath::Vector3& direction)
+	{
+		m_CharactorController->AddDirection(direction);
+	}
+
+	void PhysX::Jump(DirectX::SimpleMath::Vector3& direction)
 	{
 		m_CharactorController->AddDirection(direction);
 	}

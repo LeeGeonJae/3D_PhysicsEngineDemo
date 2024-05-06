@@ -1,72 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Charactor">
+      <UniqueIdentifier>{4f86c412-b6e2-419e-a125-a1f1efed96e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일">
+    <Filter Include="Physics">
+      <UniqueIdentifier>{7bfd778f-cc65-4cf3-a0ea-b26ad2910987}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Callback">
+      <UniqueIdentifier>{2152cc7f-346f-4642-83e0-7fb5b127770b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysX.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsSimulationEventCallback.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ActorUserData.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="PhsicsCharactorEventCallback.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="CharactorController.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Charactor</Filter>
     </ClInclude>
     <ClInclude Include="CharactorMovement.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Charactor</Filter>
+    </ClInclude>
+    <ClInclude Include="PhsicsCharactorEventCallback.h">
+      <Filter>Callback</Filter>
     </ClInclude>
     <ClInclude Include="PhsicsCharactorHitReportCallback.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Callback</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSimulationEventCallback.h">
+      <Filter>Callback</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysX.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorUserData.h">
+      <Filter>Callback</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PhysX.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>헤더 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsSimulationEventCallback.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ActorUserData.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="PhsicsCharactorEventCallback.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>header</Filter>
     </ClCompile>
     <ClCompile Include="CharactorController.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Charactor</Filter>
     </ClCompile>
     <ClCompile Include="CharactorMovement.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Charactor</Filter>
+    </ClCompile>
+    <ClCompile Include="PhsicsCharactorEventCallback.cpp">
+      <Filter>Callback</Filter>
     </ClCompile>
     <ClCompile Include="PhsicsCharactorHitReportCallback.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Callback</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSimulationEventCallback.cpp">
+      <Filter>Callback</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysX.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorUserData.cpp">
+      <Filter>Callback</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

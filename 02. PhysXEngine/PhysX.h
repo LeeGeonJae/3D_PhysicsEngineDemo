@@ -26,6 +26,7 @@ namespace PhysicsEngine
 		void CreateCharactorController();
 
 		void move(DirectX::SimpleMath::Vector3& direction);
+		void Jump(DirectX::SimpleMath::Vector3& direction);
 
 	public:
 		inline physx::PxScene* GetPxScene();

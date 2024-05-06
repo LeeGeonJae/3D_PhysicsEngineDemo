@@ -226,6 +226,12 @@ void TestApp::Update(float _deltaTime)
 			m_PhysX->move(direction);
 			IsMove = true;
 		}
+		if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Space))
+		{
+			Vector3 direction = Vector3(0.f, 1.f, 0.f);
+
+			m_PhysX->move(direction);
+		}
 
 		m_PhysX->Update(1 / 60.f);
 	}

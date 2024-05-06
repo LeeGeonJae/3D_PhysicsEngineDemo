@@ -7,6 +7,7 @@
 namespace PhysicsEngine
 {
 	class CharactorMovement;
+	class PhsicsCharactorHitReportCallback;
 
 	class CharactorController
 	{
@@ -26,6 +27,8 @@ namespace PhysicsEngine
 
 		physx::PxController* m_Controller = nullptr;
 		std::shared_ptr<CharactorMovement> m_CharactorMovement = nullptr;
+		std::shared_ptr<PhsicsCharactorHitReportCallback> m_HitReportCallback = nullptr;
+
 	};
 
 	physx::PxController* CharactorController::GetPxController()
