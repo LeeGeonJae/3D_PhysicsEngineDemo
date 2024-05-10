@@ -25,6 +25,8 @@ namespace PhysicsEngine
 		void CreateActor();
 		void CreateCharactorController();
 
+		void CreateArticulation();
+
 		void move(DirectX::SimpleMath::Vector3& direction);
 		void Jump(DirectX::SimpleMath::Vector3& direction);
 

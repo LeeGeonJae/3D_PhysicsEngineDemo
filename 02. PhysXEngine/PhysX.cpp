@@ -105,7 +105,7 @@ namespace PhysicsEngine
 
 		// 물리 시뮬레이션의 허용 오차 스케일을 설정합니다.
 		m_ToleranceScale.length = 100; // 길이 허용 오차 스케일을 설정합니다.
-		m_ToleranceScale.speed = 981; // 속도 허용 오차 스케일을 설정합니다.
+		m_ToleranceScale.speed = 2000; // 속도 허용 오차 스케일을 설정합니다.
 
 		// PhysX Physics를 생성하고 초기화합니다.
 		m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, m_ToleranceScale, true, m_Pvd); // Physics를 생성합니다.
@@ -114,7 +114,7 @@ namespace PhysicsEngine
 		physx::PxSceneDesc sceneDesc(m_Physics->getTolerancesScale()); // Scene을 생성할 때 물리적인 허용 오차 스케일을 설정합니다.
 
 		// 중력을 설정합니다.
-		sceneDesc.gravity = physx::PxVec3(0.f, -9.81f, 0.f); // 중력을 설정합니다.
+		sceneDesc.gravity = physx::PxVec3(0.f, -20.f, 0.f); // 중력을 설정합니다.
 
 		// CPU 디스패처를 생성하고 설정합니다.
 		m_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2); // CPU 디스패처를 생성합니다.
@@ -141,9 +141,12 @@ namespace PhysicsEngine
 			m_pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 			m_pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 		}
+		m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.f);
+		m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LIMITS, 1.f);
 
 		CreateActor();
 		CreateCharactorController();
+		CreateArticulation();
 	}
 
 	void PhysX::Update(float elapsedTime)
@@ -185,7 +188,7 @@ namespace PhysicsEngine
 		physx::PxConvexMeshDesc convexdesc;
 		convexdesc.points.count = m_ModelVertices.size();
 		convexdesc.points.stride = sizeof(physx::PxVec3);
-		convexdesc.vertexLimit = 20;
+		convexdesc.vertexLimit = 255;
 		convexdesc.polygonLimit = 10;
 		convexdesc.points.data = m_ModelVertices.data();
 		convexdesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
@@ -201,7 +204,7 @@ namespace PhysicsEngine
 
 
 		float halfExtent = 5.f;
-		physx::PxU32 size = 5;
+		physx::PxU32 size = 2;
 
 		const physx::PxTransform t(physx::PxVec3(0));
 		for (physx::PxU32 i = 0; i < size; i++)
@@ -209,8 +212,8 @@ namespace PhysicsEngine
 			for (physx::PxU32 j = 0; j < size - i; j++)
 			{
 				ActorUserData* data = new ActorUserData(ActorType::PLAYER);
-				physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(halfExtent, halfExtent, halfExtent), *m_Material);
-				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1) , 0) * halfExtent);
+				physx::PxShape* Shape = m_Physics->createShape(physx::PxSphereGeometry(halfExtent), *m_Material);
+				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1) + 100, 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 				Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 				Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
@@ -227,20 +230,20 @@ namespace PhysicsEngine
 			}
 		}
 
-		physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
-		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(150), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
-		physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
-		Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-		Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
-		body->userData = data2;
-		Shape->setContactOffset(0.001f);
-		Shape->setSimulationFilterData(filterDataB);
-		body->attachShape(*Shape);
+		//physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
+		//physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(150), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
+		//physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
+		//Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+		//body->userData = data2;
+		//Shape->setContactOffset(0.001f);
+		//Shape->setSimulationFilterData(filterDataB);
+		//body->attachShape(*Shape);
 
-		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
-		m_Scene->addActor(*body);
-		m_Shapes.push_back(Shape);
-		m_Bodies.push_back(body);
+		//physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
+		//m_Scene->addActor(*body);
+		//m_Shapes.push_back(Shape);
+		//m_Bodies.push_back(body);
 	}
 
 	void PhysX::CreateCharactorController()
@@ -248,8 +251,60 @@ namespace PhysicsEngine
 		m_ControllerManager = PxCreateControllerManager(*m_Scene);
 		m_CharactorController = std::make_shared<CharactorController>();
 		m_CharactorController->Initialzie(m_Material, m_ControllerManager);
-		m_ControllerManager->setDebugRenderingFlags(physx::PxControllerDebugRenderFlag::eALL);
-		m_ControllerManager->createObstacleContext();
+		m_ControllerManager->setDebugRenderingFlags(physx::PxControllerDebugRenderFlag::eALL);\
+	}
+
+	void PhysX::CreateArticulation()
+	{
+		physx::PxTransform transform1 = physx::PxTransform(physx::PxVec3{ -2.5, 100.f, 0.f });
+		physx::PxTransform transform2 = physx::PxTransform(physx::PxVec3{ 2.5f, 100.f, 0.f });
+
+		physx::PxArticulationReducedCoordinate* articulation = m_Physics->createArticulationReducedCoordinate();
+
+		articulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, true);
+		articulation->setSolverIterationCounts(4);
+		articulation->setMaxCOMLinearVelocity(1000000);
+
+		physx::PxArticulationLink* rootLink = articulation->createLink(NULL, physx::PxTransform(0.f, 0.f, 0.f));
+		physx::PxRigidActorExt::createExclusiveShape(*rootLink, physx::PxSphereGeometry(1.f), *m_Material);
+		physx::PxRigidBodyExt::updateMassAndInertia(*rootLink, 1.f);
+
+		physx::PxArticulationLink* link = articulation->createLink(rootLink, physx::PxTransform(physx::PxVec3(15.f, 0.f, 0.f)));
+		physx::PxRigidActorExt::createExclusiveShape(*link, physx::PxSphereGeometry(3.f), *m_Material);
+		physx::PxRigidBodyExt::updateMassAndInertia(*link, 1.f);
+
+		physx::PxArticulationJointReducedCoordinate* joint = link->getInboundJoint();
+		joint->setParentPose(m_Bodies[1]->getGlobalPose());
+		joint->setChildPose(m_Bodies[2]->getGlobalPose());
+
+		joint->setJointType(physx::PxArticulationJointType::eREVOLUTE);
+		// 조인트 프레임의 Z축(eSWING2)를 중심으로 회전하는 회전 조인트
+		joint->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eLIMITED);
+		joint->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eLIMITED);
+		joint->setMotion(physx::PxArticulationAxis::eX, physx::PxArticulationMotion::eLOCKED);
+		joint->setMotion(physx::PxArticulationAxis::eY, physx::PxArticulationMotion::eLOCKED);
+		joint->setMotion(physx::PxArticulationAxis::eZ, physx::PxArticulationMotion::eFREE);
+
+		physx::PxArticulationLimit limits;
+		limits.low = -physx::PxPiDivFour;	// in rad for a rotational motion
+		limits.high = physx::PxPiDivFour;
+		joint->setLimitParams(physx::PxArticulationAxis::eSWING2, limits);
+		joint->setLimitParams(physx::PxArticulationAxis::eTWIST, limits);
+
+		physx::PxArticulationDrive posDrive;
+		posDrive.stiffness = 10.f;										// 조인트를 목표 위치로 구동하는 스프링 상수
+		posDrive.damping = 5.f;											// 조인트를 목표 속도로 구동하는 감쇠 계수
+		posDrive.maxForce = 1000.f;										// 드라이브에 대한 힘 제한
+		posDrive.driveType = physx::PxArticulationDriveType::eFORCE;	// 드라이브 출력이 힘/torque이 되도록 합니다.(기본값)
+		// 적용 및 목표 설정 (일관된 축을 다시 기록)
+		joint->setDriveParams(physx::PxArticulationAxis::eSWING2, posDrive);
+		joint->setDriveVelocity(physx::PxArticulationAxis::eSWING2, 0.f);
+		joint->setDriveTarget(physx::PxArticulationAxis::eSWING2, 1.5f);
+		joint->setDriveTarget(physx::PxArticulationAxis::eTWIST, 0.5f);
+
+		physx::PxArticulationFixedTendon* fixedTendon = articulation->createFixedTendon();
+
+		m_Scene->addArticulation(*articulation);
 	}
 
 	void PhysX::move(DirectX::SimpleMath::Vector3& direction)

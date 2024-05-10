@@ -25,7 +25,7 @@ namespace PhysicsEngine
 		desc.stepOffset = 0.f;
 		//desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
 		desc.nonWalkableMode = physx::PxControllerNonWalkableMode::ePREVENT_CLIMBING_AND_FORCE_SLIDING;
-		desc.slopeLimit = 1.f;
+		desc.slopeLimit = 0.1f;
 		desc.maxJumpHeight = 1.f;
 		desc.position = physx::PxExtendedVec3(100.f, 60.f, -0.f);
 		desc.material = material;
@@ -34,7 +34,7 @@ namespace PhysicsEngine
 		m_Controller = controllerManager->createController(desc);
 
 		physx::PxFilterData filterData;
-		filterData.word0 = 3;
+		filterData.word0 = 2;
 		filterData.word1 = 7;
 		physx::PxShape* shape;
 		m_Controller->getActor()->getShapes(&shape, 1);
@@ -80,6 +80,6 @@ namespace PhysicsEngine
 
 	void CharactorController::AddDirection(DirectX::SimpleMath::Vector3& inputVector)
 	{
-		m_Direction = m_Direction + inputVector;
+		m_Direction += inputVector;
 	}
 }

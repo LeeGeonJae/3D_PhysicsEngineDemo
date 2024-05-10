@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="FQPhysics">
+      <UniqueIdentifier>{9803e5ae-2e82-474f-be2b-777846fa8a7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{52ef6666-a9f3-4432-89c0-af5909025245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character">
+      <UniqueIdentifier>{b4dbfc19-01cd-4a73-99e4-ba39f13bce93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RigidBody">
+      <UniqueIdentifier>{895e30c1-b440-4238-b7ee-ec9e570edec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physx">
+      <UniqueIdentifier>{483cd7d2-63a5-4ec6-aed1-aa5e7e3349f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tool">
+      <UniqueIdentifier>{99de7aa7-e376-43fc-bfd8-f9cd0def7d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{a6f1c632-e56a-456f-b4bd-be885c9665ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Callback">
+      <UniqueIdentifier>{1fa4cccb-e793-4a61-bed2-2c99400c86de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helper">
+      <UniqueIdentifier>{ac9ab3f4-2ce7-4734-b859-df7021017cdb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CharacterController.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterMovement.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>physx</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCCTHitCallback.h">
+      <Filter>Callback</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCharactorControllerManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="FQPhysics.h">
+      <Filter>FQPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicRigidBody.h">
+      <Filter>RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCookingMeshTool.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsRigidBodyManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSimulationEventCallback.h">
+      <Filter>Callback</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCharacterController.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticRigidBody.h">
+      <Filter>RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineDataConverter.h">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugShape.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterMovement.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>physx</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCCTHitCallback.cpp">
+      <Filter>Callback</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCharactorControllerManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Header</Filter>
+    </ClCompile>
+    <ClCompile Include="FQPhysics.cpp">
+      <Filter>FQPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicRigidBody.cpp">
+      <Filter>RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCookingMeshTool.cpp">
+      <Filter>Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsRigidBodyManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSimulationEventCallback.cpp">
+      <Filter>Callback</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCharacterController.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticRigidBody.cpp">
+      <Filter>RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineDataConverter.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugShape.cpp" />
+  </ItemGroup>
+</Project>

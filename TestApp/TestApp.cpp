@@ -11,6 +11,7 @@
 #include "PawnController.h"
 
 #include "DebugShape.h"
+#include "../03. PhysXEngine/Common.h"
 
 #include "../02. GraphicsEngine/Graphics.h"
 #include "../02. GraphicsEngine/RenderManager.h"
@@ -21,6 +22,7 @@
 #include "../02. PhysXEngine/PhysicsSimulationEventCallback.h"
 #include "../01. Engine/InputManager.h"
 #include "../02. PhysXEngine/CharactorController.h"
+#include "../03. PhysXEngine/FQPhysics.h"
 
 
 void TestApp::Init()
