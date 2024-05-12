@@ -39,7 +39,7 @@ namespace PhysicsEngine
 		}
 
 		// 필터 데이터 충돌 체크 ( 시뮬레이션 )
-		if (((filterData0.word1 & filterData1.word0) > 0) && ((filterData1.word1 & filterData0.word0) > 0))
+		//if (((filterData0.word1 & filterData1.word0) > 0) && ((filterData1.word1 & filterData0.word0) > 0))
 		{
 			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
 				| physx::PxPairFlag::eDETECT_CCD_CONTACT
@@ -51,11 +51,11 @@ namespace PhysicsEngine
 				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 			return physx::PxFilterFlag::eDEFAULT;
 		}
-		else
-		{
-			pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
-			return physx::PxFilterFlag::eSUPPRESS;
-		}
+		//else
+		//{
+		//	pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
+		//	return physx::PxFilterFlag::eSUPPRESS;
+		//}
 	}
 
 	PhysX::PhysX()
@@ -105,7 +105,7 @@ namespace PhysicsEngine
 
 		// 물리 시뮬레이션의 허용 오차 스케일을 설정합니다.
 		m_ToleranceScale.length = 100; // 길이 허용 오차 스케일을 설정합니다.
-		m_ToleranceScale.speed = 2000; // 속도 허용 오차 스케일을 설정합니다.
+		m_ToleranceScale.speed = 1000; // 속도 허용 오차 스케일을 설정합니다.
 
 		// PhysX Physics를 생성하고 초기화합니다.
 		m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, m_ToleranceScale, true, m_Pvd); // Physics를 생성합니다.
@@ -114,7 +114,7 @@ namespace PhysicsEngine
 		physx::PxSceneDesc sceneDesc(m_Physics->getTolerancesScale()); // Scene을 생성할 때 물리적인 허용 오차 스케일을 설정합니다.
 
 		// 중력을 설정합니다.
-		sceneDesc.gravity = physx::PxVec3(0.f, -20.f, 0.f); // 중력을 설정합니다.
+		sceneDesc.gravity = physx::PxVec3(0.f, -10.f, 0.f); // 중력을 설정합니다.
 
 		// CPU 디스패처를 생성하고 설정합니다.
 		m_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2); // CPU 디스패처를 생성합니다.
@@ -127,6 +127,8 @@ namespace PhysicsEngine
 		sceneDesc.cpuDispatcher = m_Dispatcher; // Scene 설명자에 CPU 디스패처를 설정합니다.
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = m_MyEventCallback;		// 클래스 등록
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 
 
 		// PhysX Physics에서 Scene을 생성합니다.
@@ -155,6 +157,7 @@ namespace PhysicsEngine
 
 		m_Scene->simulate(elapsedTime);
 		m_Scene->fetchResults(true);
+
 		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
 	}
 
@@ -204,7 +207,7 @@ namespace PhysicsEngine
 
 
 		float halfExtent = 5.f;
-		physx::PxU32 size = 2;
+		physx::PxU32 size = 0;
 
 		const physx::PxTransform t(physx::PxVec3(0));
 		for (physx::PxU32 i = 0; i < size; i++)
@@ -256,53 +259,89 @@ namespace PhysicsEngine
 
 	void PhysX::CreateArticulation()
 	{
-		physx::PxTransform transform1 = physx::PxTransform(physx::PxVec3{ -2.5, 100.f, 0.f });
-		physx::PxTransform transform2 = physx::PxTransform(physx::PxVec3{ 2.5f, 100.f, 0.f });
-
 		physx::PxArticulationReducedCoordinate* articulation = m_Physics->createArticulationReducedCoordinate();
 
 		articulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, true);
+		articulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, true);
 		articulation->setSolverIterationCounts(4);
-		articulation->setMaxCOMLinearVelocity(1000000);
+		articulation->setMaxCOMLinearVelocity(10000000.f);
 
-		physx::PxArticulationLink* rootLink = articulation->createLink(NULL, physx::PxTransform(0.f, 0.f, 0.f));
-		physx::PxRigidActorExt::createExclusiveShape(*rootLink, physx::PxSphereGeometry(1.f), *m_Material);
-		physx::PxRigidBodyExt::updateMassAndInertia(*rootLink, 1.f);
+		physx::PxArticulationLink* rootLink = articulation->createLink(nullptr, physx::PxTransform(0.f, 50.f, 0.f));
+		//physx::PxRigidActorExt::createExclusiveShape(*rootLink, physx::PxSphereGeometry(5.f), *m_Material);
+		//physx::PxRigidBodyExt::updateMassAndInertia(*rootLink, 10.f);
 
-		physx::PxArticulationLink* link = articulation->createLink(rootLink, physx::PxTransform(physx::PxVec3(15.f, 0.f, 0.f)));
-		physx::PxRigidActorExt::createExclusiveShape(*link, physx::PxSphereGeometry(3.f), *m_Material);
-		physx::PxRigidBodyExt::updateMassAndInertia(*link, 1.f);
+		physx::PxArticulationLink* link = articulation->createLink(rootLink, physx::PxTransform(physx::PxVec3(10.f, 0.f, 0.f)));
+		if (!physx::PxRigidActorExt::createExclusiveShape(*link, physx::PxSphereGeometry(5.f), *m_Material))
+			std::cout << "false" << std::endl;
+		physx::PxRigidBodyExt::updateMassAndInertia(*link, 10.f);
+
+		physx::PxArticulationLink* link1 = articulation->createLink(link, physx::PxTransform(physx::PxVec3(-10.f, -0.f, 0.f)));
+		if (!physx::PxRigidActorExt::createExclusiveShape(*link1, physx::PxSphereGeometry(5.f), *m_Material))
+			std::cout << "false" << std::endl;
+		physx::PxRigidBodyExt::updateMassAndInertia(*link1, 10.f);
+
+		//m_Bodies.push_back(rootLink);
+		m_Bodies.push_back(link);
+		m_Bodies.push_back(link1);
+
+		physx::PxFilterData filterData;
+		filterData.word0 = OBJECT_TYPE_B;
+		filterData.word1 = OBJECT_TYPE_B | OBJECT_TYPE_C;
+
+		//physx::PxShape* shape1;
+		//physx::PxShape* shape2;
+		//link->getShapes(&shape1, 1);
+		//shape1->setSimulationFilterData(filterData);
+		//link1->getShapes(&shape2, 1);
+		//shape2->setSimulationFilterData(filterData);
 
 		physx::PxArticulationJointReducedCoordinate* joint = link->getInboundJoint();
-		joint->setParentPose(m_Bodies[1]->getGlobalPose());
-		joint->setChildPose(m_Bodies[2]->getGlobalPose());
+		joint->setParentPose(rootLink->getGlobalPose());
+		joint->setChildPose(link->getGlobalPose());
 
-		joint->setJointType(physx::PxArticulationJointType::eREVOLUTE);
-		// 조인트 프레임의 Z축(eSWING2)를 중심으로 회전하는 회전 조인트
-		joint->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eLIMITED);
-		joint->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eLIMITED);
-		joint->setMotion(physx::PxArticulationAxis::eX, physx::PxArticulationMotion::eLOCKED);
-		joint->setMotion(physx::PxArticulationAxis::eY, physx::PxArticulationMotion::eLOCKED);
+		joint->setJointType(physx::PxArticulationJointType::eSPHERICAL);
+		joint->setMotion(physx::PxArticulationAxis::eSWING1, physx::PxArticulationMotion::eFREE);
+		joint->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eFREE);
+		joint->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eFREE);
+		joint->setMotion(physx::PxArticulationAxis::eX, physx::PxArticulationMotion::eFREE);
+		joint->setMotion(physx::PxArticulationAxis::eY, physx::PxArticulationMotion::eFREE);
 		joint->setMotion(physx::PxArticulationAxis::eZ, physx::PxArticulationMotion::eFREE);
 
+		physx::PxArticulationJointReducedCoordinate* joint1 = link1->getInboundJoint();
+		joint1->setParentPose(link->getGlobalPose());
+		joint1->setChildPose(link1->getGlobalPose());
+
+		joint1->setJointType(physx::PxArticulationJointType::eSPHERICAL);
+		joint1->setMotion(physx::PxArticulationAxis::eSWING1, physx::PxArticulationMotion::eFREE);
+		joint1->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eFREE);
+		joint1->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eFREE);
+		joint1->setMotion(physx::PxArticulationAxis::eX, physx::PxArticulationMotion::eFREE);
+		joint1->setMotion(physx::PxArticulationAxis::eY, physx::PxArticulationMotion::eFREE);
+		joint1->setMotion(physx::PxArticulationAxis::eZ, physx::PxArticulationMotion::eFREE);
+
 		physx::PxArticulationLimit limits;
-		limits.low = -physx::PxPiDivFour;	// in rad for a rotational motion
-		limits.high = physx::PxPiDivFour;
-		joint->setLimitParams(physx::PxArticulationAxis::eSWING2, limits);
-		joint->setLimitParams(physx::PxArticulationAxis::eTWIST, limits);
+		//limits.low = -physx::PxPiDivFour;    // in rad for a rotational motion
+		//limits.high = physx::PxPiDivFour;
+		//limits.low = -1.f;    // in rad for a rotational motion
+		//limits.high = 1.f;
+		//joint->setLimitParams(physx::PxArticulationAxis::eSWING2, limits);
+		//joint->setLimitParams(physx::PxArticulationAxis::eTWIST, limits);
 
 		physx::PxArticulationDrive posDrive;
-		posDrive.stiffness = 10.f;										// 조인트를 목표 위치로 구동하는 스프링 상수
-		posDrive.damping = 5.f;											// 조인트를 목표 속도로 구동하는 감쇠 계수
-		posDrive.maxForce = 1000.f;										// 드라이브에 대한 힘 제한
-		posDrive.driveType = physx::PxArticulationDriveType::eFORCE;	// 드라이브 출력이 힘/torque이 되도록 합니다.(기본값)
-		// 적용 및 목표 설정 (일관된 축을 다시 기록)
+		posDrive.stiffness = 10.f;
+		posDrive.damping = 50.f;
+		posDrive.maxForce = 1000.f;
+		posDrive.driveType = physx::PxArticulationDriveType::eFORCE;
 		joint->setDriveParams(physx::PxArticulationAxis::eSWING2, posDrive);
 		joint->setDriveVelocity(physx::PxArticulationAxis::eSWING2, 0.f);
 		joint->setDriveTarget(physx::PxArticulationAxis::eSWING2, 1.5f);
 		joint->setDriveTarget(physx::PxArticulationAxis::eTWIST, 0.5f);
+		joint1->setDriveParams(physx::PxArticulationAxis::eSWING2, posDrive);
+		joint1->setDriveVelocity(physx::PxArticulationAxis::eSWING2, 0.f);
+		joint1->setDriveTarget(physx::PxArticulationAxis::eSWING2, 1.5f);
+		joint1->setDriveTarget(physx::PxArticulationAxis::eTWIST, 0.5f);
 
-		physx::PxArticulationFixedTendon* fixedTendon = articulation->createFixedTendon();
+		// Create fixed tendon if needed
 
 		m_Scene->addArticulation(*articulation);
 	}

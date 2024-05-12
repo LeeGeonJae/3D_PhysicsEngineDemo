@@ -182,7 +182,7 @@ void TestApp::Update(float _deltaTime)
 		RENDER->AddDebugSphere(box);
 	}
 
-	physx::PxRigidActor* charactorBody = m_PhysX->GetCharactorController()->GetPxController()->getActor();
+	physx::PxRigidActor* charactorBody = m_PhysX-> GetCharactorController()->GetPxController()->getActor();
 	physx::PxShape* shape;
 	charactorBody->getShapes(&shape, sizeof(shape));
 	DebugCapsule(charactorBody, shape);
