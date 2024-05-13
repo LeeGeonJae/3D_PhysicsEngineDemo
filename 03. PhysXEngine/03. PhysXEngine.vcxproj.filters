@@ -28,6 +28,9 @@
     <Filter Include="Helper">
       <UniqueIdentifier>{ac9ab3f4-2ce7-4734-b859-df7021017cdb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CharacterPhysics">
+      <UniqueIdentifier>{1c3a2f91-00e1-4664-b17f-e23f55d34599}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterController.h">
@@ -82,6 +85,21 @@
       <Filter>Helper</Filter>
     </ClInclude>
     <ClInclude Include="DebugShape.h" />
+    <ClInclude Include="PhysicsCharacterPhysicsManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPhysics.h">
+      <Filter>CharacterPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterArticulation.h">
+      <Filter>CharacterPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterJoint.h">
+      <Filter>CharacterPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterLink.h">
+      <Filter>CharacterPhysics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterController.cpp">
@@ -130,5 +148,20 @@
       <Filter>Helper</Filter>
     </ClCompile>
     <ClCompile Include="DebugShape.cpp" />
+    <ClCompile Include="PhysicsCharacterPhysicsManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterArticulation.cpp">
+      <Filter>CharacterPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterJoint.cpp">
+      <Filter>CharacterPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterLink.cpp">
+      <Filter>CharacterPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterPhysics.cpp">
+      <Filter>CharacterPhysics</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

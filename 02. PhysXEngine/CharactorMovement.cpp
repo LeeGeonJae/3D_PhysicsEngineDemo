@@ -113,8 +113,6 @@ namespace PhysicsEngine
 		m_Direction.z = square(m_Velocity.z) / triangleFunction * m_Speed;
 		m_Direction.y = m_Velocity.y;
 
-		std::cout << m_Direction.x << ", " << m_Direction.z << ", " << m_Speed << std::endl;
-
 		return true;
 	}
 

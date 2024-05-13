@@ -39,7 +39,7 @@ namespace PhysicsEngine
 		}
 
 		// 필터 데이터 충돌 체크 ( 시뮬레이션 )
-		//if (((filterData0.word1 & filterData1.word0) > 0) && ((filterData1.word1 & filterData0.word0) > 0))
+		if (((filterData0.word1 & filterData1.word0) > 0) && ((filterData1.word1 & filterData0.word0) > 0))
 		{
 			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
 				| physx::PxPairFlag::eDETECT_CCD_CONTACT
@@ -51,11 +51,11 @@ namespace PhysicsEngine
 				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 			return physx::PxFilterFlag::eDEFAULT;
 		}
-		//else
-		//{
-		//	pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
-		//	return physx::PxFilterFlag::eSUPPRESS;
-		//}
+		else
+		{
+			pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
+			return physx::PxFilterFlag::eSUPPRESS;
+		}
 	}
 
 	PhysX::PhysX()
@@ -157,6 +157,8 @@ namespace PhysicsEngine
 
 		m_Scene->simulate(elapsedTime);
 		m_Scene->fetchResults(true);
+
+		std::cout << m_Scene->getTimestamp() << std::endl;
 
 		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
 	}
@@ -262,7 +264,7 @@ namespace PhysicsEngine
 		physx::PxArticulationReducedCoordinate* articulation = m_Physics->createArticulationReducedCoordinate();
 
 		articulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, true);
-		articulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, true);
+		articulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
 		articulation->setSolverIterationCounts(4);
 		articulation->setMaxCOMLinearVelocity(10000000.f);
 
@@ -270,30 +272,40 @@ namespace PhysicsEngine
 		//physx::PxRigidActorExt::createExclusiveShape(*rootLink, physx::PxSphereGeometry(5.f), *m_Material);
 		//physx::PxRigidBodyExt::updateMassAndInertia(*rootLink, 10.f);
 
-		physx::PxArticulationLink* link = articulation->createLink(rootLink, physx::PxTransform(physx::PxVec3(10.f, 0.f, 0.f)));
+		physx::PxArticulationLink* link = articulation->createLink(rootLink, physx::PxTransform(physx::PxVec3(0.f, 0.f, 0.f)));
 		if (!physx::PxRigidActorExt::createExclusiveShape(*link, physx::PxSphereGeometry(5.f), *m_Material))
 			std::cout << "false" << std::endl;
 		physx::PxRigidBodyExt::updateMassAndInertia(*link, 10.f);
 
-		physx::PxArticulationLink* link1 = articulation->createLink(link, physx::PxTransform(physx::PxVec3(-10.f, -0.f, 0.f)));
+		physx::PxArticulationLink* link1 = articulation->createLink(link, physx::PxTransform(physx::PxVec3(20.f, 0.f, 0.f)));
 		if (!physx::PxRigidActorExt::createExclusiveShape(*link1, physx::PxSphereGeometry(5.f), *m_Material))
 			std::cout << "false" << std::endl;
 		physx::PxRigidBodyExt::updateMassAndInertia(*link1, 10.f);
 
+		physx::PxArticulationLink* link2 = articulation->createLink(link1, physx::PxTransform(physx::PxVec3(-5.f, -5.f, 0.f)));
+		if (!physx::PxRigidActorExt::createExclusiveShape(*link2, physx::PxSphereGeometry(5.f), *m_Material))
+			std::cout << "false" << std::endl;
+		physx::PxRigidBodyExt::updateMassAndInertia(*link2, 10.f);
+
 		//m_Bodies.push_back(rootLink);
 		m_Bodies.push_back(link);
 		m_Bodies.push_back(link1);
+		m_Bodies.push_back(link2);
 
 		physx::PxFilterData filterData;
-		filterData.word0 = OBJECT_TYPE_B;
-		filterData.word1 = OBJECT_TYPE_B | OBJECT_TYPE_C;
+		filterData.word0 = OBJECT_TYPE_A;
+		filterData.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B | OBJECT_TYPE_C;
 
-		//physx::PxShape* shape1;
-		//physx::PxShape* shape2;
-		//link->getShapes(&shape1, 1);
-		//shape1->setSimulationFilterData(filterData);
-		//link1->getShapes(&shape2, 1);
-		//shape2->setSimulationFilterData(filterData);
+		physx::PxShape* shape;
+		link->getShapes(&shape, 1);
+		shape->setQueryFilterData(filterData);
+		shape->setSimulationFilterData(filterData);
+		link1->getShapes(&shape, 1);
+		shape->setQueryFilterData(filterData);
+		shape->setSimulationFilterData(filterData);
+		link2->getShapes(&shape, 1);
+		shape->setQueryFilterData(filterData);
+		shape->setSimulationFilterData(filterData);
 
 		physx::PxArticulationJointReducedCoordinate* joint = link->getInboundJoint();
 		joint->setParentPose(rootLink->getGlobalPose());
@@ -303,9 +315,6 @@ namespace PhysicsEngine
 		joint->setMotion(physx::PxArticulationAxis::eSWING1, physx::PxArticulationMotion::eFREE);
 		joint->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eFREE);
 		joint->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eFREE);
-		joint->setMotion(physx::PxArticulationAxis::eX, physx::PxArticulationMotion::eFREE);
-		joint->setMotion(physx::PxArticulationAxis::eY, physx::PxArticulationMotion::eFREE);
-		joint->setMotion(physx::PxArticulationAxis::eZ, physx::PxArticulationMotion::eFREE);
 
 		physx::PxArticulationJointReducedCoordinate* joint1 = link1->getInboundJoint();
 		joint1->setParentPose(link->getGlobalPose());
@@ -315,9 +324,15 @@ namespace PhysicsEngine
 		joint1->setMotion(physx::PxArticulationAxis::eSWING1, physx::PxArticulationMotion::eFREE);
 		joint1->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eFREE);
 		joint1->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eFREE);
-		joint1->setMotion(physx::PxArticulationAxis::eX, physx::PxArticulationMotion::eFREE);
-		joint1->setMotion(physx::PxArticulationAxis::eY, physx::PxArticulationMotion::eFREE);
-		joint1->setMotion(physx::PxArticulationAxis::eZ, physx::PxArticulationMotion::eFREE);
+
+		physx::PxArticulationJointReducedCoordinate* joint2 = link2->getInboundJoint();
+		joint2->setParentPose(link1->getGlobalPose());
+		joint2->setChildPose(link2->getGlobalPose());
+
+		joint2->setJointType(physx::PxArticulationJointType::eSPHERICAL);
+		joint2->setMotion(physx::PxArticulationAxis::eSWING1, physx::PxArticulationMotion::eFREE);
+		joint2->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eFREE);
+		joint2->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eFREE);
 
 		physx::PxArticulationLimit limits;
 		//limits.low = -physx::PxPiDivFour;    // in rad for a rotational motion
@@ -340,6 +355,10 @@ namespace PhysicsEngine
 		joint1->setDriveVelocity(physx::PxArticulationAxis::eSWING2, 0.f);
 		joint1->setDriveTarget(physx::PxArticulationAxis::eSWING2, 1.5f);
 		joint1->setDriveTarget(physx::PxArticulationAxis::eTWIST, 0.5f);
+		joint2->setDriveParams(physx::PxArticulationAxis::eSWING2, posDrive);
+		joint2->setDriveVelocity(physx::PxArticulationAxis::eSWING2, 0.f);
+		joint2->setDriveTarget(physx::PxArticulationAxis::eSWING2, 1.5f);
+		joint2->setDriveTarget(physx::PxArticulationAxis::eTWIST, 0.5f);
 
 		// Create fixed tendon if needed
 
