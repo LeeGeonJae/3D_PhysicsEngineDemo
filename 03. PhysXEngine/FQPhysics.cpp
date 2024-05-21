@@ -4,6 +4,7 @@
 #include "Physics.h"
 #include "PhysicsRigidBodyManager.h"
 #include "PhysicsCharactorControllerManager.h"
+#include "PhysicsCharacterPhysicsmanager.h"
 #include "PhysicsSimulationEventCallback.h"
 
 namespace physics
@@ -58,6 +59,7 @@ namespace physics
 		: mPhysics(std::make_shared<Physics>())
 		, mRigidBodyManager(std::make_shared<PhysicsRigidBodyManager>())
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
+		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
 		, mCollisionMatrix{}
@@ -100,7 +102,8 @@ namespace physics
 
 		// 매니저 초기화
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics())) return false;
-		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics())) return false;
+		if (!mCCTManager->initialize(mPhysics->GetPhysics(), mScene)) return false;
+		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene)) return false;
 
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
@@ -285,7 +288,31 @@ namespace physics
 	{
 		mCCTManager->SetCharacterMovementData(id, movementData);
 	}
-
 #pragma endregion
 
+#pragma region CharacterPhysicsManager
+	bool FQPhysics::CreateCharacterphysics(const CharacterPhysicsInfo& info)
+	{
+		return mCharacterPhysicsManager->CreateCharacterphysics(info);
+	}
+
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
+	}
+
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, radius);
+	}
+
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
+	}
+	bool FQPhysics::SimulationCharacter(unsigned int id)
+	{
+		return mCharacterPhysicsManager->SimulationCharacter(id);
+	}
+#pragma endregion
 }

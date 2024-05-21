@@ -14,7 +14,7 @@ namespace physics
 		/// <summary>
 		/// 캐릭터 컨트롤러 매니저 생성 및 초기화 함수
 		/// </summary>
-		bool initialize(physx::PxScene* scene, physx::PxPhysics* physics);
+		bool initialize(physx::PxPhysics* physics, physx::PxScene* scene);
 
 		/// <summary>
 		/// 캐릭터 컨트롤러 매니저가 소유하고 있는 캐릭터 컨트롤러 업데이트 함수

@@ -31,6 +31,9 @@
     <Filter Include="CharacterPhysics">
       <UniqueIdentifier>{1c3a2f91-00e1-4664-b17f-e23f55d34599}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{d9ea110f-9378-4597-80db-0eb69b8a578d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterController.h">
@@ -88,16 +91,28 @@
     <ClInclude Include="PhysicsCharacterPhysicsManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="CharacterPhysics.h">
-      <Filter>CharacterPhysics</Filter>
+    <ClInclude Include="PhysicsResourceManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="CharacterArticulation.h">
-      <Filter>CharacterPhysics</Filter>
+    <ClInclude Include="MaterialResource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBase.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationResource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvexMeshResource.h">
+      <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="CharacterJoint.h">
       <Filter>CharacterPhysics</Filter>
     </ClInclude>
     <ClInclude Include="CharacterLink.h">
+      <Filter>CharacterPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPhysics.h">
       <Filter>CharacterPhysics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -151,8 +166,20 @@
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="CharacterArticulation.cpp">
-      <Filter>CharacterPhysics</Filter>
+    <ClCompile Include="PhysicsResourceManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialResource.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBase.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationResource.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvexMeshResource.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="CharacterJoint.cpp">
       <Filter>CharacterPhysics</Filter>

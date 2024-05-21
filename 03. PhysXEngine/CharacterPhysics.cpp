@@ -1,2 +1,124 @@
-#include "pch.h"
 #include "CharacterPhysics.h"
+
+#include "CharacterLink.h"
+#include "EngineDataConverter.h"
+
+namespace physics
+{
+	CharacterPhysics::CharacterPhysics()
+		: mPxArticulation(nullptr)
+		, mMaterial(nullptr)
+		, mRootLink(std::make_shared<CharacterLink>())
+		, mModelPath()
+		, mID()
+		, mLayerNumber()
+		, mLinkContainer()
+		, mWorldTransform()
+	{
+	}
+
+	CharacterPhysics::~CharacterPhysics()
+	{
+	}
+
+	bool CharacterPhysics::Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics)
+	{
+		mPxArticulation = physics->createArticulationReducedCoordinate();
+		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
+		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
+		mPxArticulation->setSolverIterationCounts(2);
+		mPxArticulation->setMaxCOMAngularVelocity(10000.f);
+
+		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
+		mModelPath = info.modelPath;
+		mID = info.id;
+		mLayerNumber = info.layerNumber;
+		mWorldTransform = info.worldTransform;
+
+		CharacterLinkInfo linkInfo;
+		std::string str = "root";
+		linkInfo.boneName = "root";
+		linkInfo.parentBoneName = "";
+		linkInfo.localTransform = mWorldTransform;
+		mRootLink->Initialize(linkInfo, nullptr, mPxArticulation);
+
+		return true;
+	}
+
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent)
+	{
+		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
+
+		auto parentLink = mLinkContainer.find(info.parentBoneName);
+		if (parentLink == mLinkContainer.end())
+		{
+			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+		}
+		else
+		{
+			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
+		}
+
+		mLinkContainer.insert(std::make_pair(info.boneName, link));
+		physx::PxShape* shape =  link->CreateShape(mMaterial, extent, collisionData);
+		assert(shape);
+
+		physx::PxFilterData filterdata;
+		filterdata.word0 = mLayerNumber;
+		filterdata.word1 = collisionMatrix[mLayerNumber];
+		shape->setSimulationFilterData(filterdata);
+
+		return true;
+	}
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& radius)
+	{
+		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
+
+		auto parentLink = mLinkContainer.find(info.parentBoneName);
+		if (parentLink == mLinkContainer.end())
+		{
+			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+		}
+		else
+		{
+			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
+		}
+
+		mLinkContainer.insert(std::make_pair(info.boneName, link));
+		physx::PxShape* shape = link->CreateShape(mMaterial, radius, collisionData);
+		assert(shape);
+
+		physx::PxFilterData filterdata;
+		filterdata.word0 = mLayerNumber;
+		filterdata.word1 = collisionMatrix[mLayerNumber];
+		shape->setSimulationFilterData(filterdata);
+
+		return true;
+	}
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& halfHeight, const float& radius)
+	{
+		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
+
+		auto parentLink = mLinkContainer.find(info.parentBoneName);
+		if (parentLink == mLinkContainer.end())
+		{
+			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+		}
+		else
+		{
+			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
+		}
+
+		mLinkContainer.insert(std::make_pair(info.boneName, link));
+		physx::PxShape* shape = link->CreateShape(mMaterial, radius, halfHeight, collisionData);
+		assert(shape);
+
+		physx::PxFilterData filterdata;
+		filterdata.word0 = mLayerNumber;
+		filterdata.word1 = collisionMatrix[mLayerNumber];
+		shape->setSimulationFilterData(filterdata);
+
+		return true;
+	}
+}
+

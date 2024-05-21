@@ -9,6 +9,7 @@ namespace physics
 	class PhysicsRigidBodyManager;
 	class PhysicsSimulationEventCallback;
 	class PhysicsCharactorControllerManager;
+	class PhysicsCharacterPhysicsManager;
 
 	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
 
@@ -48,7 +49,6 @@ namespace physics
 		virtual void SetPhysicsInfo(PhysicsEngineInfo& info);
 
 #pragma region RigidBodyManager
-
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
@@ -85,7 +85,6 @@ namespace physics
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
 		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon();
-		
 #pragma endregion
 
 #pragma region CharacterControllerManager
@@ -120,12 +119,24 @@ namespace physics
 
 #pragma endregion
 
+#pragma region CharacterPhysicsManager
+		bool CreateCharacterphysics(const CharacterPhysicsInfo& info);
+
+		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent);
+		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius);
+		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius);
+
+		bool SimulationCharacter(unsigned int id);
+#pragma endregion
+
+
 	private:
 		// 씬
 		physx::PxScene* mScene;
 		std::shared_ptr<Physics> mPhysics;
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
+		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
 
 		// 충돌 이벤트 클래스
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;

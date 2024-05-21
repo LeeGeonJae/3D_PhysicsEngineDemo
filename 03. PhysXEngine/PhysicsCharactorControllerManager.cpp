@@ -28,7 +28,7 @@ namespace physics
 		PX_RELEASE(mCCTManager);
 	}
 
-	bool PhysicsCharactorControllerManager::initialize(physx::PxScene* scene, physx::PxPhysics* physics)
+	bool PhysicsCharactorControllerManager::initialize(physx::PxPhysics* physics, physx::PxScene* scene)
 	{
 		mCCTManager = PxCreateControllerManager(*scene);
 		assert(mCCTManager);
