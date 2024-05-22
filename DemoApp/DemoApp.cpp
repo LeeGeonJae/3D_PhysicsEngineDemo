@@ -38,7 +38,7 @@ void DemoApp::Init()
 	{
 		engineInfo.collisionMatrix[i] = INT_MAX;
 	}
-	engineInfo.gravity = Vector3(0.f, - 10.f, 0.f);
+	engineInfo.gravity = Vector3(0.f, - 30.f, 0.f);
 	m_Physics->Initialize(engineInfo);
 	m_Funtion = callbackFunction;
 	m_Physics->SetCallBackFunction(m_Funtion);
@@ -143,7 +143,7 @@ void DemoApp::Init()
 		{
 			physics::CharacterLinkInfo linkInfo;
 			linkInfo.boneName = "pelvis";
-			linkInfo.density = 1.f;
+			linkInfo.density = 100.f;
 			linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
 			linkInfo.parentBoneName = "root";
 			linkInfo.JointInfo.Swing1AxisInfo.motion = physics::EArticulationMotion::LIMITED;
@@ -155,10 +155,10 @@ void DemoApp::Init()
 			linkInfo.JointInfo.TwistAxisInfo.motion = physics::EArticulationMotion::LIMITED;
 			linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 50.f;
 			linkInfo.JointInfo.TwistAxisInfo.limitsLow = -50.f;
-			linkInfo.JointInfo.damping = 1.f;
+			linkInfo.JointInfo.damping = 0.99f;
 			linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
-			linkInfo.JointInfo.maxForce = 100.f;
-			linkInfo.JointInfo.stiffness = 10.f;
+			linkInfo.JointInfo.maxForce = 0.f;
+			linkInfo.JointInfo.stiffness = 0.f;
 			m_Physics->AddArticulationLink(3, linkInfo, 3.f, 5.f);
 
 			// «œ√º

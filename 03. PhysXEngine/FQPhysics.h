@@ -52,14 +52,14 @@ namespace physics
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
-		virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType);
-		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType);
-		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
-		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
-		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType);
-		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType);
-		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
-		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
+		virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material);
+		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material);
+		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material);
+		virtual bool CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material);
+		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material);
+		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material);
+		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material);
+		virtual bool CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material);
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환

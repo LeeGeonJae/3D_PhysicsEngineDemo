@@ -35,14 +35,14 @@ namespace physics
 		/// </summary>
 		/// <param name="info"> 리지드 바디의 도형 형태 입니다. </param>
 		/// <param name="colliderType"> 콜라이더 타입(트리거, 콜리전) 입니다. </param>
-		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
-		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
+		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
+		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
+		bool CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material, int* collisionMatrix);
+		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
+		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
+		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
+		bool CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material, int* collisionMatrix);
 
 		bool SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 		bool SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);

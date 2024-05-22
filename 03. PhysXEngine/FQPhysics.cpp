@@ -153,56 +153,56 @@ namespace physics
 
 #pragma region RigidBodyManager
 
-	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material)
 	{
 		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
-	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material)
 	{
 		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
-	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material)
 	{
 		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
-	bool FQPhysics::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
+		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, material, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
-	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material)
 	{
 		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
-	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material)
 	{
 		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
-	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material)
 	{
 		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
-	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material)
 	{
 		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;

@@ -51,7 +51,7 @@ namespace physics
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.2f);
+		shape->setContactOffset(0.4f);
 		return shape;
 	}
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData)
