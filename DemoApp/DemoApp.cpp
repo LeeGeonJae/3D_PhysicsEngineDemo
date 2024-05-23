@@ -54,16 +54,17 @@ void DemoApp::Init()
 		boxInfo.colliderInfo.layerNumber = 0;
 		boxInfo.colliderInfo.restitution = 1.f;
 		boxInfo.colliderInfo.staticFriction = 1.f;
-		m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION);
+		m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION, "ground");
 		m_RigidBodyIDVec.push_back(0);
 
 		boxInfo.boxExtent = Vector3(5.f, 5.f, 5.f);
 		boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 20.f, 0.f));
 		boxInfo.colliderInfo.id = 1;
-		m_Physics->CreateDynamicBody(boxInfo, physics::EColliderType::COLLISION);
+		m_Physics->CreateDynamicBody(boxInfo, physics::EColliderType::COLLISION, "box");
 
 		physics::CharacterControllerInfo controllerInfo;
 		controllerInfo.id = 1000;
+		controllerInfo.layerNumber = 0;
 		controllerInfo.position = Vector3(100.f, 20.f, 0.f);
 
 		physics::CharacterMovementInfo movementInfo;
@@ -124,7 +125,7 @@ void DemoApp::Init()
 		convexInfo.vertexSize = meshVertex.size();
 		convexInfo.vertices = meshVertex.data();
 
-		m_Physics->CreateDynamicBody(convexInfo, physics::EColliderType::COLLISION);
+		m_Physics->CreateDynamicBody(convexInfo, physics::EColliderType::COLLISION, "zelda");
 	}
 
 	// °üÀý

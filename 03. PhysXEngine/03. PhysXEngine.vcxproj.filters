@@ -100,9 +100,6 @@
     <ClInclude Include="ResourceBase.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="ArticulationResource.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
     <ClInclude Include="ConvexMeshResource.h">
       <Filter>Resource</Filter>
     </ClInclude>
@@ -173,9 +170,6 @@
       <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="ResourceBase.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="ArticulationResource.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="ConvexMeshResource.cpp">

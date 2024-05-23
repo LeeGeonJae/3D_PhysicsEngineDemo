@@ -10,6 +10,7 @@ namespace physics
 	class PhysicsSimulationEventCallback;
 	class PhysicsCharactorControllerManager;
 	class PhysicsCharacterPhysicsManager;
+	class PhysicsResourceManager;
 
 	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
 
@@ -52,14 +53,14 @@ namespace physics
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
-		virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material);
-		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material);
-		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material);
-		virtual bool CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material);
-		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material);
-		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material);
-		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material);
-		virtual bool CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material);
+		virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name);
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -137,6 +138,7 @@ namespace physics
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
+		std::shared_ptr<PhysicsResourceManager> mResourceManager;
 
 		// 충돌 이벤트 클래스
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;

@@ -124,6 +124,10 @@ namespace physics
 		unsigned int id = unregisterID;
 		unsigned int layerNumber = 0;
 		DirectX::SimpleMath::Matrix collisionTransform;
+		float staticFriction = 1.f;									// 정적 마찰 계수
+		float dynamicFriction = 1.f;								// 동적 마찰 계수
+		float restitution = 1.f;									// 복원 계수
+		float density = 1.f;										// 밀도
 	};
 
 	struct BoxColliderInfo
@@ -143,6 +147,14 @@ namespace physics
 		ColliderInfo colliderInfo;
 		float raidus;
 		float halfHeight;
+	};
+
+	struct ConvexMeshColliderInfo
+	{
+		ColliderInfo colliderInfo;
+		DirectX::SimpleMath::Vector3* vertices;					// 모델 버텍스
+		int vertexSize;											// 모델 버텍스 사이즈
+		unsigned char convexPolygonLimit = 4;					// 컨벡스 메시에 생성할 폴리곤 최대 수 ( 최소 : 4개 이상, 최대 256개 미만 )
 	};
 #pragma endregion
 

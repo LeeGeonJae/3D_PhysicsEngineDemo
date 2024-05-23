@@ -56,6 +56,9 @@ namespace physics
 		DirectX::SimpleMath::Vector3 mInputMove;
 
 		std::shared_ptr<CharacterMovement> mCharacterMovement;
+
+		std::shared_ptr<physx::PxControllerFilters> mFilters;
+		std::shared_ptr<physx::PxFilterData> mFilterData;
 		physx::PxMaterial* mMaterial;
 		physx::PxController* mPxController;
 	};

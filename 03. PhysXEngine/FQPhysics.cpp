@@ -4,7 +4,8 @@
 #include "Physics.h"
 #include "PhysicsRigidBodyManager.h"
 #include "PhysicsCharactorControllerManager.h"
-#include "PhysicsCharacterPhysicsmanager.h"
+#include "PhysicsCharacterPhysicsManager.h"
+#include "PhysicsResourceManager.h"
 #include "PhysicsSimulationEventCallback.h"
 
 namespace physics
@@ -61,6 +62,7 @@ namespace physics
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
 		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
+		, mResourceManager(std::make_shared<PhysicsResourceManager>())
 		, mScene(nullptr)
 		, mCollisionMatrix{}
 	{
@@ -101,7 +103,8 @@ namespace physics
 		assert(mScene);
 
 		// 매니저 초기화
-		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics())) return false;
+		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
+		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager)) return false;
 		if (!mCCTManager->initialize(mPhysics->GetPhysics(), mScene)) return false;
 		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene)) return false;
 
@@ -153,69 +156,42 @@ namespace physics
 
 #pragma region RigidBodyManager
 
-	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material)
+	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material)
+	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material)
+	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material)
+	bool FQPhysics::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, material, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material)
+	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material)
+	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material)
+	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material)
+	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
 	}
 
 	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
-		if (!mRigidBodyManager->RemoveRigidBody(id, mScene))
-			return false;
-
-		return true;
+		return mRigidBodyManager->RemoveRigidBody(id, mScene);
 	}
 
 	bool FQPhysics::RemoveAllRigidBody()

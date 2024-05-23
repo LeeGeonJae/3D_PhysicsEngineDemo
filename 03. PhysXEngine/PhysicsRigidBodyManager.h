@@ -7,6 +7,8 @@
 
 namespace physics
 {
+	class PhysicsResourceManager;
+
 	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
 
 	class PhysicsRigidBodyManager
@@ -18,7 +20,7 @@ namespace physics
 		/// <summary>
 		/// 리지드 바디를 생성 및 관리하는 매니저를 세팅합니다.
 		/// </summary>
-		bool Initialize(physx::PxPhysics* physics);
+		bool Initialize(physx::PxPhysics* physics, std::shared_ptr<PhysicsResourceManager> resourceManager);
 
 		/// <summary>
 		/// 생성된 리지드 바디들을 한 번에 물리 공간에 생성합니다.
@@ -35,14 +37,14 @@ namespace physics
 		/// </summary>
 		/// <param name="info"> 리지드 바디의 도형 형태 입니다. </param>
 		/// <param name="colliderType"> 콜라이더 타입(트리거, 콜리전) 입니다. </param>
-		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
-		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
-		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
-		bool CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material, int* collisionMatrix);
-		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
-		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
-		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, void* material, int* collisionMatrix);
-		bool CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, void* convexMesh, void* material, int* collisionMatrix);
+		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
+		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
+		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
+		bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
+		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
+		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
+		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
+		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix);
 
 		bool SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 		bool SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
@@ -93,7 +95,8 @@ namespace physics
 	private:
 		physx::PxPhysics* mPhysics;
 
-		std::shared_ptr<PhysicsCookingMeshTool> mCookingMeshTool;
+		std::weak_ptr<PhysicsResourceManager> mResourceManager;
+
 		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
 		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>> mCollisionDataContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;

@@ -12,6 +12,8 @@ namespace physics
 		, mCharacterMovement(nullptr)
 		, mMaterial(nullptr)
 		, mPxController(nullptr)
+		, mFilters(nullptr)
+		, mFilterData(nullptr)
 	{
 	}
 
@@ -30,6 +32,11 @@ namespace physics
 		mID = info.id;
 		mLayerNumber = info.layerNumber;
 		mMaterial = material;
+
+		mFilterData = std::make_shared<physx::PxFilterData>();
+		mFilterData->word0 = mLayerNumber;
+		mFilterData->word1 = collisionMatrix[mLayerNumber];
+		mFilters = std::make_shared<physx::PxControllerFilters>(mFilterData.get());
 
 		mCharacterMovement = std::make_shared<CharacterMovement>();
 		mCharacterMovement->initialize(movementInfo);
