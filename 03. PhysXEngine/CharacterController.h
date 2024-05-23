@@ -5,6 +5,7 @@
 namespace physics
 {
 	class CharacterMovement;
+	class CharacterQueryFilterCallback;
 
 	class CharacterController
 	{
@@ -57,6 +58,7 @@ namespace physics
 
 		std::shared_ptr<CharacterMovement> mCharacterMovement;
 
+		std::shared_ptr<CharacterQueryFilterCallback> mCharacterQueryFilterCallback;
 		std::shared_ptr<physx::PxControllerFilters> mFilters;
 		std::shared_ptr<physx::PxFilterData> mFilterData;
 		physx::PxMaterial* mMaterial;

@@ -112,6 +112,9 @@
     <ClInclude Include="CharacterPhysics.h">
       <Filter>CharacterPhysics</Filter>
     </ClInclude>
+    <ClInclude Include="CharacterQueryFilterCallback.h">
+      <Filter>Callback</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterController.cpp">
@@ -183,6 +186,9 @@
     </ClCompile>
     <ClCompile Include="CharacterPhysics.cpp">
       <Filter>CharacterPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterQueryFilterCallback.cpp">
+      <Filter>Callback</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

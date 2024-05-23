@@ -2,6 +2,7 @@
 #include "CharacterController.h"
 
 #include "CharacterMovement.h"
+#include "CharacterQueryFilterCallback.h"
 
 namespace physics
 {
@@ -14,6 +15,7 @@ namespace physics
 		, mPxController(nullptr)
 		, mFilters(nullptr)
 		, mFilterData(nullptr)
+		, mCharacterQueryFilterCallback(nullptr)
 	{
 	}
 
@@ -36,7 +38,8 @@ namespace physics
 		mFilterData = std::make_shared<physx::PxFilterData>();
 		mFilterData->word0 = mLayerNumber;
 		mFilterData->word1 = collisionMatrix[mLayerNumber];
-		mFilters = std::make_shared<physx::PxControllerFilters>(mFilterData.get());
+		mCharacterQueryFilterCallback = std::make_shared<CharacterQueryFilterCallback>(mFilterData);
+		mFilters = std::make_shared<physx::PxControllerFilters>(mFilterData.get(), mCharacterQueryFilterCallback.get());
 
 		mCharacterMovement = std::make_shared<CharacterMovement>();
 		mCharacterMovement->initialize(movementInfo);
@@ -55,7 +58,7 @@ namespace physics
 		mCharacterMovement->CopyDirectionToPxVec3(dispVector);
 
 		// physx CCT 이동
-		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, NULL);
+		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, *mFilters.get());
 
 		// 바닥과 충돌을 안한다면 떨어짐 상태로 체크
 		if (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
