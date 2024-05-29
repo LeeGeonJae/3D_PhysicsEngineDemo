@@ -41,7 +41,7 @@ namespace physics
 	bool PhysicsCharacterPhysicsManager::SimulationCharacter(unsigned int id)
 	{
 		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
-
+		 
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
 		return mScene->addArticulation(*characterPhysics->GetPxArticulation());
 	}

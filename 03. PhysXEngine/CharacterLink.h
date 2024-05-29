@@ -21,9 +21,9 @@ namespace physics
 
 		bool Initialize(const CharacterLinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation);
 
-		physx::PxShape* CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData);
-		physx::PxShape* CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData);
-		physx::PxShape* CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData);
+		physx::PxShape* CreateShape(const physx::PxMaterial* material, std::shared_ptr<CollisionData> collisionData, const DirectX::SimpleMath::Vector3& extent);
+		physx::PxShape* CreateShape(const physx::PxMaterial* material, std::shared_ptr<CollisionData> collisionData, const float& radius, const float& halfHeight);
+		physx::PxShape* CreateShape(const physx::PxMaterial* material, std::shared_ptr<CollisionData> collisionData, const float& radius);
 
 		inline physx::PxArticulationLink* GetPxLink();
 		inline const std::string& GetName();

@@ -74,6 +74,17 @@ namespace physics
 		bool isDead = false;
 	};
 
+	/// <summary>
+	/// 레이캐스트 : 부딪힌 오브젝트들의 정보
+	/// </summary>
+	struct RayCastData
+	{
+		unsigned int hitSize = 0;
+		std::vector<unsigned int> id;
+		std::vector<unsigned int> layerNumber;
+		std::vector<DirectX::SimpleMath::Vector3> contectPoints;
+	};
+
 #pragma region GetSetData
 	/// <summary>
 	/// 물리 엔진에서 리지드 바디 정보들을 주고 받는 GetSet 구조체
@@ -205,9 +216,9 @@ namespace physics
 		JointAxisInfo Swing2AxisInfo;					// Swing2( Y축을 중심으로 한 회전 )
 		JointAxisInfo TwistAxisInfo;					// Twist( Z축을 중심으로 한 회전 )
 		DirectX::SimpleMath::Matrix localTransform;		// 조인트의 로절 좌표
-		float stiffness = 100.f;						// 강성 : 관절이 목표 위치로 이동하려는 힘의 크기
-		float damping = 10.f;							// 감쇠 계수 : 운동에 대한 저항력 ( 진동을 방지하고 부드럽게 움직이동 할 수 있게 )
-		float maxForce = 1000.f;						// 최대 힘 : 관절 드라이브가 적용할 수 있는 최대 힘
+		float stiffness = 0.f;							// 강성 : 관절이 목표 위치로 이동하려는 힘의 크기
+		float damping = 1.f;							// 감쇠 계수 : 운동에 대한 저항력 ( 진동을 방지하고 부드럽게 움직이동 할 수 있게 )
+		float maxForce = 1.f;							// 최대 힘 : 관절 드라이브가 적용할 수 있는 최대 힘
 	};
 
 	struct CharacterLinkInfo
@@ -228,7 +239,7 @@ namespace physics
 		float staticFriction = 1.f;						// 정적 마찰 계수
 		float dynamicFriction = 1.f;					// 동적 마찰 계수
 		float restitution = 1.f;						// 복원 계수
-		float density = 5.f;							// 밀도
+		float density = 1.f;							// 밀도
 	};
 #pragma endregion
 }

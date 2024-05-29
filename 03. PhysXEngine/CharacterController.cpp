@@ -36,9 +36,12 @@ namespace physics
 		mMaterial = material;
 
 		mFilterData = std::make_shared<physx::PxFilterData>();
-		mFilterData->word0 = mLayerNumber;
-		mFilterData->word1 = collisionMatrix[mLayerNumber];
-		mCharacterQueryFilterCallback = std::make_shared<CharacterQueryFilterCallback>(mFilterData);
+		mFilterData->word0 = 0;
+
+		std::shared_ptr<physx::PxFilterData> data = std::make_shared<physx::PxFilterData>();
+		data->word0 = mLayerNumber;
+		data->word1 = collisionMatrix[mLayerNumber];
+		mCharacterQueryFilterCallback = std::make_shared<CharacterQueryFilterCallback>(data);
 		mFilters = std::make_shared<physx::PxControllerFilters>(mFilterData.get(), mCharacterQueryFilterCallback.get());
 
 		mCharacterMovement = std::make_shared<CharacterMovement>();

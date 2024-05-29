@@ -161,6 +161,19 @@ namespace PhysicsEngine
 		//std::cout << m_Scene->getTimestamp() << std::endl;
 
 		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
+
+		physx::PxRaycastBuffer hitbuffer;
+		bool isBlock = m_Scene->raycast(physx::PxVec3(0.f, 0.f, 10.f), physx::PxVec3(0.f, 1.f, 0.f), 100.f, hitbuffer);
+		if (isBlock)
+		{
+			physx::PxRaycastHit& hit = hitbuffer.block;
+			
+			physx::PxVec3 hitPosition = hit.position;
+
+			float distance = hit.distance;
+
+			std::cout << "rayCast" << std::endl;
+		}
 	}
 
 	void PhysX::CreateActor()
@@ -249,6 +262,10 @@ namespace PhysicsEngine
 		//m_Scene->addActor(*body);
 		//m_Shapes.push_back(Shape);
 		//m_Bodies.push_back(body);
+
+		physx::PxRaycastBuffer hitbuffer;
+		physx::PxU32 hitCount = m_Scene->raycast(physx::PxVec3(0.f, 0.f, 0.f), physx::PxVec3(0.f, 1.f, 0.f), 10.f, hitbuffer);
+		hitbuffer.hasAnyHits();
 	}
 
 	void PhysX::CreateCharactorController()

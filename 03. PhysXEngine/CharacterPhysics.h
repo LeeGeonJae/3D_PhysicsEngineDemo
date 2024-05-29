@@ -6,11 +6,10 @@
 #include <directxtk\SimpleMath.h>
 
 #include "Common.h"
+#include "CharacterLink.h"
 
 namespace physics
 {
-	class CharacterLink;
-
 	class CharacterPhysics
 	{
 	public:
@@ -19,9 +18,8 @@ namespace physics
 
 		bool Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics);
 
-		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent);
-		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& radius);
-		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& halfHeight, const float& radius);
+		template <typename ...Params>
+		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, Params... params);
 
 		inline const std::string& GetModelPath();
 		inline const unsigned int GetID();
@@ -46,6 +44,32 @@ namespace physics
 		physx::PxMaterial* mMaterial;
 	};
 
+	template<typename ...Params>
+	inline bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, Params ... params)
+	{
+		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
+
+		auto parentLink = mLinkContainer.find(info.parentBoneName);
+		if (parentLink == mLinkContainer.end())
+		{
+			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+		}
+		else
+		{
+			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
+		}
+
+		mLinkContainer.insert(std::make_pair(info.boneName, link));
+		physx::PxShape* shape = link->CreateShape(mMaterial, collisionData, params...);
+		assert(shape);
+
+		physx::PxFilterData filterdata;
+		filterdata.word0 = mLayerNumber;
+		filterdata.word1 = collisionMatrix[mLayerNumber];
+		shape->setSimulationFilterData(filterdata);
+
+		return true;
+	}
 
 #pragma region GetSet
 	const std::string& CharacterPhysics::GetModelPath()

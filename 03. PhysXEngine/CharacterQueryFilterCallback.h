@@ -16,9 +16,16 @@ namespace physics
 		virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags) override;
 		virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit, const PxShape* shape, const PxRigidActor* actor) override;
 
+		inline std::shared_ptr<physx::PxFilterData> GetFilterData();
+
 	public:
 		std::shared_ptr<physx::PxFilterData> mFilterData;
 	};
+
+	std::shared_ptr<physx::PxFilterData> CharacterQueryFilterCallback::GetFilterData()
+	{
+		return mFilterData;
+	}
 }
 
 

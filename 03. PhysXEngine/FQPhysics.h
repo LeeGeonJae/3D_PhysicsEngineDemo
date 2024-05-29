@@ -2,14 +2,14 @@
 #define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
 #include "Common.h"
+#include "PhysicsRigidBodyManager.h"
+#include "PhysicsCharacterPhysicsManager.h"
 
 namespace physics
 {
 	class Physics;
-	class PhysicsRigidBodyManager;
 	class PhysicsSimulationEventCallback;
 	class PhysicsCharactorControllerManager;
-	class PhysicsCharacterPhysicsManager;
 	class PhysicsResourceManager;
 
 	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
@@ -49,18 +49,19 @@ namespace physics
 		/// <param name="info"> 물리 엔진 정보 </param>
 		virtual void SetPhysicsInfo(PhysicsEngineInfo& info);
 
+		/// <summary>
+		/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
+		/// </summary>
+		virtual RayCastData RayCast(const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance);
+
 #pragma region RigidBodyManager
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
-		virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name);
-		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name);
-		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name);
-		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name);
-		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name);
-		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name);
-		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name);
-		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		template <typename ColliderInfo>
+		bool CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, const std::string& name);
+		template <typename ColliderInfo>
+		bool CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, const std::string& name);
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -89,7 +90,6 @@ namespace physics
 #pragma endregion
 
 #pragma region CharacterControllerManager
-
 		/// <summary>
 		/// 캐릭터 컨트롤러 생성 함수
 		/// </summary>
@@ -117,19 +117,19 @@ namespace physics
 		virtual CharacterMovementGetSetData GetCharacterMovementData(const unsigned int& id);
 		virtual void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData);
 		virtual void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData);
-
 #pragma endregion
 
 #pragma region CharacterPhysicsManager
 		bool CreateCharacterphysics(const CharacterPhysicsInfo& info);
-
-		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent);
-		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius);
-		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius);
+		bool RemoveArticulation(unsigned int id);
 
 		bool SimulationCharacter(unsigned int id);
-#pragma endregion
 
+		template <typename ...Params>
+		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, Params...);
+
+		bool RemoveArticulationLink(unsigned int id, const std::string& boneName);
+#pragma endregion
 
 	private:
 		// 씬
@@ -146,5 +146,22 @@ namespace physics
 		// 충돌 매트릭스
 		int mCollisionMatrix[16];
 	};
+
+	template<typename ColliderInfo>
+	inline bool FQPhysics::CreateStaticBody(const ColliderInfo& info, const EColliderType& colliderType, const std::string& name)
+	{
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
+	}
+	template<typename ColliderInfo>
+	inline bool FQPhysics::CreateDynamicBody(const ColliderInfo& info, const EColliderType& colliderType, const std::string& name)
+	{
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
+	}
+
+	template<typename ...Params>
+	inline bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, Params... params)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, params...);
+	}
 }
 

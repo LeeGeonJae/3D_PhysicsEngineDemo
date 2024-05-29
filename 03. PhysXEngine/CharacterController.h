@@ -42,7 +42,6 @@ namespace physics
 		/// <param name="input"> 이동하거나 점프를 하기 위해 입력 받는 키 값 (x,y,z) </param>
 		void AddMovementInput(const DirectX::SimpleMath::Vector3& input);
 
-
 		inline physx::PxController* GetPxController();
 		inline const unsigned int& GetID();
 		inline const unsigned int& GetLayerNumber();
@@ -58,6 +57,7 @@ namespace physics
 
 		std::shared_ptr<CharacterMovement> mCharacterMovement;
 
+	protected:
 		std::shared_ptr<CharacterQueryFilterCallback> mCharacterQueryFilterCallback;
 		std::shared_ptr<physx::PxControllerFilters> mFilters;
 		std::shared_ptr<physx::PxFilterData> mFilterData;
@@ -66,7 +66,6 @@ namespace physics
 	};
 
 #pragma region GetSet
-
 	physx::PxController* CharacterController::GetPxController()
 	{
 		return mPxController;
@@ -99,6 +98,5 @@ namespace physics
 
 		mPxController->setPosition(vector);
 	}
-
 #pragma endregion
 }

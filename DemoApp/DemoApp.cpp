@@ -121,6 +121,7 @@ void DemoApp::Init()
 		convexInfo.colliderInfo.id = 2;
 		convexInfo.colliderInfo.restitution = 1.f;
 		convexInfo.colliderInfo.staticFriction = 1.f;
+		convexInfo.colliderInfo.layerNumber = 2;
 		convexInfo.convexPolygonLimit = 10.f;
 		convexInfo.vertexSize = meshVertex.size();
 		convexInfo.vertices = meshVertex.data();

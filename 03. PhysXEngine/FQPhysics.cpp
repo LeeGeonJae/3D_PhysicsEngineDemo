@@ -7,6 +7,7 @@
 #include "PhysicsCharacterPhysicsManager.h"
 #include "PhysicsResourceManager.h"
 #include "PhysicsSimulationEventCallback.h"
+#include "EngineDataConverter.h"
 
 namespace physics
 { 
@@ -154,41 +155,42 @@ namespace physics
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
 
+	RayCastData FQPhysics::RayCast(const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance)
+	{
+		RayCastData raycastData;
+		physx::PxRaycastBuffer hitBuffer;
+
+		physx::PxVec3 pxOrigin;
+		physx::PxVec3 pxDirection;
+		CopyDxVec3ToPxVec3(origin, pxOrigin);
+		CopyDxVec3ToPxVec3(direction, pxDirection);
+
+		bool isBlock = mScene->raycast(pxOrigin, pxDirection, distance, hitBuffer);
+		if (isBlock)
+		{
+			unsigned int hitSize = hitBuffer.getNbAnyHits();
+			raycastData.hitSize = hitSize;
+
+			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
+			{
+				const physx::PxRaycastHit& hit = hitBuffer.getAnyHit(hitNumber);
+				physx::PxShape* shape = hit.shape;
+
+				DirectX::SimpleMath::Vector3 position;
+				CopyPxVec3ToDxVec3(hit.position, position);
+				unsigned int id = static_cast<CollisionData*>(shape->userData)->myId;
+				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
+
+				raycastData.contectPoints.push_back(position);
+				raycastData.id.push_back(id);
+				raycastData.layerNumber.push_back(layerNumber);
+			}
+		}
+
+		return raycastData;
+	}
+
 #pragma region RigidBodyManager
-
-	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
-	}
-	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
-	}
-	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
-	}
-	bool FQPhysics::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateStaticBody(info, colliderType, name, mCollisionMatrix);
-	}
-	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
-	}
-	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
-	}
-	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
-	}
-	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name)
-	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, name, mCollisionMatrix);
-	}
-
 	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
 		return mRigidBodyManager->RemoveRigidBody(id, mScene);
@@ -270,21 +272,6 @@ namespace physics
 	bool FQPhysics::CreateCharacterphysics(const CharacterPhysicsInfo& info)
 	{
 		return mCharacterPhysicsManager->CreateCharacterphysics(info);
-	}
-
-	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
-	{
-		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
-	}
-
-	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius)
-	{
-		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, radius);
-	}
-
-	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
-	{
-		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
 	}
 	bool FQPhysics::SimulationCharacter(unsigned int id)
 	{

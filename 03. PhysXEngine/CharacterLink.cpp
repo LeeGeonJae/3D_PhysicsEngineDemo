@@ -42,7 +42,7 @@ namespace physics
 		return true;
 	}
 
-	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData)
+	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, std::shared_ptr<CollisionData> collisionData, const DirectX::SimpleMath::Vector3& extent)
 	{
 		physx::PxVec3 pxExtent;
 		std::memcpy(&pxExtent, &extent, sizeof(pxExtent));
@@ -54,22 +54,22 @@ namespace physics
 		shape->setContactOffset(0.4f);
 		return shape;
 	}
-	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData)
+	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, std::shared_ptr<CollisionData> collisionData, const float& radius, const float& halfHeight)
 	{
 		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxCapsuleGeometry(radius, halfHeight), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.2f);
+		shape->setContactOffset(0.4f);
 		return shape;
 	}
-	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData)
+	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, std::shared_ptr<CollisionData> collisionData, const float& radius)
 	{
 		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxSphereGeometry(radius), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.2f);
+		shape->setContactOffset(0.4f);
 		return shape;
 	}
 }

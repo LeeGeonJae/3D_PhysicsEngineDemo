@@ -69,7 +69,6 @@ namespace physics
 	}
 
 #pragma region SettingCollisionData
-
 	void PhysicsSimulationEventCallback::SettingCollisionData(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, const ECollisionEventType& eventType)
 	{
 		std::vector<physx::PxContactPairPoint> contactPoints;
@@ -138,6 +137,5 @@ namespace physics
 		mFunction(Mydata, eventType);
 		mFunction(Otherdata, eventType);
 	}
-
 #pragma endregion
 }

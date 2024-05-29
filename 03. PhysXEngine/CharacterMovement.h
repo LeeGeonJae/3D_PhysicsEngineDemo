@@ -87,9 +87,7 @@ namespace physics
 		float mMinDistance;
 	};
 
-
 #pragma region GetSet
-
 	const DirectX::SimpleMath::Vector3& CharacterMovement::GetVelocity()
 	{
 		return mVelocity;
@@ -179,7 +177,5 @@ namespace physics
 	{
 		mGravityWeight = gravityWeight;
 	}
-
 #pragma endregion
-
 }
