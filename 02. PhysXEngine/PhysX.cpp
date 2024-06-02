@@ -5,7 +5,12 @@
 #include "PhysicsSimulationEventCallback.h"
 #include "ActorUserData.h"
 #include "CharactorController.h"
+
 #include <cassert>
+#include <physx/cudamanager/PxCudaContext.h>
+#include <physx/extensions/PxParticleExt.h>
+#include <physx/cudamanager/PxCudaContextManager.h>
+#include <physx/gpu/PxGpu.h>
 
 namespace PhysicsEngine
 {
@@ -87,10 +92,13 @@ namespace PhysicsEngine
 	}
 
 
-	void PhysX::Init()
+	void PhysX::Init(ID3D11Device* device)
 	{
 		// PhysX Foundation을 생성하고 초기화합니다.
 		m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_DefaultAllocatorCallback, m_DefaultErrorCallback);
+
+		// CUDA 초기화
+		cudaSetDevice(0);
 
 		// Foundation이 성공적으로 생성되었는지 확인합니다.
 		if (!m_Foundation)
@@ -108,28 +116,37 @@ namespace PhysicsEngine
 		m_ToleranceScale.speed = 1000; // 속도 허용 오차 스케일을 설정합니다.
 
 		// PhysX Physics를 생성하고 초기화합니다.
-		m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, m_ToleranceScale, true, m_Pvd); // Physics를 생성합니다.
+		m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, m_ToleranceScale, true, m_Pvd); // Physics를 생성합니다..
+
+		physx::PxCudaContextManagerDesc cudaContextManagerDesc;
+		cudaContextManagerDesc.graphicsDevice = device;
+
+		m_CudaContextManager = PxCreateCudaContextManager(*m_Foundation, cudaContextManagerDesc, PxGetProfilerCallback());
+		if (m_CudaContextManager == NULL)
+		{
+			PxGetFoundation().error(physx::PxErrorCode::eINVALID_OPERATION, PX_FL, "Failed to initialize CUDA!\n");
+		}
 
 		// PhysX 시뮬레이션을 위한 Scene을 설정합니다.
 		physx::PxSceneDesc sceneDesc(m_Physics->getTolerancesScale()); // Scene을 생성할 때 물리적인 허용 오차 스케일을 설정합니다.
 
-		// 중력을 설정합니다.
 		sceneDesc.gravity = physx::PxVec3(0.f, -10.f, 0.f); // 중력을 설정합니다.
 
 		// CPU 디스패처를 생성하고 설정합니다.
 		m_Dispatcher = physx::PxDefaultCpuDispatcherCreate(2); // CPU 디스패처를 생성합니다.
 
-		
 		m_MyEventCallback = new PhysicsSimulationEventCallback;
 		physx::PxPairFlags pairFlags = physx::PxPairFlags();
 
 		// Scene 설명자에 CPU 디스패처와 필터 셰이더를 설정합니다.
+		// 중력을 설정합니다.
 		sceneDesc.cpuDispatcher = m_Dispatcher; // Scene 설명자에 CPU 디스패처를 설정합니다.
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = m_MyEventCallback;		// 클래스 등록
-		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
+		sceneDesc.cudaContextManager = m_CudaContextManager;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
-
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 
 		// PhysX Physics에서 Scene을 생성합니다.
 		m_Scene = m_Physics->createScene(sceneDesc); // Scene을 생성합니다.
@@ -149,6 +166,15 @@ namespace PhysicsEngine
 		CreateActor();
 		CreateCharactorController();
 		CreateArticulation();
+
+		// Setup Cloth
+		const physx::PxReal totalClothMass = 10.0f;
+
+		physx::PxU32 numPointsX = 250;
+		physx::PxU32 numPointsZ = 250;
+		physx::PxReal particleSpacing = 0.05f;
+
+		CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 8.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
 	}
 
 	void PhysX::Update(float elapsedTime)
@@ -329,9 +355,9 @@ namespace PhysicsEngine
 		joint->setChildPose(physx::PxTransform(physx::PxVec3(0.f, 0.f, 0.f)));
 
 		joint->setJointType(physx::PxArticulationJointType::eSPHERICAL);
-		joint->setMotion(physx::PxArticulationAxis::eSWING1, physx::PxArticulationMotion::eFREE);
-		joint->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eFREE);
-		joint->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eFREE);
+		joint->setMotion(physx::PxArticulationAxis::eSWING1, physx::PxArticulationMotion::eLOCKED);
+		joint->setMotion(physx::PxArticulationAxis::eSWING2, physx::PxArticulationMotion::eLOCKED);
+		joint->setMotion(physx::PxArticulationAxis::eTWIST, physx::PxArticulationMotion::eLOCKED);
 
 
 		physx::PxArticulationJointReducedCoordinate* joint1 = link1->getInboundJoint();
@@ -372,6 +398,135 @@ namespace PhysicsEngine
 		// Create fixed tendon if needed
 
 		m_Scene->addArticulation(*articulation);
+	}
+
+	PX_FORCE_INLINE physx::PxU32 id(physx::PxU32 x, physx::PxU32 y, physx::PxU32 numY)
+	{
+		return x * numY + y;
+	}
+
+	void PhysX::CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position, const physx::PxReal particleSpacing, const physx::PxReal totalClothMass)
+	{
+		const physx::PxU32 numParticles = numX * numZ;
+		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
+		const physx::PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;
+
+		const physx::PxReal restOffset = particleSpacing;
+
+		const physx::PxReal stretchStiffness = 10000.f;
+		const physx::PxReal shearStiffness = 100.f;
+		const physx::PxReal springDamping = 0.001f;
+
+		// Material setup
+		physx::PxPBDMaterial* defaultMat = m_Physics->createPBDMaterial(0.8f, 0.05f, 1e+6f, 0.001f, 0.5f, 0.005f, 0.05f, 0.f, 0.f);
+
+		physx::PxPBDParticleSystem* particleSystem = m_Physics->createPBDParticleSystem(*m_CudaContextManager);
+		m_ParticleSystem = particleSystem;
+
+		// General particle system setting
+
+		const physx::PxReal particleMass = totalClothMass / numParticles;
+		particleSystem->setRestOffset(restOffset);
+		particleSystem->setContactOffset(restOffset + 0.02f);
+		particleSystem->setParticleContactOffset(restOffset + 0.02f);
+		particleSystem->setSolidRestOffset(restOffset);
+		particleSystem->setFluidRestOffset(0.0f);
+
+		m_Scene->addActor(*particleSystem);
+
+		// Create particles and add them to the particle system
+		const physx::PxU32 particlePhase = particleSystem->createPhase(defaultMat, physx::PxParticlePhaseFlags
+		(physx::PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | physx::PxParticlePhaseFlag::eParticlePhaseSelfCollide));
+		
+		physx::ExtGpu::PxParticleClothBufferHelper* clothBuffers = physx::ExtGpu::PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, m_CudaContextManager);
+
+		physx::PxU32* phase = m_CudaContextManager->allocPinnedHostBuffer<physx::PxU32>(numParticles);
+		physx::PxVec4* positionInvMass = m_CudaContextManager->allocPinnedHostBuffer<physx::PxVec4>(numParticles);
+		physx::PxVec4* velocity = m_CudaContextManager->allocPinnedHostBuffer<physx::PxVec4>(numParticles);
+
+		physx::PxReal x = position.x;
+		physx::PxReal y = position.y;
+		physx::PxReal z = position.z;
+
+		// Define springs and triangles
+		physx::PxArray<physx::PxParticleSpring> springs;
+		springs.reserve(numSprings);
+		physx::PxArray<physx::PxU32> triangles;
+		triangles.reserve(numTriangles * 3);
+
+		for (physx::PxU32 i = 0; i < numX; ++i)
+		{
+			for (physx::PxU32 j = 0; j < numZ; ++j)
+			{
+				const physx::PxU32 index = i * numZ + j;
+
+				physx::PxVec4 pos(x, y, z, 1.0f / particleMass);
+				phase[index] = particlePhase;
+				positionInvMass[index] = pos;
+				velocity[index] = physx::PxVec4(0.0f);
+
+				if (i > 0)
+				{
+					physx::PxParticleSpring spring = { id(i - 1, j, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
+					springs.pushBack(spring);
+				}
+				if (j > 0)
+				{
+					physx::PxParticleSpring spring = { id(i, j - 1, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
+					springs.pushBack(spring);
+				}
+
+				if (i > 0 && j > 0)
+				{
+					physx::PxParticleSpring spring0 = { id(i - 1, j - 1, numZ), id(i, j, numZ), physx::PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
+					springs.pushBack(spring0);
+					physx::PxParticleSpring spring1 = { id(i - 1, j, numZ), id(i, j - 1, numZ), physx::PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
+					springs.pushBack(spring1);
+
+					//Triangles are used to compute approximated aerodynamic forces for cloth falling down
+					triangles.pushBack(id(i - 1, j - 1, numZ));
+					triangles.pushBack(id(i - 1, j, numZ));
+					triangles.pushBack(id(i, j - 1, numZ));
+
+					triangles.pushBack(id(i - 1, j, numZ));
+					triangles.pushBack(id(i, j - 1, numZ));
+					triangles.pushBack(id(i, j, numZ));
+				}
+
+				z += particleSpacing;
+			}
+			z = position.z;
+			x += particleSpacing;
+		}
+
+		PX_ASSERT(numSprings == springs.size());
+		PX_ASSERT(numTriangles == triangles.size() / 3);
+
+		clothBuffers->addCloth(0.0f, 0.0f, 0.0f, triangles.begin(), numTriangles, springs.begin(), numSprings, positionInvMass, numParticles);
+
+		physx::ExtGpu::PxParticleBufferDesc bufferDesc;
+		bufferDesc.maxParticles = numParticles;
+		bufferDesc.numActiveParticles = numParticles;
+		bufferDesc.positions = positionInvMass;
+		bufferDesc.velocities = velocity;
+		bufferDesc.phases = phase;
+
+		const physx::PxParticleClothDesc& clothDesc = clothBuffers->getParticleClothDesc();
+		physx::PxParticleClothPreProcessor* clothPreProcessor = PxCreateParticleClothPreProcessor(m_CudaContextManager);
+
+		physx::PxPartitionedParticleCloth output;
+		clothPreProcessor->partitionSprings(clothDesc, output);
+		clothPreProcessor->release();
+
+
+		m_ClothBuffer = physx::ExtGpu::PxCreateAndPopulateParticleClothBuffer(bufferDesc, clothDesc, output, m_CudaContextManager);
+		m_ParticleSystem->addParticleBuffer(m_ClothBuffer);
+
+		clothBuffers->release();
+
+		m_CudaContextManager->freePinnedHostBuffer(positionInvMass);
+		m_CudaContextManager->freePinnedHostBuffer(velocity);
+		m_CudaContextManager->freePinnedHostBuffer(phase);
 	}
 
 	void PhysX::move(DirectX::SimpleMath::Vector3& direction)

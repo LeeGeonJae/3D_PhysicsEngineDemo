@@ -1,11 +1,16 @@
 #pragma once
 
-#include <physx\PxPhysics.h>
-#include <physx\PxPhysicsAPI.h>
+#pragma comment(lib, "cudart.lib")
+
+#include "../Libraries/Include/cuda/cuda_runtime.h"
+
+#include <physx/PxPhysics.h>
+#include <physx/PxPhysicsAPI.h>
 
 #include <vector>
 #include <memory>
 #include <directxtk/SimpleMath.h>
+#include <d3d11.h>
 
 namespace PhysicsEngine
 {
@@ -19,13 +24,13 @@ namespace PhysicsEngine
 		~PhysX();
 
 	public:
-		void Init();
+		void Init(ID3D11Device* device);
 		void Update(float elapsedTime);
 
 		void CreateActor();
 		void CreateCharactorController();
-
 		void CreateArticulation();
+		void CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position = physx::PxVec3(0, 0, 0), const physx::PxReal particleSpacing = 0.2f, const physx::PxReal totalClothMass = 10.f);
 
 		void move(DirectX::SimpleMath::Vector3& direction);
 		void Jump(DirectX::SimpleMath::Vector3& direction);
@@ -57,6 +62,14 @@ namespace PhysicsEngine
 		physx::PxRigidStatic*			m_groundPlane = nullptr;
 
 		physx::PxControllerManager*		m_ControllerManager = nullptr;
+
+		//
+		physx::PxCudaContextManager* m_CudaContextManager = nullptr;
+		physx::PxPBDParticleSystem* m_ParticleSystem = nullptr;
+
+		physx::PxParticleClothBuffer* m_ClothBuffer = nullptr;
+		//
+
 		std::shared_ptr<CharactorController> m_CharactorController = nullptr;
 
 		// init physX

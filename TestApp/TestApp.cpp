@@ -73,7 +73,7 @@ void TestApp::Init()
 		}
 	}
 
-	m_PhysX->Init();
+	m_PhysX->Init(RENDER->GetGraphics()->GetDevice().Get());
 
 	int count = 1;
 	for (auto body : m_PhysX->GetPxBodies())
