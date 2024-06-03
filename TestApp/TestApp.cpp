@@ -22,6 +22,7 @@
 #include "../02. PhysXEngine/PhysicsSimulationEventCallback.h"
 #include "../01. Engine/InputManager.h"
 #include "../02. PhysXEngine/CharactorController.h"
+#include "../02. PhysXEngine/SoftBody.h"
 #include "../03. PhysXEngine/FQPhysics.h"
 
 
@@ -180,6 +181,23 @@ void TestApp::Update(float _deltaTime)
 		box->Radius = 0.5f;
 
 		RENDER->AddDebugSphere(box);
+	}
+	for (auto softBody : m_PhysX->GetSoftBodies())
+	{
+		int vertexSize = softBody.mSoftBody->getCollisionMesh()->getNbVertices();
+		
+		for (int i = 0; i < vertexSize; i++)
+		{
+			physx::PxVec4 vertex = softBody.mPositionsInvMass[i];
+
+			shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
+			sphere->Center.x = vertex.x;
+			sphere->Center.y = vertex.y;
+			sphere->Center.z = -vertex.z;
+			sphere->Radius = 0.05f;
+
+			RENDER->AddDebugSphere(sphere);
+		}
 	}
 
 	physx::PxRigidActor* charactorBody = m_PhysX-> GetCharactorController()->GetPxController()->getActor();

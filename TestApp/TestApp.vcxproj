@@ -107,10 +107,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PX_SUPPORT_GPU_PHYSX;PX_PHYSX_GPU_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include;$(SolutionDir)01. Engine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include;$(SolutionDir)01. Engine;..\Libraries\Include\physX</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,9 +154,6 @@
     </ProjectReference>
     <ProjectReference Include="..\02. PhysXEngine\02. PhysXEngine.vcxproj">
       <Project>{0ca61ed4-2d79-4399-8caa-09ce59c7f866}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\03. PhysXEngine\03. PhysXEngine.vcxproj">
-      <Project>{a5c66113-7f09-4dbe-a017-340d4db6550f}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

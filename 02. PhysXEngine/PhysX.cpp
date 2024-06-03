@@ -5,12 +5,20 @@
 #include "PhysicsSimulationEventCallback.h"
 #include "ActorUserData.h"
 #include "CharactorController.h"
+#include "SoftBody.h"
+#include "MeshGenerator.h"
 
 #include <cassert>
+//#include <physx/foundation/PxPreprocessor.h>		// 전처리기 
 #include <physx/cudamanager/PxCudaContext.h>
 #include <physx/extensions/PxParticleExt.h>
 #include <physx/cudamanager/PxCudaContextManager.h>
+#include <physx/geometry/PxTetrahedronMesh.h>
 #include <physx/gpu/PxGpu.h>
+#include <physx/extensions/PxTetMakerExt.h>
+#include <physx/extensions/PxSoftBodyExt.h>
+#include <physx/extensions/PxRemeshingExt.h>
+
 
 namespace PhysicsEngine
 {
@@ -58,8 +66,18 @@ namespace PhysicsEngine
 		}
 		else
 		{
-			pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
-			return physx::PxFilterFlag::eSUPPRESS;
+			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
+				| physx::PxPairFlag::eDETECT_CCD_CONTACT
+				| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
+				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+				| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
+				| physx::PxPairFlag::eCONTACT_EVENT_POSE
+				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+			return physx::PxFilterFlag::eDEFAULT;
+
+			//pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
+			//return physx::PxFilterFlag::eSUPPRESS;
 		}
 	}
 
@@ -97,9 +115,6 @@ namespace PhysicsEngine
 		// PhysX Foundation을 생성하고 초기화합니다.
 		m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_DefaultAllocatorCallback, m_DefaultErrorCallback);
 
-		// CUDA 초기화
-		cudaSetDevice(0);
-
 		// Foundation이 성공적으로 생성되었는지 확인합니다.
 		if (!m_Foundation)
 		{
@@ -118,10 +133,17 @@ namespace PhysicsEngine
 		// PhysX Physics를 생성하고 초기화합니다.
 		m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, m_ToleranceScale, true, m_Pvd); // Physics를 생성합니다..
 
-		physx::PxCudaContextManagerDesc cudaContextManagerDesc;
-		cudaContextManagerDesc.graphicsDevice = device;
-
-		m_CudaContextManager = PxCreateCudaContextManager(*m_Foundation, cudaContextManagerDesc, PxGetProfilerCallback());
+		if (PxGetSuggestedCudaDeviceOrdinal(m_Foundation->getErrorCallback()) >= 0)
+		{
+			// initialize CUDA
+			physx::PxCudaContextManagerDesc cudaContextManagerDesc;
+			m_CudaContextManager = PxCreateCudaContextManager(*m_Foundation, cudaContextManagerDesc, PxGetProfilerCallback());
+			if (m_CudaContextManager && !m_CudaContextManager->contextIsValid())
+			{
+				m_CudaContextManager->release();
+				m_CudaContextManager = NULL;
+			}
+		}
 		if (m_CudaContextManager == NULL)
 		{
 			PxGetFoundation().error(physx::PxErrorCode::eINVALID_OPERATION, PX_FL, "Failed to initialize CUDA!\n");
@@ -144,9 +166,11 @@ namespace PhysicsEngine
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = m_MyEventCallback;		// 클래스 등록
 		sceneDesc.cudaContextManager = m_CudaContextManager;
+		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
+		sceneDesc.solverType = physx::PxSolverType::eTGS;
 
 		// PhysX Physics에서 Scene을 생성합니다.
 		m_Scene = m_Physics->createScene(sceneDesc); // Scene을 생성합니다.
@@ -160,21 +184,20 @@ namespace PhysicsEngine
 			m_pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 			m_pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 		}
-		m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.f);
-		m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eJOINT_LIMITS, 1.f);
 
 		CreateActor();
 		CreateCharactorController();
-		CreateArticulation();
+		CreateSoftBodies();
+		//CreateArticulation();
 
 		// Setup Cloth
-		const physx::PxReal totalClothMass = 10.0f;
+		//const physx::PxReal totalClothMass = 10.0f;
 
-		physx::PxU32 numPointsX = 250;
-		physx::PxU32 numPointsZ = 250;
-		physx::PxReal particleSpacing = 0.05f;
+		//physx::PxU32 numPointsX = 25;
+		//physx::PxU32 numPointsZ = 25;
+		//physx::PxReal particleSpacing = 0.05f;
 
-		CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 8.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
+		//CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 8.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
 	}
 
 	void PhysX::Update(float elapsedTime)
@@ -184,22 +207,28 @@ namespace PhysicsEngine
 		m_Scene->simulate(elapsedTime);
 		m_Scene->fetchResults(true);
 
+		for (physx::PxU32 i = 0; i < m_SoftBodies.size(); i++)
+		{
+			SoftBody* sb = &m_SoftBodies[i];
+			sb->copyDeformedVerticesFromGPU();
+		}
+
 		//std::cout << m_Scene->getTimestamp() << std::endl;
 
 		//m_Scene->getVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_EDGES);
 
-		physx::PxRaycastBuffer hitbuffer;
-		bool isBlock = m_Scene->raycast(physx::PxVec3(0.f, 0.f, 10.f), physx::PxVec3(0.f, 1.f, 0.f), 100.f, hitbuffer);
-		if (isBlock)
-		{
-			physx::PxRaycastHit& hit = hitbuffer.block;
-			
-			physx::PxVec3 hitPosition = hit.position;
+		//physx::PxRaycastBuffer hitbuffer;
+		//bool isBlock = m_Scene->raycast(physx::PxVec3(0.f, 0.f, 10.f), physx::PxVec3(0.f, 1.f, 0.f), 100.f, hitbuffer);
+		//if (isBlock)
+		//{
+		//	physx::PxRaycastHit& hit = hitbuffer.block;
+		//	
+		//	physx::PxVec3 hitPosition = hit.position;
 
-			float distance = hit.distance;
+		//	float distance = hit.distance;
 
-			std::cout << "rayCast" << std::endl;
-		}
+		//	std::cout << "rayCast" << std::endl;
+		//}
 	}
 
 	void PhysX::CreateActor()
@@ -407,6 +436,8 @@ namespace PhysicsEngine
 
 	void PhysX::CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position, const physx::PxReal particleSpacing, const physx::PxReal totalClothMass)
 	{
+		m_CudaContextManager = m_Scene->getCudaContextManager();
+
 		const physx::PxU32 numParticles = numX * numZ;
 		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
 		const physx::PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;
@@ -527,6 +558,108 @@ namespace PhysicsEngine
 		m_CudaContextManager->freePinnedHostBuffer(positionInvMass);
 		m_CudaContextManager->freePinnedHostBuffer(velocity);
 		m_CudaContextManager->freePinnedHostBuffer(phase);
+	}
+
+	void PhysX::addSoftBody(physx::PxSoftBody* softBody, const physx::PxFEMParameters& femParams, const physx::PxTransform& transform, const physx::PxReal density, const physx::PxReal scale, const physx::PxU32 iterCount)
+	{
+		physx::PxVec4* simPositionInvMassPinned;
+		physx::PxVec4* simVelocityPinned;
+		physx::PxVec4* collPositionInvMassPinned;
+		physx::PxVec4* restPositionPinned;
+
+		physx::PxSoftBodyExt::allocateAndInitializeHostMirror(*softBody, m_CudaContextManager, simPositionInvMassPinned, simVelocityPinned, collPositionInvMassPinned, restPositionPinned);
+
+		const physx::PxReal maxInvMassRatio = 50.f;
+
+		softBody->setParameter(femParams);
+		softBody->setSolverIterationCounts(iterCount);
+
+		physx::PxSoftBodyExt::transform(*softBody, transform, scale, simPositionInvMassPinned, simVelocityPinned, collPositionInvMassPinned, restPositionPinned);
+		physx::PxSoftBodyExt::updateMass(*softBody, density, maxInvMassRatio, simPositionInvMassPinned);
+		physx::PxSoftBodyExt::copyToDevice(*softBody, physx::PxSoftBodyDataFlag::eALL, simPositionInvMassPinned, simVelocityPinned, collPositionInvMassPinned, restPositionPinned);
+
+		SoftBody sBody(softBody, m_CudaContextManager);
+
+		m_SoftBodies.push_back(sBody);
+
+		m_CudaContextManager->freePinnedHostBuffer(simPositionInvMassPinned);
+		m_CudaContextManager->freePinnedHostBuffer(simVelocityPinned);
+		m_CudaContextManager->freePinnedHostBuffer(collPositionInvMassPinned);
+		m_CudaContextManager->freePinnedHostBuffer(restPositionPinned);
+	}
+
+	physx::PxSoftBody* PhysX::CreateSoftBody(const physx::PxCookingParams& params, const physx::PxArray<physx::PxVec3>& triVerts, const physx::PxArray<physx::PxU32>& triIndices, bool useCollisionMeshForSimulation)
+	{
+		physx::PxSoftBodyMesh* softBodyMesh;
+
+		physx::PxU32 numVoxelsAlongLongestAABBAxis = 8;
+
+		physx::PxSimpleTriangleMesh surfaceMesh;
+		surfaceMesh.points.count = triVerts.size();
+		surfaceMesh.points.data = triVerts.begin();
+		surfaceMesh.triangles.count = triIndices.size() / 3;
+		surfaceMesh.triangles.data = triIndices.begin();
+
+		if (useCollisionMeshForSimulation)
+		{
+			softBodyMesh = physx::PxSoftBodyExt::createSoftBodyMeshNoVoxels(params, surfaceMesh, m_Physics->getPhysicsInsertionCallback());
+		}
+		else
+		{
+			softBodyMesh = physx::PxSoftBodyExt::createSoftBodyMesh(params, surfaceMesh, numVoxelsAlongLongestAABBAxis, m_Physics->getPhysicsInsertionCallback());
+		}
+
+		PX_ASSERT(softBodyMesh);
+
+		if (!m_CudaContextManager)
+			return NULL;
+
+		physx::PxSoftBody* softBody = m_Physics->createSoftBody(*m_CudaContextManager);
+		if (softBody)
+		{
+			physx::PxShapeFlags shapeFlags = physx::PxShapeFlag::eVISUALIZATION | physx::PxShapeFlag::eSCENE_QUERY_SHAPE | physx::PxShapeFlag::eSIMULATION_SHAPE;
+
+			physx::PxFEMSoftBodyMaterial* materialPtr = PxGetPhysics().createFEMSoftBodyMaterial(1e+6f, 0.45f, 0.5f);
+			physx::PxTetrahedronMeshGeometry geometry(softBodyMesh->getCollisionMesh());
+			physx::PxShape* shape = m_Physics->createShape(geometry, &materialPtr, 1, true, shapeFlags);
+
+			if (shape)
+			{
+				softBody->attachShape(*shape);
+				shape->setSimulationFilterData(physx::PxFilterData(0, UINT_MAX, 0, 0));
+			}
+			softBody->attachSimulationMesh(*softBodyMesh->getSimulationMesh(), *softBodyMesh->getSoftBodyAuxData());
+
+			m_Scene->addActor(*softBody);
+
+			physx::PxFEMParameters femParams;
+			addSoftBody(softBody, femParams, physx::PxTransform(physx::PxVec3(0.f, 100.f, 0.f), physx::PxQuat(physx::PxIdentity)), 1.f, 1.f, 30);
+			softBody->setSoftBodyFlag(physx::PxSoftBodyFlag::eDISABLE_SELF_COLLISION, true);
+		}
+
+		return softBody;
+	}
+
+	void PhysX::CreateSoftBodies()
+	{
+		physx::PxTolerancesScale scale;
+		m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, scale, true, m_Pvd);
+		PxInitExtensions(*m_Physics, m_Pvd);
+
+		physx::PxCookingParams params(scale);
+		params.meshWeldTolerance = 0.001f;
+		params.meshPreprocessParams = physx::PxMeshPreprocessingFlags(physx::PxMeshPreprocessingFlag::eWELD_VERTICES);
+		params.buildTriangleAdjacencies = false;
+		params.buildGPUData = true;
+
+		physx::PxArray<physx::PxVec3> triVerts;
+		physx::PxArray<physx::PxU32> triIndices;
+
+		physx::PxReal maxEdgeLength = 2;
+
+		createCube(triVerts, triIndices, physx::PxVec3(0, 0, 0), 20.0);
+		physx::PxRemeshingExt::limitMaxEdgeLength(triIndices, triVerts, maxEdgeLength);
+		CreateSoftBody(params, triVerts, triIndices, true);
 	}
 
 	void PhysX::move(DirectX::SimpleMath::Vector3& direction)

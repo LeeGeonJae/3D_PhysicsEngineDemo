@@ -118,7 +118,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;PX_SUPPORT_GPU_PHYSX;PX_PHYSX_GPU_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -156,16 +156,19 @@
     <ClInclude Include="CharactorController.h" />
     <ClInclude Include="CharactorMovement.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MeshGenerator.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhsicsCharactorEventCallback.h" />
     <ClInclude Include="PhsicsCharactorHitReportCallback.h" />
     <ClInclude Include="PhysicsSimulationEventCallback.h" />
     <ClInclude Include="PhysX.h" />
+    <ClInclude Include="SoftBody.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActorUserData.cpp" />
     <ClCompile Include="CharactorController.cpp" />
     <ClCompile Include="CharactorMovement.cpp" />
+    <ClCompile Include="MeshGenerator.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -176,6 +179,7 @@
     <ClCompile Include="PhsicsCharactorHitReportCallback.cpp" />
     <ClCompile Include="PhysicsSimulationEventCallback.cpp" />
     <ClCompile Include="PhysX.cpp" />
+    <ClCompile Include="SoftBody.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

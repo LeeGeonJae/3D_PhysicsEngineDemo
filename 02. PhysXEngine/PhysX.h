@@ -2,8 +2,6 @@
 
 #pragma comment(lib, "cudart.lib")
 
-#include "../Libraries/Include/cuda/cuda_runtime.h"
-
 #include <physx/PxPhysics.h>
 #include <physx/PxPhysicsAPI.h>
 
@@ -16,6 +14,7 @@ namespace PhysicsEngine
 {
 	class PhysicsSimulationEventCallback;
 	class CharactorController;
+	class SoftBody;
 
 	class PhysX
 	{
@@ -31,6 +30,10 @@ namespace PhysicsEngine
 		void CreateCharactorController();
 		void CreateArticulation();
 		void CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position = physx::PxVec3(0, 0, 0), const physx::PxReal particleSpacing = 0.2f, const physx::PxReal totalClothMass = 10.f);
+		physx::PxSoftBody* CreateSoftBody(const physx::PxCookingParams& params, const physx::PxArray<physx::PxVec3>& triVerts, const physx::PxArray<physx::PxU32>& triIndices, bool useCollisionMeshForSimulation = false);
+		void addSoftBody(physx::PxSoftBody* softBody, const physx::PxFEMParameters& femParams, const physx::PxTransform& transform, const physx::PxReal density, const physx::PxReal scale, const physx::PxU32 iterCount);
+
+		void CreateSoftBodies();
 
 		void move(DirectX::SimpleMath::Vector3& direction);
 		void Jump(DirectX::SimpleMath::Vector3& direction);
@@ -39,6 +42,7 @@ namespace PhysicsEngine
 		inline physx::PxScene* GetPxScene();
 		inline std::vector<physx::PxShape*>& GetPxShapes();
 		inline std::vector<physx::PxRigidActor*>& GetPxBodies();
+		inline std::vector<SoftBody>& GetSoftBodies();
 		inline std::shared_ptr<CharactorController> GetCharactorController();
 
 	public:
@@ -75,6 +79,7 @@ namespace PhysicsEngine
 		// init physX
 		std::vector<physx::PxShape*>	m_Shapes;
 		std::vector<physx::PxRigidActor*> m_Bodies;
+		std::vector<SoftBody> m_SoftBodies;
 
 		std::vector<physx::PxVec3> m_ModelVertices;
 		// create simulation
@@ -82,6 +87,8 @@ namespace PhysicsEngine
 
 		// run simulation
 		physx::PxRigidDynamic* m_DynamicBody;
+
+		
 
 	};
 
@@ -96,6 +103,10 @@ namespace PhysicsEngine
 	std::vector<physx::PxRigidActor*>& PhysX::GetPxBodies()
 	{
 		return m_Bodies;
+	}
+	std::vector<SoftBody>& PhysX::GetSoftBodies()
+	{
+		return m_SoftBodies;
 	}
 	std::shared_ptr<CharactorController> PhysX::GetCharactorController()
 	{

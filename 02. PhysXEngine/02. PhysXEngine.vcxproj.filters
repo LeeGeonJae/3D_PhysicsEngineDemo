@@ -43,6 +43,8 @@
     <ClInclude Include="ActorUserData.h">
       <Filter>Callback</Filter>
     </ClInclude>
+    <ClInclude Include="SoftBody.h" />
+    <ClInclude Include="MeshGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -69,5 +71,7 @@
     <ClCompile Include="ActorUserData.cpp">
       <Filter>Callback</Filter>
     </ClCompile>
+    <ClCompile Include="SoftBody.cpp" />
+    <ClCompile Include="MeshGenerator.cpp" />
   </ItemGroup>
 </Project>
