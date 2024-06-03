@@ -188,7 +188,7 @@ namespace PhysicsEngine
 		CreateActor();
 		CreateCharactorController();
 		CreateSoftBodies();
-		//CreateArticulation();
+		CreateArticulation();
 
 		// Setup Cloth
 		//const physx::PxReal totalClothMass = 10.0f;
@@ -231,6 +231,7 @@ namespace PhysicsEngine
 		//}
 	}
 
+#pragma region Actor
 	void PhysX::CreateActor()
 	{
 		// 오브젝트 타입에 대한 필터 데이터 정의
@@ -322,15 +323,19 @@ namespace PhysicsEngine
 		physx::PxU32 hitCount = m_Scene->raycast(physx::PxVec3(0.f, 0.f, 0.f), physx::PxVec3(0.f, 1.f, 0.f), 10.f, hitbuffer);
 		hitbuffer.hasAnyHits();
 	}
+#pragma endregion
 
+#pragma region Controller
 	void PhysX::CreateCharactorController()
 	{
 		m_ControllerManager = PxCreateControllerManager(*m_Scene);
 		m_CharactorController = std::make_shared<CharactorController>();
 		m_CharactorController->Initialzie(m_Material, m_ControllerManager);
-		m_ControllerManager->setDebugRenderingFlags(physx::PxControllerDebugRenderFlag::eALL);\
+		m_ControllerManager->setDebugRenderingFlags(physx::PxControllerDebugRenderFlag::eALL); \
 	}
+#pragma endregion
 
+#pragma region Articulation
 	void PhysX::CreateArticulation()
 	{
 		physx::PxArticulationReducedCoordinate* articulation = m_Physics->createArticulationReducedCoordinate();
@@ -428,7 +433,9 @@ namespace PhysicsEngine
 
 		m_Scene->addArticulation(*articulation);
 	}
+#pragma endregion
 
+#pragma region Cloth
 	PX_FORCE_INLINE physx::PxU32 id(physx::PxU32 x, physx::PxU32 y, physx::PxU32 numY)
 	{
 		return x * numY + y;
@@ -468,7 +475,7 @@ namespace PhysicsEngine
 		// Create particles and add them to the particle system
 		const physx::PxU32 particlePhase = particleSystem->createPhase(defaultMat, physx::PxParticlePhaseFlags
 		(physx::PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | physx::PxParticlePhaseFlag::eParticlePhaseSelfCollide));
-		
+
 		physx::ExtGpu::PxParticleClothBufferHelper* clothBuffers = physx::ExtGpu::PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, m_CudaContextManager);
 
 		physx::PxU32* phase = m_CudaContextManager->allocPinnedHostBuffer<physx::PxU32>(numParticles);
@@ -549,9 +556,10 @@ namespace PhysicsEngine
 		clothPreProcessor->partitionSprings(clothDesc, output);
 		clothPreProcessor->release();
 
-
 		m_ClothBuffer = physx::ExtGpu::PxCreateAndPopulateParticleClothBuffer(bufferDesc, clothDesc, output, m_CudaContextManager);
 		m_ParticleSystem->addParticleBuffer(m_ClothBuffer);
+
+
 
 		clothBuffers->release();
 
@@ -559,7 +567,9 @@ namespace PhysicsEngine
 		m_CudaContextManager->freePinnedHostBuffer(velocity);
 		m_CudaContextManager->freePinnedHostBuffer(phase);
 	}
+#pragma endregion
 
+#pragma region SoftBody
 	void PhysX::addSoftBody(physx::PxSoftBody* softBody, const physx::PxFEMParameters& femParams, const physx::PxTransform& transform, const physx::PxReal density, const physx::PxReal scale, const physx::PxU32 iterCount)
 	{
 		physx::PxVec4* simPositionInvMassPinned;
@@ -661,6 +671,7 @@ namespace PhysicsEngine
 		physx::PxRemeshingExt::limitMaxEdgeLength(triIndices, triVerts, maxEdgeLength);
 		CreateSoftBody(params, triVerts, triIndices, true);
 	}
+#pragma endregion
 
 	void PhysX::move(DirectX::SimpleMath::Vector3& direction)
 	{
