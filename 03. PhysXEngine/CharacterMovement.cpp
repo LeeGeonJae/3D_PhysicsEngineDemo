@@ -104,8 +104,6 @@ namespace physics
 		// 중력 적용
 		if (mIsFall)
 			mVelocity.y -= mGravityWeight * deltaTime;
-		else
-			mVelocity.y == 0;
 
 		// 현재 속도 계산
 		mSpeed = abs(mVelocity.x) + abs(mVelocity.z);
@@ -116,8 +114,10 @@ namespace physics
 
 		// 변위 벡터 계산
 		float triangleFunction = (mVelocity.x * mVelocity.x) + (mVelocity.z * mVelocity.z);
-		mDisplacementVector.x = square(mVelocity.x) / triangleFunction * mSpeed;
-		mDisplacementVector.z = square(mVelocity.z) / triangleFunction * mSpeed;
+		if (abs(mVelocity.x) >= 0.001f)
+			mDisplacementVector.x = square(mVelocity.x) / triangleFunction * mSpeed;
+		if (abs(mVelocity.z) >= 0.001f)
+			mDisplacementVector.z = square(mVelocity.z) / triangleFunction * mSpeed;
 		mDisplacementVector.y = mVelocity.y;
 	}
 

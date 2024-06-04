@@ -49,7 +49,7 @@ namespace physics
 
 		physx::PxFilterData filterData;
 		filterData.word0 = info.layerNumber;
-		filterData.word1 = collisionMatrix[info.layerNumber];
+		filterData.word1 = collisionMatrix[mLayerNumber];
 		shape->setSimulationFilterData(filterData);
 
 		collisionData->myId = info.id;

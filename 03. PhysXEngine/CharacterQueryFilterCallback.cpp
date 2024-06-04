@@ -28,6 +28,6 @@ namespace physics
 			return PxQueryHitType::eBLOCK;
 		}
 
-		return PxQueryHitType::eBLOCK;
+		return PxQueryHitType::eNONE;
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <PxPhysicsAPI.h>
 
 namespace physics
 {

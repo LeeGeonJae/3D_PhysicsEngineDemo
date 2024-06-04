@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "physx/PxPhysicsAPI.h"
+#include <PxPhysicsAPI.h>
 #include "directxtk\SimpleMath.h"
 
 namespace physics

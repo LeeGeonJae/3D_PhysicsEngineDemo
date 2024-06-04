@@ -1,5 +1,7 @@
 #pragma once
 
+#include <PxPhysicsAPI.h>
+
 namespace physics
 {
 	class PhysicsCCTHitCallback : physx::PxUserControllerHitReport

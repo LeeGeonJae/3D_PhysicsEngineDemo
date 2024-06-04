@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PhysicsCharactorControllerManager.h"
 
-#include <physx\PxPhysicsApi.h>
+#include <PxPhysicsApi.h>
 
 #include "CharacterController.h"
 #include "PhysicsCCTHitCallback.h"

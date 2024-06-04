@@ -5,8 +5,9 @@
 #include <unordered_map>
 #include <array>
 
+#include <PxPhysicsAPI.h>
+
 #include "ResourceBase.h"
-#include "physx\PxPhysicsAPI.h"
 
 namespace physics
 {

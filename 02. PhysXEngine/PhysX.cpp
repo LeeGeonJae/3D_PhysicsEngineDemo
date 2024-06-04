@@ -187,15 +187,15 @@ namespace PhysicsEngine
 
 		CreateActor();
 		CreateCharactorController();
-		CreateSoftBodies();
+		//CreateSoftBodies();
 		CreateArticulation();
 
 		// Setup Cloth
 		const physx::PxReal totalClothMass = 10.0f;
 
-		physx::PxU32 numPointsX = 50;
-		physx::PxU32 numPointsZ = 50;
-		physx::PxReal particleSpacing = 1.f;
+		physx::PxU32 numPointsX = 30;
+		physx::PxU32 numPointsZ = 30;
+		physx::PxReal particleSpacing = 2.f;
 
 		CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 150.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
 	}

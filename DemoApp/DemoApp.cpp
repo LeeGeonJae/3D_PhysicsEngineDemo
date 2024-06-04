@@ -65,7 +65,7 @@ void DemoApp::Init()
 		physics::CharacterControllerInfo controllerInfo;
 		controllerInfo.id = 1000;
 		controllerInfo.layerNumber = 0;
-		controllerInfo.position = Vector3(100.f, 20.f, 0.f);
+		controllerInfo.position = Vector3(000.f, 100.f, 0.f);
 
 		physics::CharacterMovementInfo movementInfo;
 		m_Physics->CreateCCT(controllerInfo, movementInfo);
@@ -95,7 +95,7 @@ void DemoApp::Init()
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
 		meshComponent->SetOwner(object->GetRootComponent());
-		object->SetPosition(Vector3(200.f, 200.f, 0.f));
+		object->SetPosition(Vector3(100.f, 500.f, 0.f));
 		object->SetScale(Vector3(0.1f, 0.1f, 0.1f));
 
 		m_ObjectVec.push_back(object);
@@ -121,7 +121,7 @@ void DemoApp::Init()
 		convexInfo.colliderInfo.id = 2;
 		convexInfo.colliderInfo.restitution = 1.f;
 		convexInfo.colliderInfo.staticFriction = 1.f;
-		convexInfo.colliderInfo.layerNumber = 2;
+		convexInfo.colliderInfo.layerNumber = 1;
 		convexInfo.convexPolygonLimit = 10.f;
 		convexInfo.vertexSize = meshVertex.size();
 		convexInfo.vertices = meshVertex.data();
@@ -129,206 +129,206 @@ void DemoApp::Init()
 		m_Physics->CreateDynamicBody(convexInfo, physics::EColliderType::COLLISION, "zelda");
 	}
 
-	// 관절
-	{
-		physics::CharacterPhysicsInfo physicsInfo;
-		physicsInfo.density = 1.f;
-		physicsInfo.dynamicFriction = 1.f;
-		physicsInfo.id = 3;
-		physicsInfo.layerNumber = 0;
-		physicsInfo.restitution = 1.f;
-		physicsInfo.staticFriction = 1.f;
-		physicsInfo.worldTransform = Matrix::CreateTranslation(Vector3(0.f, 200.f, 0.f));
+	//// 관절
+	//{
+	//	physics::CharacterPhysicsInfo physicsInfo;
+	//	physicsInfo.density = 1.f;
+	//	physicsInfo.dynamicFriction = 1.f;
+	//	physicsInfo.id = 3;
+	//	physicsInfo.layerNumber = 0;
+	//	physicsInfo.restitution = 1.f;
+	//	physicsInfo.staticFriction = 1.f;
+	//	physicsInfo.worldTransform = Matrix::CreateTranslation(Vector3(0.f, 200.f, 0.f));
 
-		m_Physics->CreateCharacterphysics(physicsInfo);
-		
-		{
-			physics::CharacterLinkInfo linkInfo;
-			linkInfo.boneName = "pelvis";
-			linkInfo.density = 100.f;
-			linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
-			linkInfo.parentBoneName = "root";
-			linkInfo.JointInfo.Swing1AxisInfo.motion = physics::EArticulationMotion::LIMITED;
-			linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 10.f;
-			linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -10.f;
-			linkInfo.JointInfo.Swing2AxisInfo.motion = physics::EArticulationMotion::LIMITED;
-			linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 10.f;
-			linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -10.f;
-			linkInfo.JointInfo.TwistAxisInfo.motion = physics::EArticulationMotion::LIMITED;
-			linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 50.f;
-			linkInfo.JointInfo.TwistAxisInfo.limitsLow = -50.f;
-			linkInfo.JointInfo.damping = 0.99f;
-			linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
-			linkInfo.JointInfo.maxForce = 0.f;
-			linkInfo.JointInfo.stiffness = 0.f;
-			m_Physics->AddArticulationLink(3, linkInfo, 3.f, 5.f);
+	//	m_Physics->CreateCharacterphysics(physicsInfo);
+	//	
+	//	{
+	//		physics::CharacterLinkInfo linkInfo;
+	//		linkInfo.boneName = "pelvis";
+	//		linkInfo.density = 100.f;
+	//		linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+	//		linkInfo.parentBoneName = "root";
+	//		linkInfo.JointInfo.Swing1AxisInfo.motion = physics::EArticulationMotion::LIMITED;
+	//		linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 10.f;
+	//		linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -10.f;
+	//		linkInfo.JointInfo.Swing2AxisInfo.motion = physics::EArticulationMotion::LIMITED;
+	//		linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 10.f;
+	//		linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -10.f;
+	//		linkInfo.JointInfo.TwistAxisInfo.motion = physics::EArticulationMotion::LIMITED;
+	//		linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 50.f;
+	//		linkInfo.JointInfo.TwistAxisInfo.limitsLow = -50.f;
+	//		linkInfo.JointInfo.damping = 0.99f;
+	//		linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+	//		linkInfo.JointInfo.maxForce = 0.f;
+	//		linkInfo.JointInfo.stiffness = 0.f;
+	//		m_Physics->AddArticulationLink(3, linkInfo, 3.f, 5.f);
 
-			// 하체
-			{
-				linkInfo.boneName = "thighI";
-				linkInfo.parentBoneName = "pelvis";
-				linkInfo.localTransform = Matrix::CreateTranslation(Vector3(5.f, 10.f, 0.f));
-				linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -10.f, 0.f));
-				m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 10.f, 3.f));
-				linkInfo.boneName = "thighR";
-				linkInfo.parentBoneName = "pelvis";
-				linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-5.f, 10.f, 0.f));
-				linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -10.f, 0.f));
-				m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 10.f, 3.f));
-				{
-					linkInfo.boneName = "calfI";
-					linkInfo.parentBoneName = "thighI";
-					linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 16.f, 0.f));
-					linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -8.f, 0.f));
-					m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 8.f, 3.f));
-					linkInfo.boneName = "calfR";
-					linkInfo.parentBoneName = "thighR";
-					linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 16.f, 0.f));
-					linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -8.f, 0.f));
-					m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 8.f, 3.f));
-					{
-						linkInfo.boneName = "footI";
-						linkInfo.parentBoneName = "calfI";
-						linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 9.f, -4.f));
-						linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -1.f, 4.f));
-						m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 1.5f, 4.5f));
-						linkInfo.boneName = "footR";
-						linkInfo.parentBoneName = "calfR";
-						linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 9.f, -4.f));
-						linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -1.f, 4.f));
-						m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 1.5f, 4.5f));
-					}
-				}
-			}
-			// 상체
-			{
-				linkInfo.boneName = "spine01";
-				linkInfo.parentBoneName = "pelvis";
-				linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, 0.f));
-				linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 3.f, 0.f));
-				m_Physics->AddArticulationLink(3, linkInfo, 3.f, 4.f);
-				{
-					linkInfo.boneName = "spine02";
-					linkInfo.parentBoneName = "spine01";
-					linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, 0.f));
-					linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 3.f, 0.f));
-					m_Physics->AddArticulationLink(3, linkInfo, 3.f, 4.f);
-					{
-						linkInfo.boneName = "spine03";
-						linkInfo.parentBoneName = "spine02";
-						linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, 0.f));
-						linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 3.f, 0.f));
-						m_Physics->AddArticulationLink(3, linkInfo, 2.f, 5.f);
-						{
-							linkInfo.boneName = "spine04";
-							linkInfo.parentBoneName = "spine03";
-							linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -10.f, 0.f));
-							linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 5.f, 0.f));
-							m_Physics->AddArticulationLink(3, linkInfo, 4.f, 8.f);
-							{
-								linkInfo.boneName = "clavicleI";
-								linkInfo.parentBoneName = "spine04";
-								linkInfo.localTransform = Matrix::CreateTranslation(Vector3(10.f, -8.f, 0.f));
-								linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-8.f, 4.f, 0.f));
-								linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 20.f;
-								linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -20.f;
-								linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 20.f;
-								linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -20.f;
-								linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 20.f;
-								linkInfo.JointInfo.TwistAxisInfo.limitsLow = -20.f;
-								m_Physics->AddArticulationLink(3, linkInfo, 2.f, 5.f);
-								linkInfo.boneName = "clavicleR";
-								linkInfo.parentBoneName = "spine04";
-								linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-10.f, -8.f, 0.f));
-								linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(8.f, 4.f, 0.f));
-								m_Physics->AddArticulationLink(3, linkInfo, 2.f, 5.f);
-								{
-									linkInfo.boneName = "upperarmI";
-									linkInfo.parentBoneName = "clavicleI";
-									linkInfo.localTransform = Matrix::CreateTranslation(Vector3(12.f, 0.f, 0.f));
-									linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-6.f, 0.f, 0.f));
-									linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 30.f;
-									linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -30.f;
-									linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 30.f;
-									linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -30.f;
-									linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 30.f;
-									linkInfo.JointInfo.TwistAxisInfo.limitsLow = -30.f;
-									m_Physics->AddArticulationLink(3, linkInfo, 6.f, 3.f);
-									linkInfo.boneName = "upperarmR";
-									linkInfo.parentBoneName = "clavicleR";
-									linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-12.f, 0.f, 0.f));
-									linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(6.f, 0.f, 0.f));
-									m_Physics->AddArticulationLink(3, linkInfo, 6.f, 3.f);
-									{
-										linkInfo.boneName = "lowerarmI";
-										linkInfo.parentBoneName = "upperarmI";
-										linkInfo.localTransform = Matrix::CreateTranslation(Vector3(12.f, 0.f, 0.f));
-										linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-6.f, 0.f, 0.f));
-										linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 180.0f;
-										linkInfo.JointInfo.Swing1AxisInfo.limitsLow = 0.0f;
-										linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 5.f;
-										linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -5.f;
-										linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 5.f;
-										linkInfo.JointInfo.TwistAxisInfo.limitsLow = -5.f;
-										m_Physics->AddArticulationLink(3, linkInfo, 6.f, 2.f);
-										linkInfo.boneName = "lowerarmR";
-										linkInfo.parentBoneName = "upperarmR";
-										linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-12.f, 0.f, 0.f));
-										linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(6.f, 0.f, 0.f));
-										m_Physics->AddArticulationLink(3, linkInfo, 6.f, 2.f);
-										{
-											linkInfo.boneName = "handI";
-											linkInfo.parentBoneName = "lowerarmI";
-											linkInfo.localTransform = Matrix::CreateTranslation(Vector3(10.f, 0.f, 0.f));
-											linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f));
-											linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 60.0f;
-											linkInfo.JointInfo.Swing1AxisInfo.limitsLow = 0.0f;
-											linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 5.f;
-											linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -5.f;
-											linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 5.f;
-											linkInfo.JointInfo.TwistAxisInfo.limitsLow = -5.f;
-											m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 2.f, 1.f));
-											linkInfo.boneName = "handR";
-											linkInfo.parentBoneName = "lowerarmR";
-											linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-10.f, 0.f, 0.f));
-											linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(3.f, 0.f, 0.f));
-											m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 2.f, 1.f));
-										}
-									}
-								}
+	//		// 하체
+	//		{
+	//			linkInfo.boneName = "thighI";
+	//			linkInfo.parentBoneName = "pelvis";
+	//			linkInfo.localTransform = Matrix::CreateTranslation(Vector3(5.f, 10.f, 0.f));
+	//			linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -10.f, 0.f));
+	//			m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 10.f, 3.f));
+	//			linkInfo.boneName = "thighR";
+	//			linkInfo.parentBoneName = "pelvis";
+	//			linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-5.f, 10.f, 0.f));
+	//			linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -10.f, 0.f));
+	//			m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 10.f, 3.f));
+	//			{
+	//				linkInfo.boneName = "calfI";
+	//				linkInfo.parentBoneName = "thighI";
+	//				linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 16.f, 0.f));
+	//				linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -8.f, 0.f));
+	//				m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 8.f, 3.f));
+	//				linkInfo.boneName = "calfR";
+	//				linkInfo.parentBoneName = "thighR";
+	//				linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 16.f, 0.f));
+	//				linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -8.f, 0.f));
+	//				m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 8.f, 3.f));
+	//				{
+	//					linkInfo.boneName = "footI";
+	//					linkInfo.parentBoneName = "calfI";
+	//					linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 9.f, -4.f));
+	//					linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -1.f, 4.f));
+	//					m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 1.5f, 4.5f));
+	//					linkInfo.boneName = "footR";
+	//					linkInfo.parentBoneName = "calfR";
+	//					linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 9.f, -4.f));
+	//					linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -1.f, 4.f));
+	//					m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 1.5f, 4.5f));
+	//				}
+	//			}
+	//		}
+	//		// 상체
+	//		{
+	//			linkInfo.boneName = "spine01";
+	//			linkInfo.parentBoneName = "pelvis";
+	//			linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, 0.f));
+	//			linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 3.f, 0.f));
+	//			m_Physics->AddArticulationLink(3, linkInfo, 3.f, 4.f);
+	//			{
+	//				linkInfo.boneName = "spine02";
+	//				linkInfo.parentBoneName = "spine01";
+	//				linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, 0.f));
+	//				linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 3.f, 0.f));
+	//				m_Physics->AddArticulationLink(3, linkInfo, 3.f, 4.f);
+	//				{
+	//					linkInfo.boneName = "spine03";
+	//					linkInfo.parentBoneName = "spine02";
+	//					linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, 0.f));
+	//					linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 3.f, 0.f));
+	//					m_Physics->AddArticulationLink(3, linkInfo, 2.f, 5.f);
+	//					{
+	//						linkInfo.boneName = "spine04";
+	//						linkInfo.parentBoneName = "spine03";
+	//						linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -10.f, 0.f));
+	//						linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 5.f, 0.f));
+	//						m_Physics->AddArticulationLink(3, linkInfo, 4.f, 8.f);
+	//						{
+	//							linkInfo.boneName = "clavicleI";
+	//							linkInfo.parentBoneName = "spine04";
+	//							linkInfo.localTransform = Matrix::CreateTranslation(Vector3(10.f, -8.f, 0.f));
+	//							linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-8.f, 4.f, 0.f));
+	//							linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 20.f;
+	//							linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -20.f;
+	//							linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 20.f;
+	//							linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -20.f;
+	//							linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 20.f;
+	//							linkInfo.JointInfo.TwistAxisInfo.limitsLow = -20.f;
+	//							m_Physics->AddArticulationLink(3, linkInfo, 2.f, 5.f);
+	//							linkInfo.boneName = "clavicleR";
+	//							linkInfo.parentBoneName = "spine04";
+	//							linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-10.f, -8.f, 0.f));
+	//							linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(8.f, 4.f, 0.f));
+	//							m_Physics->AddArticulationLink(3, linkInfo, 2.f, 5.f);
+	//							{
+	//								linkInfo.boneName = "upperarmI";
+	//								linkInfo.parentBoneName = "clavicleI";
+	//								linkInfo.localTransform = Matrix::CreateTranslation(Vector3(12.f, 0.f, 0.f));
+	//								linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-6.f, 0.f, 0.f));
+	//								linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 30.f;
+	//								linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -30.f;
+	//								linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 30.f;
+	//								linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -30.f;
+	//								linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 30.f;
+	//								linkInfo.JointInfo.TwistAxisInfo.limitsLow = -30.f;
+	//								m_Physics->AddArticulationLink(3, linkInfo, 6.f, 3.f);
+	//								linkInfo.boneName = "upperarmR";
+	//								linkInfo.parentBoneName = "clavicleR";
+	//								linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-12.f, 0.f, 0.f));
+	//								linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(6.f, 0.f, 0.f));
+	//								m_Physics->AddArticulationLink(3, linkInfo, 6.f, 3.f);
+	//								{
+	//									linkInfo.boneName = "lowerarmI";
+	//									linkInfo.parentBoneName = "upperarmI";
+	//									linkInfo.localTransform = Matrix::CreateTranslation(Vector3(12.f, 0.f, 0.f));
+	//									linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-6.f, 0.f, 0.f));
+	//									linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 180.0f;
+	//									linkInfo.JointInfo.Swing1AxisInfo.limitsLow = 0.0f;
+	//									linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 5.f;
+	//									linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -5.f;
+	//									linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 5.f;
+	//									linkInfo.JointInfo.TwistAxisInfo.limitsLow = -5.f;
+	//									m_Physics->AddArticulationLink(3, linkInfo, 6.f, 2.f);
+	//									linkInfo.boneName = "lowerarmR";
+	//									linkInfo.parentBoneName = "upperarmR";
+	//									linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-12.f, 0.f, 0.f));
+	//									linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(6.f, 0.f, 0.f));
+	//									m_Physics->AddArticulationLink(3, linkInfo, 6.f, 2.f);
+	//									{
+	//										linkInfo.boneName = "handI";
+	//										linkInfo.parentBoneName = "lowerarmI";
+	//										linkInfo.localTransform = Matrix::CreateTranslation(Vector3(10.f, 0.f, 0.f));
+	//										linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(-3.f, 0.f, 0.f));
+	//										linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 60.0f;
+	//										linkInfo.JointInfo.Swing1AxisInfo.limitsLow = 0.0f;
+	//										linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 5.f;
+	//										linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -5.f;
+	//										linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 5.f;
+	//										linkInfo.JointInfo.TwistAxisInfo.limitsLow = -5.f;
+	//										m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 2.f, 1.f));
+	//										linkInfo.boneName = "handR";
+	//										linkInfo.parentBoneName = "lowerarmR";
+	//										linkInfo.localTransform = Matrix::CreateTranslation(Vector3(-10.f, 0.f, 0.f));
+	//										linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(3.f, 0.f, 0.f));
+	//										m_Physics->AddArticulationLink(3, linkInfo, DirectX::SimpleMath::Vector3(3.f, 2.f, 1.f));
+	//									}
+	//								}
+	//							}
 
-								linkInfo.boneName = "neck01";
-								linkInfo.parentBoneName = "spine04";
-								linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -8.f, 0.f));
-								linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
-								linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 20.f;
-								linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -20.f;
-								linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 20.f;
-								linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -20.f;
-								linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 40.f;
-								linkInfo.JointInfo.TwistAxisInfo.limitsLow = -40.f;
-								m_Physics->AddArticulationLink(3, linkInfo, 0.3f, 3.f);
-								linkInfo.boneName = "neck02";
-								linkInfo.parentBoneName = "neck01";
-								linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -3.f, -0.5f));
-								linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 1.3f));
-								m_Physics->AddArticulationLink(3, linkInfo, 0.3f, 3.f);
-								linkInfo.boneName = "head";
-								linkInfo.parentBoneName = "neck02";
-								linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, -1.3f));
-								linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 2.f, 1.7f));
-								m_Physics->AddArticulationLink(3, linkInfo, 6.5f);
-							}
-						}
-					}
-				}
-			}
+	//							linkInfo.boneName = "neck01";
+	//							linkInfo.parentBoneName = "spine04";
+	//							linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -8.f, 0.f));
+	//							linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 0.f));
+	//							linkInfo.JointInfo.Swing1AxisInfo.limitsHigh = 20.f;
+	//							linkInfo.JointInfo.Swing1AxisInfo.limitsLow = -20.f;
+	//							linkInfo.JointInfo.Swing2AxisInfo.limitsHigh = 20.f;
+	//							linkInfo.JointInfo.Swing2AxisInfo.limitsLow = -20.f;
+	//							linkInfo.JointInfo.TwistAxisInfo.limitsHigh = 40.f;
+	//							linkInfo.JointInfo.TwistAxisInfo.limitsLow = -40.f;
+	//							m_Physics->AddArticulationLink(3, linkInfo, 0.3f, 3.f);
+	//							linkInfo.boneName = "neck02";
+	//							linkInfo.parentBoneName = "neck01";
+	//							linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -3.f, -0.5f));
+	//							linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 0.f, 1.3f));
+	//							m_Physics->AddArticulationLink(3, linkInfo, 0.3f, 3.f);
+	//							linkInfo.boneName = "head";
+	//							linkInfo.parentBoneName = "neck02";
+	//							linkInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, -6.f, -1.3f));
+	//							linkInfo.JointInfo.localTransform = Matrix::CreateTranslation(Vector3(0.f, 2.f, 1.7f));
+	//							m_Physics->AddArticulationLink(3, linkInfo, 6.5f);
+	//						}
+	//					}
+	//				}
+	//			}
+	//		}
 
-			m_Physics->SimulationCharacter(3);
-		}
+	//		m_Physics->SimulationCharacter(3);
+	//	}
 
 
-	}
+	//}
 
 	for (auto object : m_ObjectVec)
 	{
@@ -376,7 +376,7 @@ void DemoApp::Update(float _deltaTime)
 		m_Physics->AddInputMove(1000, direction);
 	}
 
-	m_Physics->Update(_deltaTime);
+		m_Physics->Update(_deltaTime);
 	m_Physics->FinalUpdate();
 }
 
