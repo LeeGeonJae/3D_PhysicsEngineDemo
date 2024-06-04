@@ -1,9 +1,25 @@
 #pragma once
 
+#pragma comment(lib, "LowLevel_static_64.lib")
+#pragma comment(lib, "LowLevelAABB_static_64.lib")
+#pragma comment(lib, "LowLevelDynamics_static_64.lib")
+#pragma comment(lib, "PhysX_64.lib")
+#pragma comment(lib, "PhysXCharacterKinematic_static_64.lib")
+#pragma comment(lib, "PhysXCommon_64.lib")
+#pragma comment(lib, "PhysXCooking_64.lib")
+#pragma comment(lib, "PhysXExtensions_static_64.lib")
+#pragma comment(lib, "PhysXFoundation_64.lib")
+#pragma comment(lib, "PhysXPvdSDK_static_64.lib")
+#pragma comment(lib, "PhysXTask_static_64.lib")
+#pragma comment(lib, "PhysXVehicle_static_64.lib")
+#pragma comment(lib, "PhysXVehicle2_static_64.lib")
+//#pragma comment(lib, "PVDRuntime_64.lib")
+#pragma comment(lib, "SceneQuery_static_64.lib")
+#pragma comment(lib, "SimulationController_static_64.lib")
 #pragma comment(lib, "cudart.lib")
 
-#include <physx/PxPhysics.h>
-#include <physx/PxPhysicsAPI.h>
+#include <PxPhysics.h>
+#include <PxPhysicsAPI.h>
 
 #include <vector>
 #include <memory>
@@ -44,6 +60,8 @@ namespace PhysicsEngine
 		inline std::vector<physx::PxRigidActor*>& GetPxBodies();
 		inline std::vector<SoftBody>& GetSoftBodies();
 		inline std::shared_ptr<CharactorController> GetCharactorController();
+		inline physx::PxCudaContextManager* GetCudaContextManager();
+		inline physx::PxParticleClothBuffer* GetParticleClothBuffer();
 
 	public:
 		inline void AddVertexPosition(physx::PxVec3 _vertex);
@@ -87,9 +105,6 @@ namespace PhysicsEngine
 
 		// run simulation
 		physx::PxRigidDynamic* m_DynamicBody;
-
-		
-
 	};
 
 	physx::PxScene* PhysX::GetPxScene()
@@ -115,5 +130,13 @@ namespace PhysicsEngine
 	void PhysX::AddVertexPosition(physx::PxVec3 _vertex)
 	{
 		m_ModelVertices.push_back(_vertex);
+	}
+	physx::PxCudaContextManager* PhysX::GetCudaContextManager()
+	{
+		return m_CudaContextManager;
+	}
+	physx::PxParticleClothBuffer* PhysX::GetParticleClothBuffer()
+	{
+		return m_ClothBuffer;
 	}
 } 

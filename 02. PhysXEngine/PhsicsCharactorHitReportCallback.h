@@ -1,5 +1,5 @@
 #pragma once
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 namespace PhysicsEngine
 {

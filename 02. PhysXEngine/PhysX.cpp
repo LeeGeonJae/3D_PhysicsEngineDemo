@@ -10,14 +10,14 @@
 
 #include <cassert>
 //#include <physx/foundation/PxPreprocessor.h>		// 전처리기 
-#include <physx/cudamanager/PxCudaContext.h>
-#include <physx/extensions/PxParticleExt.h>
-#include <physx/cudamanager/PxCudaContextManager.h>
-#include <physx/geometry/PxTetrahedronMesh.h>
-#include <physx/gpu/PxGpu.h>
-#include <physx/extensions/PxTetMakerExt.h>
-#include <physx/extensions/PxSoftBodyExt.h>
-#include <physx/extensions/PxRemeshingExt.h>
+#include <cudamanager/PxCudaContext.h>
+#include <extensions/PxParticleExt.h>
+#include <cudamanager/PxCudaContextManager.h>
+#include <geometry/PxTetrahedronMesh.h>
+#include <gpu/PxGpu.h>
+#include <extensions/PxTetMakerExt.h>
+#include <extensions/PxSoftBodyExt.h>
+#include <extensions/PxRemeshingExt.h>
 
 
 namespace PhysicsEngine
@@ -191,13 +191,13 @@ namespace PhysicsEngine
 		CreateArticulation();
 
 		// Setup Cloth
-		//const physx::PxReal totalClothMass = 10.0f;
+		const physx::PxReal totalClothMass = 10.0f;
 
-		//physx::PxU32 numPointsX = 25;
-		//physx::PxU32 numPointsZ = 25;
-		//physx::PxReal particleSpacing = 0.05f;
+		physx::PxU32 numPointsX = 50;
+		physx::PxU32 numPointsZ = 50;
+		physx::PxReal particleSpacing = 1.f;
 
-		//CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 8.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
+		CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 150.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
 	}
 
 	void PhysX::Update(float elapsedTime)
@@ -241,11 +241,11 @@ namespace PhysicsEngine
 
 		physx::PxFilterData filterDataB;
 		filterDataB.word0 = OBJECT_TYPE_B;
-		filterDataB.word1 = OBJECT_TYPE_B | OBJECT_TYPE_C;
+		filterDataB.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B | OBJECT_TYPE_C;
 
 		physx::PxFilterData filterDataC;
 		filterDataC.word0 = OBJECT_TYPE_C;
-		filterDataC.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B;
+		filterDataC.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B | OBJECT_TYPE_C;
 
 		// 시뮬레이션 생성
 		ActorUserData* data1 = new ActorUserData(ActorType::TILE);
@@ -444,6 +444,8 @@ namespace PhysicsEngine
 	void PhysX::CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position, const physx::PxReal particleSpacing, const physx::PxReal totalClothMass)
 	{
 		m_CudaContextManager = m_Scene->getCudaContextManager();
+		if (m_CudaContextManager == nullptr)
+			return;
 
 		const physx::PxU32 numParticles = numX * numZ;
 		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
@@ -451,9 +453,9 @@ namespace PhysicsEngine
 
 		const physx::PxReal restOffset = particleSpacing;
 
-		const physx::PxReal stretchStiffness = 10000.f;
+		const physx::PxReal stretchStiffness = 100.f;
 		const physx::PxReal shearStiffness = 100.f;
-		const physx::PxReal springDamping = 0.001f;
+		const physx::PxReal springDamping = 0.1f;
 
 		// Material setup
 		physx::PxPBDMaterial* defaultMat = m_Physics->createPBDMaterial(0.8f, 0.05f, 1e+6f, 0.001f, 0.5f, 0.005f, 0.05f, 0.f, 0.f);
@@ -473,8 +475,8 @@ namespace PhysicsEngine
 		m_Scene->addActor(*particleSystem);
 
 		// Create particles and add them to the particle system
-		const physx::PxU32 particlePhase = particleSystem->createPhase(defaultMat, physx::PxParticlePhaseFlags
-		(physx::PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | physx::PxParticlePhaseFlag::eParticlePhaseSelfCollide));
+		const physx::PxU32 particlePhase = particleSystem->createPhase(defaultMat, 
+			physx::PxParticlePhaseFlags(physx::PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | physx::PxParticlePhaseFlag::eParticlePhaseSelfCollide));
 
 		physx::ExtGpu::PxParticleClothBufferHelper* clothBuffers = physx::ExtGpu::PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, m_CudaContextManager);
 
@@ -559,8 +561,6 @@ namespace PhysicsEngine
 		m_ClothBuffer = physx::ExtGpu::PxCreateAndPopulateParticleClothBuffer(bufferDesc, clothDesc, output, m_CudaContextManager);
 		m_ParticleSystem->addParticleBuffer(m_ClothBuffer);
 
-
-
 		clothBuffers->release();
 
 		m_CudaContextManager->freePinnedHostBuffer(positionInvMass);
@@ -635,8 +635,12 @@ namespace PhysicsEngine
 
 			if (shape)
 			{
+				physx::PxFilterData filterDataB;
+				filterDataB.word0 = OBJECT_TYPE_B;
+				filterDataB.word1 = OBJECT_TYPE_A | OBJECT_TYPE_B | OBJECT_TYPE_C;
+
 				softBody->attachShape(*shape);
-				shape->setSimulationFilterData(physx::PxFilterData(0, UINT_MAX, 0, 0));
+				shape->setSimulationFilterData(filterDataB);
 			}
 			softBody->attachSimulationMesh(*softBodyMesh->getSimulationMesh(), *softBodyMesh->getSoftBodyAuxData());
 
@@ -665,7 +669,7 @@ namespace PhysicsEngine
 		physx::PxArray<physx::PxVec3> triVerts;
 		physx::PxArray<physx::PxU32> triIndices;
 
-		physx::PxReal maxEdgeLength = 2;
+		physx::PxReal maxEdgeLength = 4;
 
 		createCube(triVerts, triIndices, physx::PxVec3(0, 0, 0), 20.0);
 		physx::PxRemeshingExt::limitMaxEdgeLength(triIndices, triVerts, maxEdgeLength);

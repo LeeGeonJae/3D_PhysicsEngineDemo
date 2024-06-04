@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath />
-    <LibraryPath>..\Lib\deb;..\Libraries\Lib\cuda;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\Libraries\Lib\physX\deb;..\Libraries\Lib\cuda;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

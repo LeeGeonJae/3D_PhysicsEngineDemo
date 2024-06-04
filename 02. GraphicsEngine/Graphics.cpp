@@ -112,7 +112,7 @@ namespace GraphicsEngine
 
 	void Graphics::RenderEnd()
 	{
-		HRESULT hr = m_SwapChain->Present(1, 0);
+		HRESULT hr = m_SwapChain->Present(0, 0);
 		assert(SUCCEEDED(hr));
 	}
 

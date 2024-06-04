@@ -120,6 +120,18 @@ void TestApp::Update(float _deltaTime)
 {
 	__super::Update(_deltaTime);
 
+	static int dtCount = 0;
+	static float dt = 0;
+	dtCount++;
+	dt += _deltaTime;
+	if (dt >= 1.f)
+	{
+		std::cout << "FPS : " << dtCount << std::endl;
+
+		dt -= 1.f;
+		dtCount = 0;
+	}
+
 	int count = 1;
 	for (auto body : m_PhysX->GetPxBodies())
 	{
@@ -197,6 +209,35 @@ void TestApp::Update(float _deltaTime)
 			sphere->Radius = 0.05f;
 
 			RENDER->AddDebugSphere(sphere);
+		}
+	}
+	{
+		physx::PxParticleClothBuffer* buffer = m_PhysX->GetParticleClothBuffer();
+		if (buffer != nullptr)
+		{
+			int paticleSize = buffer->getNbActiveParticles();
+			physx::PxVec4* particle = buffer->getPositionInvMasses();
+
+			physx::PxCudaContextManager* cudaContextManager = m_PhysX->GetCudaContextManager();
+
+			cudaContextManager->acquireContext();
+
+			physx::PxCudaContext* cudaContext = cudaContextManager->getCudaContext();
+			vector<physx::PxVec4> vertex;
+			vertex.resize(paticleSize);
+
+			cudaContext->memcpyDtoH(vertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
+
+			for (int i = 0; i < paticleSize; i++)
+			{
+				shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
+				sphere->Center.x = vertex[i].x;
+				sphere->Center.y = vertex[i].y;
+				sphere->Center.z = -vertex[i].z;
+				sphere->Radius = 0.05f;
+
+				RENDER->AddDebugSphere(sphere);
+			}
 		}
 	}
 

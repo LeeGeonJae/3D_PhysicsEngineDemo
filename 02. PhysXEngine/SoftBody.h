@@ -1,8 +1,8 @@
 #pragma once
 
-#include <physx/PxPhysicsAPI.h>
-#include <physx/cudamanager/PxCudaContextManager.h>
-#include <physx/cudamanager/PxCudaContext.h>
+#include <PxPhysicsAPI.h>
+#include <cudamanager/PxCudaContextManager.h>
+#include <cudamanager/PxCudaContext.h>
 #include <vector>
 
 namespace PhysicsEngine
