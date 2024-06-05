@@ -250,7 +250,7 @@ namespace PhysicsEngine
 		// 시뮬레이션 생성
 		ActorUserData* data1 = new ActorUserData(ActorType::TILE);
 		ActorUserData* data2 = new ActorUserData(ActorType::MONSTER);
-		m_Material = m_Physics->createMaterial(1.f, 1.f, 10.f);
+		m_Material = m_Physics->createMaterial(1.f, 1.f, 20.f);
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
 		physx::PxShape* shape;
 		m_groundPlane->getShapes(&shape, sizeof(physx::PxShape));
@@ -304,20 +304,30 @@ namespace PhysicsEngine
 			}
 		}
 
-		//physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
-		//physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(150), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
-		//physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
-		//Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
-		//Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
-		//body->userData = data2;
-		//Shape->setContactOffset(0.001f);
-		//Shape->setSimulationFilterData(filterDataB);
-		//body->attachShape(*Shape);
+		physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(1.f, 1.f, 1.f), *m_Material);
+		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(250), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
+		physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
+		Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+		body->userData = data2;
+		Shape->setContactOffset(0.001f);
+		Shape->setSimulationFilterData(filterDataB);
+		body->attachShape(*Shape);
+		Shape->release();
+		body->detachShape(*Shape);
 
-		//physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
-		//m_Scene->addActor(*body);
-		//m_Shapes.push_back(Shape);
-		//m_Bodies.push_back(body);
+		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
+		m_Scene->addActor(*body);
+
+		
+		physx::PxShape* newShape = m_Physics->createShape(physx::PxSphereGeometry(10.f), *m_Material);
+		newShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		newShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+		newShape->setContactOffset(0.001f);
+		newShape->setSimulationFilterData(filterDataB);
+		body->attachShape(*newShape);
+		m_Shapes.push_back(newShape);
+		m_Bodies.push_back(body);
 
 		physx::PxRaycastBuffer hitbuffer;
 		physx::PxU32 hitCount = m_Scene->raycast(physx::PxVec3(0.f, 0.f, 0.f), physx::PxVec3(0.f, 1.f, 0.f), 10.f, hitbuffer);
@@ -436,17 +446,27 @@ namespace PhysicsEngine
 #pragma endregion
 
 #pragma region Cloth
+	// 두 개의 2차원 인덱스를 1차원 인덱스로 변환하는 함수
+	// x, y: 2차원 인덱스
+	// numY: 두 번째 차원의 크기
 	PX_FORCE_INLINE physx::PxU32 id(physx::PxU32 x, physx::PxU32 y, physx::PxU32 numY)
 	{
 		return x * numY + y;
 	}
 
+	// 천막(cloth)을 생성하는 함수
+	// numX, numZ: 천막의 가로 및 세로에 해당하는 입자(particle)의 개수
+	// position: 천막의 시작 위치
+	// particleSpacing: 입자 간의 간격
+	// totalClothMass: 천막의 총 질량
 	void PhysX::CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position, const physx::PxReal particleSpacing, const physx::PxReal totalClothMass)
 	{
+		// CUDA 컨텍스트 매니저 가져오기
 		m_CudaContextManager = m_Scene->getCudaContextManager();
 		if (m_CudaContextManager == nullptr)
 			return;
 
+		// 입자 및 스프링, 삼각형의 개수 계산
 		const physx::PxU32 numParticles = numX * numZ;
 		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
 		const physx::PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;
@@ -457,14 +477,14 @@ namespace PhysicsEngine
 		const physx::PxReal shearStiffness = 100.f;
 		const physx::PxReal springDamping = 0.1f;
 
-		// Material setup
-		physx::PxPBDMaterial* defaultMat = m_Physics->createPBDMaterial(0.8f, 0.05f, 1e+6f, 0.001f, 0.5f, 0.005f, 0.05f, 0.f, 0.f);
+		// 재료(Material) 설정
+		physx::PxPBDMaterial* defaultMat = m_Physics->createPBDMaterial(0.8f, 0.001f, 1e+7f, 0.001f, 0.5f, 0.005f, 0.05f, 0.f, 0.f, 1.f, 2.f);
 
+		// 입자 시스템 생성
 		physx::PxPBDParticleSystem* particleSystem = m_Physics->createPBDParticleSystem(*m_CudaContextManager);
 		m_ParticleSystem = particleSystem;
 
-		// General particle system setting
-
+		// 입자 시스템의 설정
 		const physx::PxReal particleMass = totalClothMass / numParticles;
 		particleSystem->setRestOffset(restOffset);
 		particleSystem->setContactOffset(restOffset + 0.02f);
@@ -472,14 +492,15 @@ namespace PhysicsEngine
 		particleSystem->setSolidRestOffset(restOffset);
 		particleSystem->setFluidRestOffset(0.0f);
 
+		// 씬에 입자 시스템 추가
 		m_Scene->addActor(*particleSystem);
 
-		// Create particles and add them to the particle system
-		const physx::PxU32 particlePhase = particleSystem->createPhase(defaultMat, 
+		// 입자의 상태를 저장하는 버퍼 생성
+		const physx::PxU32 particlePhase = particleSystem->createPhase(defaultMat,
 			physx::PxParticlePhaseFlags(physx::PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | physx::PxParticlePhaseFlag::eParticlePhaseSelfCollide));
 
 		physx::ExtGpu::PxParticleClothBufferHelper* clothBuffers = physx::ExtGpu::PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, m_CudaContextManager);
-
+		// 입자, 스프링, 삼각형의 상태를 저장하기 위한 버퍼 할당
 		physx::PxU32* phase = m_CudaContextManager->allocPinnedHostBuffer<physx::PxU32>(numParticles);
 		physx::PxVec4* positionInvMass = m_CudaContextManager->allocPinnedHostBuffer<physx::PxVec4>(numParticles);
 		physx::PxVec4* velocity = m_CudaContextManager->allocPinnedHostBuffer<physx::PxVec4>(numParticles);
@@ -488,7 +509,7 @@ namespace PhysicsEngine
 		physx::PxReal y = position.y;
 		physx::PxReal z = position.z;
 
-		// Define springs and triangles
+		// 스프링 및 삼각형 정의
 		physx::PxArray<physx::PxParticleSpring> springs;
 		springs.reserve(numSprings);
 		physx::PxArray<physx::PxU32> triangles;
@@ -500,11 +521,13 @@ namespace PhysicsEngine
 			{
 				const physx::PxU32 index = i * numZ + j;
 
+				// 입자의 위치와 상태 설정
 				physx::PxVec4 pos(x, y, z, 1.0f / particleMass);
 				phase[index] = particlePhase;
 				positionInvMass[index] = pos;
 				velocity[index] = physx::PxVec4(0.0f);
 
+				// 스프링 추가
 				if (i > 0)
 				{
 					physx::PxParticleSpring spring = { id(i - 1, j, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
@@ -516,6 +539,7 @@ namespace PhysicsEngine
 					springs.pushBack(spring);
 				}
 
+				// 삼각형 추가
 				if (i > 0 && j > 0)
 				{
 					physx::PxParticleSpring spring0 = { id(i - 1, j - 1, numZ), id(i, j, numZ), physx::PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
@@ -523,7 +547,7 @@ namespace PhysicsEngine
 					physx::PxParticleSpring spring1 = { id(i - 1, j, numZ), id(i, j - 1, numZ), physx::PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
 					springs.pushBack(spring1);
 
-					//Triangles are used to compute approximated aerodynamic forces for cloth falling down
+					// 삼각형은 천막이 아래로 떨어질 때 근사적인 공기 저항력 계산에 사용됩니다.
 					triangles.pushBack(id(i - 1, j - 1, numZ));
 					triangles.pushBack(id(i - 1, j, numZ));
 					triangles.pushBack(id(i, j - 1, numZ));
@@ -539,11 +563,14 @@ namespace PhysicsEngine
 			x += particleSpacing;
 		}
 
+		// 생성된 스프링 및 삼각형 수가 예상대로 생성되었는지 확인
 		PX_ASSERT(numSprings == springs.size());
 		PX_ASSERT(numTriangles == triangles.size() / 3);
 
+		// 천막의 버퍼에 데이터 추가
 		clothBuffers->addCloth(0.0f, 0.0f, 0.0f, triangles.begin(), numTriangles, springs.begin(), numSprings, positionInvMass, numParticles);
 
+		// 입자의 상태를 나타내는 버퍼 설명
 		physx::ExtGpu::PxParticleBufferDesc bufferDesc;
 		bufferDesc.maxParticles = numParticles;
 		bufferDesc.numActiveParticles = numParticles;
@@ -551,18 +578,25 @@ namespace PhysicsEngine
 		bufferDesc.velocities = velocity;
 		bufferDesc.phases = phase;
 
+		// 천막의 설명 가져오기
 		const physx::PxParticleClothDesc& clothDesc = clothBuffers->getParticleClothDesc();
+
+		// 입자 천막의 전처리기 생성
 		physx::PxParticleClothPreProcessor* clothPreProcessor = PxCreateParticleClothPreProcessor(m_CudaContextManager);
 
+		// 입자 천막 분할 및 처리
 		physx::PxPartitionedParticleCloth output;
 		clothPreProcessor->partitionSprings(clothDesc, output);
 		clothPreProcessor->release();
 
+		// 천막 버퍼 생성
 		m_ClothBuffer = physx::ExtGpu::PxCreateAndPopulateParticleClothBuffer(bufferDesc, clothDesc, output, m_CudaContextManager);
 		m_ParticleSystem->addParticleBuffer(m_ClothBuffer);
 
+		// 버퍼 해제
 		clothBuffers->release();
 
+		// 할당된 메모리 해제
 		m_CudaContextManager->freePinnedHostBuffer(positionInvMass);
 		m_CudaContextManager->freePinnedHostBuffer(velocity);
 		m_CudaContextManager->freePinnedHostBuffer(phase);

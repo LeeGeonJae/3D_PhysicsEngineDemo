@@ -101,17 +101,22 @@ namespace PhysicsEngine
 			m_Velocity.y == 0;
 
 		// 현재 속도 계산
-		m_Speed = abs(m_Velocity.x) + abs(m_Velocity.z);
+		m_Speed = sqrt(abs(m_Velocity.x * m_Velocity.x) + abs(m_Velocity.z * m_Velocity.z));
 
 		// 최대 속도 제한
 		if (m_Speed > m_MaxSpeed)
 			m_Speed = m_MaxSpeed;
 
-		// 이동 방향 계산
-		float triangleFunction = (m_Velocity.x * m_Velocity.x) + (m_Velocity.z * m_Velocity.z);
-		m_Direction.x = square(m_Velocity.x) / triangleFunction * m_Speed;
-		m_Direction.z = square(m_Velocity.z) / triangleFunction * m_Speed;
+		// 변위 벡터 계산
+		float triangleFunction = sqrt((m_Velocity.x * m_Velocity.x) + (m_Velocity.z * m_Velocity.z));
+		if (abs(m_Velocity.x) >= 0.001f)
+			m_Direction.x = (m_Velocity.x) / triangleFunction * m_Speed;
+		if (abs(m_Velocity.z) >= 0.001f)
+			m_Direction.z = (m_Velocity.z) / triangleFunction * m_Speed;
 		m_Direction.y = m_Velocity.y;
+
+
+		std::cout << m_Direction.x << ", " << m_Direction.y << ", " << m_Direction.z << ", " << m_Speed << std::endl;
 
 		return true;
 	}
