@@ -60,7 +60,7 @@ void TestApp::Init()
 
 		m_ObjectVec.push_back(object);
 
-		shared_ptr< GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/zeldaPosed001.fbx");
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/zeldaPosed001.fbx");
 		for (auto& mesh : staticMesh->GetStaticMeshVec())
 		{
 			for (const auto& vertices : mesh.GetVertices())

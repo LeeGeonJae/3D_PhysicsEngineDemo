@@ -9,6 +9,7 @@ namespace physics
 	PhysicsResourceManager::~PhysicsResourceManager()
 	{
 	}
+
 	bool PhysicsResourceManager::Initialize(physx::PxPhysics* physics)
 	{
 		mPhysics = physics;

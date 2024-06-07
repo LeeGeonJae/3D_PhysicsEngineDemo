@@ -150,6 +150,7 @@
     <ClInclude Include="CharacterLink.h" />
     <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="CharacterPhysics.h" />
+    <ClInclude Include="PhysicsCloth.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ConvexMeshResource.h" />
     <ClInclude Include="DebugShape.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
+    <ClInclude Include="PhysicsClothManager.h" />
     <ClInclude Include="PhysicsCookingMeshTool.h" />
     <ClInclude Include="PhysicsResourceManager.h" />
     <ClInclude Include="PhysicsRigidBodyManager.h" />
@@ -179,6 +181,7 @@
     <ClCompile Include="CharacterLink.cpp" />
     <ClCompile Include="CharacterMovement.cpp" />
     <ClCompile Include="CharacterPhysics.cpp" />
+    <ClCompile Include="PhysicsCloth.cpp" />
     <ClCompile Include="ConvexMeshResource.cpp" />
     <ClCompile Include="DebugShape.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -200,6 +203,7 @@
     <ClCompile Include="PhysicsCCTHitCallback.cpp" />
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp" />
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />
+    <ClCompile Include="PhysicsClothManager.cpp" />
     <ClCompile Include="PhysicsCookingMeshTool.cpp" />
     <ClCompile Include="PhysicsResourceManager.cpp" />
     <ClCompile Include="PhysicsRigidBodyManager.cpp" />

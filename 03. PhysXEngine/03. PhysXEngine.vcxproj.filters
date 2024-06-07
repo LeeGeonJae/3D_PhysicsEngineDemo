@@ -34,6 +34,9 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{d9ea110f-9378-4597-80db-0eb69b8a578d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Cloth">
+      <UniqueIdentifier>{97cf5cdb-bb73-4780-8c35-0a6a33b2338d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CharacterController.h">
@@ -115,6 +118,12 @@
     <ClInclude Include="CharacterQueryFilterCallback.h">
       <Filter>Callback</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsClothManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCloth.h">
+      <Filter>Cloth</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterController.cpp">
@@ -189,6 +198,12 @@
     </ClCompile>
     <ClCompile Include="CharacterQueryFilterCallback.cpp">
       <Filter>Callback</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsClothManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCloth.cpp">
+      <Filter>Cloth</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

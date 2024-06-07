@@ -44,9 +44,10 @@ namespace PhysicsEngine
 		if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
 		{
 			pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT
-				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
-				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
-				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+				| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_FOUND
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_LOST
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_PERSISTS;
 
 			return physx::PxFilterFlag::eDEFAULT;
 		}
@@ -57,11 +58,11 @@ namespace PhysicsEngine
 			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
 				| physx::PxPairFlag::eDETECT_CCD_CONTACT
 				| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
-				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
-				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_FOUND
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_LOST
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_PERSISTS
 				| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
-				| physx::PxPairFlag::eCONTACT_EVENT_POSE
-				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+				| physx::PxPairFlag::eCONTACT_EVENT_POSE;
 			return physx::PxFilterFlag::eDEFAULT;
 		}
 		else
@@ -69,11 +70,11 @@ namespace PhysicsEngine
 			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
 				| physx::PxPairFlag::eDETECT_CCD_CONTACT
 				| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
-				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
-				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_FOUND
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_LOST
+				| physx::PxPairFlag::eNOTIFY_THRESHOLD_FORCE_PERSISTS
 				| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
-				| physx::PxPairFlag::eCONTACT_EVENT_POSE
-				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+				| physx::PxPairFlag::eCONTACT_EVENT_POSE;
 			return physx::PxFilterFlag::eDEFAULT;
 
 			//pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
@@ -127,7 +128,7 @@ namespace PhysicsEngine
 		m_Pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL); // PVD를 트랜스포트에 연결합니다.
 
 		// 물리 시뮬레이션의 허용 오차 스케일을 설정합니다.
-		m_ToleranceScale.length = 100; // 길이 허용 오차 스케일을 설정합니다.
+		m_ToleranceScale.length = 1; // 길이 허용 오차 스케일을 설정합니다.
 		m_ToleranceScale.speed = 1000; // 속도 허용 오차 스케일을 설정합니다.
 
 		// PhysX Physics를 생성하고 초기화합니다.
@@ -195,7 +196,7 @@ namespace PhysicsEngine
 
 		physx::PxU32 numPointsX = 30;
 		physx::PxU32 numPointsZ = 30;
-		physx::PxReal particleSpacing = 2.f;
+		physx::PxReal particleSpacing = 3.f;
 
 		CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 150.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
 	}
@@ -250,7 +251,7 @@ namespace PhysicsEngine
 		// 시뮬레이션 생성
 		ActorUserData* data1 = new ActorUserData(ActorType::TILE);
 		ActorUserData* data2 = new ActorUserData(ActorType::MONSTER);
-		m_Material = m_Physics->createMaterial(1.f, 1.f, 20.f);
+		m_Material = m_Physics->createMaterial(5.f, 5.f, 20.f);
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
 		physx::PxShape* shape;
 		m_groundPlane->getShapes(&shape, sizeof(physx::PxShape));
@@ -269,6 +270,7 @@ namespace PhysicsEngine
 
 		physx::PxTolerancesScale scale;
 		physx::PxCookingParams params(scale);
+		params.buildGPUData = true;
 
 		physx::PxDefaultMemoryOutputStream buf;
 		physx::PxConvexMeshCookingResult::Enum result;
@@ -278,7 +280,7 @@ namespace PhysicsEngine
 
 
 		float halfExtent = 5.f;
-		physx::PxU32 size = 0;
+		physx::PxU32 size = 3;
 
 		const physx::PxTransform t(physx::PxVec3(0));
 		for (physx::PxU32 i = 0; i < size; i++)
@@ -286,16 +288,17 @@ namespace PhysicsEngine
 			for (physx::PxU32 j = 0; j < size - i; j++)
 			{
 				ActorUserData* data = new ActorUserData(ActorType::PLAYER);
-				physx::PxShape* Shape = m_Physics->createShape(physx::PxSphereGeometry(halfExtent), *m_Material);
-				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1) + 100, 0) * halfExtent);
+				physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(physx::PxVec3(halfExtent / 2, halfExtent / 2, halfExtent / 2)), *m_Material);
+				physx::PxTransform localTm(physx::PxVec3(physx::PxReal(j * 2) - physx::PxReal(size - i), physx::PxReal(i * 2 + 1), 0) * halfExtent);
 				physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 				Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 				Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
 				body->userData = data;
+				Shape->setContactOffset(0.02f);
+				Shape->setRestOffset(0.f);
 				Shape->setSimulationFilterData(filterDataB);
 				body->attachShape(*Shape);
-				assert(physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f));
-				Shape->setContactOffset(0.001f);
+				assert(physx::PxRigidBodyExt::updateMassAndInertia(*body, 100.f));
 
 				m_Scene->addActor(*body);
 				m_Shapes.push_back(Shape);
@@ -304,30 +307,36 @@ namespace PhysicsEngine
 			}
 		}
 
-		physx::PxShape* Shape = m_Physics->createShape(physx::PxBoxGeometry(1.f, 1.f, 1.f), *m_Material);
+		physx::PxShape* Shape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
 		physx::PxTransform localTm(physx::PxVec3(physx::PxReal(3), physx::PxReal(250), 0), physx::PxQuat(1.f, 0.1f, 0.f, 0.f));
 		physx::PxRigidDynamic* body = m_Physics->createRigidDynamic(t.transform(localTm));
 		Shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 		Shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
 		body->userData = data2;
-		Shape->setContactOffset(0.001f);
+		Shape->setContactOffset(0.02f);
+		Shape->setRestOffset(0.f);
 		Shape->setSimulationFilterData(filterDataB);
 		body->attachShape(*Shape);
 		Shape->release();
 		body->detachShape(*Shape);
 
-		physx::PxRigidBodyExt::updateMassAndInertia(*body, 1000.f);
-		m_Scene->addActor(*body);
-
-		
-		physx::PxShape* newShape = m_Physics->createShape(physx::PxSphereGeometry(10.f), *m_Material);
+		physx::PxShape* newShape = m_Physics->createShape(physx::PxConvexMeshGeometry(convexMesh), *m_Material);
 		newShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 		newShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
-		newShape->setContactOffset(0.001f);
+		newShape->setContactOffset(1.1f);
 		newShape->setSimulationFilterData(filterDataB);
 		body->attachShape(*newShape);
 		m_Shapes.push_back(newShape);
 		m_Bodies.push_back(body);
+
+		body->setMassSpaceInertiaTensor(physx::PxVec3(
+			1.f / (body->getCMassLocalPose().p.x * body->getCMassLocalPose().p.x),
+			1.f / (body->getCMassLocalPose().p.y * body->getCMassLocalPose().p.y),
+			1.f / (body->getCMassLocalPose().p.z * body->getCMassLocalPose().p.z)
+		));
+
+		physx::PxRigidBodyExt::updateMassAndInertia(*body, 100.f);
+		m_Scene->addActor(*body);
 
 		physx::PxRaycastBuffer hitbuffer;
 		physx::PxU32 hitCount = m_Scene->raycast(physx::PxVec3(0.f, 0.f, 0.f), physx::PxVec3(0.f, 1.f, 0.f), 10.f, hitbuffer);
@@ -355,7 +364,7 @@ namespace PhysicsEngine
 		articulation->setSolverIterationCounts(4);
 		articulation->setMaxCOMLinearVelocity(10000000.f);
 
-		physx::PxArticulationLink* rootLink = articulation->createLink(nullptr, physx::PxTransform(0.f, 50.f, 0.f));
+		physx::PxArticulationLink* rootLink = articulation->createLink(nullptr, physx::PxTransform(0.f, 50.f, 100.f));
 		//physx::PxRigidActorExt::createExclusiveShape(*rootLink, physx::PxSphereGeometry(5.f), *m_Material);
 		//physx::PxRigidBodyExt::updateMassAndInertia(*rootLink, 10.f);
 
@@ -467,9 +476,9 @@ namespace PhysicsEngine
 			return;
 
 		// 입자 및 스프링, 삼각형의 개수 계산
-		const physx::PxU32 numParticles = numX * numZ;
-		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
-		const physx::PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;
+		const physx::PxU32 numParticles = numX * numZ;	// 입자 갯수
+		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);	// 입자 하나당 이웃하는 입자들에 스프링 값을 가지는데, 그 스프링 갯수
+		const physx::PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;	// 삼각형 갯수
 
 		const physx::PxReal restOffset = particleSpacing;
 
@@ -600,6 +609,32 @@ namespace PhysicsEngine
 		m_CudaContextManager->freePinnedHostBuffer(positionInvMass);
 		m_CudaContextManager->freePinnedHostBuffer(velocity);
 		m_CudaContextManager->freePinnedHostBuffer(phase);
+
+		int paticleSize = m_ClothBuffer->getNbActiveParticles();
+		physx::PxVec4* particle = m_ClothBuffer->getPositionInvMasses();
+
+		physx::PxCudaContextManager* cudaContextManager = m_CudaContextManager;
+
+		cudaContextManager->acquireContext();
+
+		physx::PxCudaContext* cudaContext = cudaContextManager->getCudaContext();
+		std::vector<physx::PxVec4> vertex;
+		vertex.resize(paticleSize);
+
+		cudaContext->memcpyDtoH(vertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
+
+		for (int i = 0; i < paticleSize; i++)
+		{
+			DirectX::SimpleMath::Matrix particleTransform = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(vertex[i].x, vertex[i].y, vertex[i].z));
+			DirectX::SimpleMath::Matrix rotationTransformX = DirectX::SimpleMath::Matrix::CreateRotationX(0.8f);
+			DirectX::SimpleMath::Matrix rotationTransformY = DirectX::SimpleMath::Matrix::CreateRotationY(0.3f);
+			DirectX::SimpleMath::Matrix rotationTransformZ = DirectX::SimpleMath::Matrix::CreateRotationZ(0.1f);
+
+			DirectX::SimpleMath::Matrix finalTransform = particleTransform * rotationTransformX;
+			vertex[i] = physx::PxVec4(finalTransform.Translation().x, finalTransform.Translation().y, finalTransform.Translation().z, 1.f);
+		}
+
+		cudaContext->memcpyHtoD(CUdeviceptr(particle), vertex.data(), sizeof(physx::PxVec4)* paticleSize);
 	}
 #pragma endregion
 

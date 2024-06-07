@@ -242,4 +242,17 @@ namespace physics
 		float density = 1.f;							// ¹Ðµµ
 	};
 #pragma endregion
+
+#pragma region PhysicsCloth
+	struct PhysicsClothInfo
+	{
+		unsigned int id = unregisterID;
+		unsigned int layerNumber = 0;
+		unsigned int particleNumberX = 5;
+		unsigned int particleNumberZ = 5;
+		DirectX::SimpleMath::Vector3 position = {};
+		float particleSpacing = 2.f;
+		float totalClothMass = 10.f;
+	};
+#pragma endregion
 }

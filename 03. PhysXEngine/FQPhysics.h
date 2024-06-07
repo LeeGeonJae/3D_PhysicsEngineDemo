@@ -121,14 +121,11 @@ namespace physics
 
 #pragma region CharacterPhysicsManager
 		bool CreateCharacterphysics(const CharacterPhysicsInfo& info);
-		bool RemoveArticulation(unsigned int id);
 
 		bool SimulationCharacter(unsigned int id);
 
 		template <typename ...Params>
 		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, Params...);
-
-		bool RemoveArticulationLink(unsigned int id, const std::string& boneName);
 #pragma endregion
 
 	private:
