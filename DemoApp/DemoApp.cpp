@@ -376,7 +376,14 @@ void DemoApp::Update(float _deltaTime)
 		m_Physics->AddInputMove(1000, direction);
 	}
 
-		m_Physics->Update(_deltaTime);
+	m_Physics->Update(_deltaTime);
+
+	static float delayTime = 0.f;
+	delayTime += _deltaTime;
+
+	if ( delayTime >= 5.f)
+		m_Physics->RemoveController(1000);
+	
 	m_Physics->FinalUpdate();
 }
 

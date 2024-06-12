@@ -14,6 +14,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="SoftBody">
+      <UniqueIdentifier>{856ddf6d-65f1-4fa0-8c2f-05a1fefd9294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cloth">
+      <UniqueIdentifier>{e5745aab-241f-4c17-9977-8b40b4b32adb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -43,8 +49,15 @@
     <ClInclude Include="ActorUserData.h">
       <Filter>Callback</Filter>
     </ClInclude>
-    <ClInclude Include="SoftBody.h" />
-    <ClInclude Include="MeshGenerator.h" />
+    <ClInclude Include="MeshGenerator.h">
+      <Filter>SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftBody.h">
+      <Filter>SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="ClothPhysics.h">
+      <Filter>Cloth</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -71,7 +84,14 @@
     <ClCompile Include="ActorUserData.cpp">
       <Filter>Callback</Filter>
     </ClCompile>
-    <ClCompile Include="SoftBody.cpp" />
-    <ClCompile Include="MeshGenerator.cpp" />
+    <ClCompile Include="MeshGenerator.cpp">
+      <Filter>SoftBody</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftBody.cpp">
+      <Filter>SoftBody</Filter>
+    </ClCompile>
+    <ClCompile Include="ClothPhysics.cpp">
+      <Filter>Cloth</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

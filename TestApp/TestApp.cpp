@@ -11,7 +11,6 @@
 #include "PawnController.h"
 
 #include "DebugShape.h"
-#include "../03. PhysXEngine/Common.h"
 
 #include "../02. GraphicsEngine/Graphics.h"
 #include "../02. GraphicsEngine/RenderManager.h"
@@ -23,7 +22,7 @@
 #include "../01. Engine/InputManager.h"
 #include "../02. PhysXEngine/CharactorController.h"
 #include "../02. PhysXEngine/SoftBody.h"
-#include "../03. PhysXEngine/FQPhysics.h"
+#include "../02. PhysXEngine/ClothPhysics.h"
 
 
 void TestApp::Init()
@@ -71,6 +70,12 @@ void TestApp::Init()
 				vertex.z = -vertices.m_Position.z;
 				m_PhysX->AddVertexPosition(vertex);
 			}
+		}
+
+		auto& mesh = staticMesh->GetStaticMeshVec()[0];
+		for (const auto& indices : mesh.GetIndices())
+		{
+			m_PhysX->AddIndex(indices);
 		}
 	}
 
@@ -239,6 +244,21 @@ void TestApp::Update(float _deltaTime)
 				RENDER->AddDebugSphere(sphere);
 			}
 		}
+	}
+	{
+		PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
+
+		for (int i = 0; i < data.vertexSize; i++)
+		{
+			shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
+			sphere->Center.x = data.vertices[i].x;
+			sphere->Center.y = data.vertices[i].y;
+			sphere->Center.z = data.vertices[i].z;
+			sphere->Radius = 0.05f;
+
+			RENDER->AddDebugSphere(sphere);
+		}
+		
 	}
 
 	physx::PxRigidActor* charactorBody = m_PhysX-> GetCharactorController()->GetPxController()->getActor();

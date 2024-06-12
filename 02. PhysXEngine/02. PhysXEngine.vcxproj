@@ -153,6 +153,7 @@
     <ClInclude Include="ActorUserData.h" />
     <ClInclude Include="CharactorController.h" />
     <ClInclude Include="CharactorMovement.h" />
+    <ClInclude Include="ClothPhysics.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MeshGenerator.h" />
     <ClInclude Include="pch.h" />
@@ -166,6 +167,7 @@
     <ClCompile Include="ActorUserData.cpp" />
     <ClCompile Include="CharactorController.cpp" />
     <ClCompile Include="CharactorMovement.cpp" />
+    <ClCompile Include="ClothPhysics.cpp" />
     <ClCompile Include="MeshGenerator.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

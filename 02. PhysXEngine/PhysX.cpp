@@ -10,14 +10,16 @@
 
 #include <cassert>
 //#include <physx/foundation/PxPreprocessor.h>		// 전처리기 
-#include <cudamanager/PxCudaContext.h>
+//#include <cudamanager/PxCudaContext.h>
 #include <extensions/PxParticleExt.h>
-#include <cudamanager/PxCudaContextManager.h>
-#include <geometry/PxTetrahedronMesh.h>
-#include <gpu/PxGpu.h>
-#include <extensions/PxTetMakerExt.h>
+//#include <cudamanager/PxCudaContextManager.h>
+//#include <geometry/PxTetrahedronMesh.h>
+//#include <gpu/PxGpu.h>
+//#include <extensions/PxTetMakerExt.h>
 #include <extensions/PxSoftBodyExt.h>
 #include <extensions/PxRemeshingExt.h>
+#include "..\03. PhysXEngine\EngineDataConverter.h"
+#include "ClothPhysics.h"
 
 
 namespace PhysicsEngine
@@ -192,13 +194,16 @@ namespace PhysicsEngine
 		CreateArticulation();
 
 		// Setup Cloth
-		const physx::PxReal totalClothMass = 10.0f;
+		//const physx::PxReal totalClothMass = 2.f;
 
-		physx::PxU32 numPointsX = 30;
-		physx::PxU32 numPointsZ = 30;
-		physx::PxReal particleSpacing = 3.f;
+		//physx::PxU32 numPointsX = 30;
+		//physx::PxU32 numPointsZ = 30;
+		//physx::PxReal particleSpacing = 3.f;
 
-		CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 150.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
+		//CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 550.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
+
+		CreateCloth();
+
 	}
 
 	void PhysX::Update(float elapsedTime)
@@ -360,11 +365,11 @@ namespace PhysicsEngine
 		physx::PxArticulationReducedCoordinate* articulation = m_Physics->createArticulationReducedCoordinate();
 
 		articulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, true);
-		articulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
+		articulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, true);
 		articulation->setSolverIterationCounts(4);
-		articulation->setMaxCOMLinearVelocity(10000000.f);
+		articulation->setMaxCOMLinearVelocity(10.f);
 
-		physx::PxArticulationLink* rootLink = articulation->createLink(nullptr, physx::PxTransform(0.f, 50.f, 100.f));
+		physx::PxArticulationLink* rootLink = articulation->createLink(nullptr, physx::PxTransform(0.f, 50.f, 0.f));
 		//physx::PxRigidActorExt::createExclusiveShape(*rootLink, physx::PxSphereGeometry(5.f), *m_Material);
 		//physx::PxRigidBodyExt::updateMassAndInertia(*rootLink, 10.f);
 
@@ -455,12 +460,65 @@ namespace PhysicsEngine
 #pragma endregion
 
 #pragma region Cloth
+	// 왼손 좌표계(DirectX11)에서 오른손 좌표계(PhysX)로 변환하기
+	void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix, physx::PxTransform& pxTransform)
+	{
+		DirectX::XMFLOAT4X4 dxMatrixData;
+		DirectX::XMStoreFloat4x4(&dxMatrixData, dxMatrix);
+
+		pxTransform.p.x = dxMatrixData._41;
+		pxTransform.p.y = dxMatrixData._42;
+		pxTransform.p.z = -dxMatrixData._43; // z축 방향 반전
+
+		// 회전 정보에서 z축 방향 반전 적용
+		DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationMatrix(dxMatrix);
+		DirectX::XMVECTOR flippedZ = DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), DirectX::XM_PI);
+		quaternion = DirectX::XMQuaternionMultiply(quaternion, flippedZ);
+
+		pxTransform.q.x = DirectX::XMVectorGetX(quaternion);
+		pxTransform.q.y = DirectX::XMVectorGetY(quaternion);
+		pxTransform.q.z = DirectX::XMVectorGetZ(quaternion);
+		pxTransform.q.w = DirectX::XMVectorGetW(quaternion);
+	}
+
+	physx::PxVec4 multiply(const physx::PxMat44& mat, const physx::PxVec4& vec)  // 4x4 행렬과 PxVec4를 곱하는 함수
+	{
+		physx::PxVec4 result;
+		result.x = mat(0, 0) * vec.x + mat(1, 0) * vec.y + mat(2, 0) * vec.z + mat(3, 0) * vec.w;
+		result.y = mat(0, 1) * vec.x + mat(1, 1) * vec.y + mat(2, 1) * vec.z + mat(3, 1) * vec.w;
+		result.z = mat(0, 2) * vec.x + mat(1, 2) * vec.y + mat(2, 2) * vec.z + mat(3, 2) * vec.w;
+		result.w = mat(0, 3) * vec.x + mat(1, 3) * vec.y + mat(2, 3) * vec.z + mat(3, 3) * vec.w;
+		return result;
+	}
+
 	// 두 개의 2차원 인덱스를 1차원 인덱스로 변환하는 함수
 	// x, y: 2차원 인덱스
 	// numY: 두 번째 차원의 크기
 	PX_FORCE_INLINE physx::PxU32 id(physx::PxU32 x, physx::PxU32 y, physx::PxU32 numY)
 	{
 		return x * numY + y;
+	}
+
+	void PhysX::CreateCloth()
+	{
+		PhysicsClothInfo info;
+		std::vector<DirectX::SimpleMath::Vector3> vertices;
+		vertices.resize(m_ModelVertices.size());
+		for (int i = 0; i < m_ModelVertices.size(); i++)
+		{
+			vertices[i].x = m_ModelVertices[i].x;
+			vertices[i].y = m_ModelVertices[i].y;
+			vertices[i].z = m_ModelVertices[i].z;
+		}
+		info.vertices = vertices.data();
+		info.vertexSize = vertices.size();
+		info.indices = m_ModelIndices.data();
+		info.id = 100;
+		info.layerNumber = 1;
+		info.worldTransform = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 100.f, 0.f);
+
+		m_ClothPhysics = std::make_shared<ClothPhysics>(info.id, info.layerNumber);
+		m_ClothPhysics->Initialize(info, m_Physics, m_Scene, m_CudaContextManager);
 	}
 
 	// 천막(cloth)을 생성하는 함수
@@ -480,7 +538,7 @@ namespace PhysicsEngine
 		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);	// 입자 하나당 이웃하는 입자들에 스프링 값을 가지는데, 그 스프링 갯수
 		const physx::PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;	// 삼각형 갯수
 
-		const physx::PxReal restOffset = particleSpacing;
+		const physx::PxReal restOffset = particleSpacing - 0.5f;
 
 		const physx::PxReal stretchStiffness = 100.f;
 		const physx::PxReal shearStiffness = 100.f;
@@ -490,22 +548,21 @@ namespace PhysicsEngine
 		physx::PxPBDMaterial* defaultMat = m_Physics->createPBDMaterial(0.8f, 0.001f, 1e+7f, 0.001f, 0.5f, 0.005f, 0.05f, 0.f, 0.f, 1.f, 2.f);
 
 		// 입자 시스템 생성
-		physx::PxPBDParticleSystem* particleSystem = m_Physics->createPBDParticleSystem(*m_CudaContextManager);
-		m_ParticleSystem = particleSystem;
+		m_ParticleSystem = m_Physics->createPBDParticleSystem(*m_CudaContextManager);
 
 		// 입자 시스템의 설정
 		const physx::PxReal particleMass = totalClothMass / numParticles;
-		particleSystem->setRestOffset(restOffset);
-		particleSystem->setContactOffset(restOffset + 0.02f);
-		particleSystem->setParticleContactOffset(restOffset + 0.02f);
-		particleSystem->setSolidRestOffset(restOffset);
-		particleSystem->setFluidRestOffset(0.0f);
+		m_ParticleSystem->setRestOffset(restOffset);
+		m_ParticleSystem->setContactOffset(restOffset + 0.02f);
+		m_ParticleSystem->setParticleContactOffset(restOffset + 0.02f);
+		m_ParticleSystem->setSolidRestOffset(restOffset);
+		m_ParticleSystem->setFluidRestOffset(0.0f);
 
 		// 씬에 입자 시스템 추가
-		m_Scene->addActor(*particleSystem);
+		m_Scene->addActor(*m_ParticleSystem);
 
 		// 입자의 상태를 저장하는 버퍼 생성
-		const physx::PxU32 particlePhase = particleSystem->createPhase(defaultMat,
+		const physx::PxU32 particlePhase = m_ParticleSystem->createPhase(defaultMat,
 			physx::PxParticlePhaseFlags(physx::PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | physx::PxParticlePhaseFlag::eParticlePhaseSelfCollide));
 
 		physx::ExtGpu::PxParticleClothBufferHelper* clothBuffers = physx::ExtGpu::PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, m_CudaContextManager);
@@ -539,7 +596,7 @@ namespace PhysicsEngine
 				// 스프링 추가
 				if (i > 0)
 				{
-					physx::PxParticleSpring spring = { id(i - 1, j, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
+					physx::PxParticleSpring spring = {id(i - 1, j, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
 					springs.pushBack(spring);
 				}
 				if (j > 0)
@@ -610,31 +667,32 @@ namespace PhysicsEngine
 		m_CudaContextManager->freePinnedHostBuffer(velocity);
 		m_CudaContextManager->freePinnedHostBuffer(phase);
 
-		int paticleSize = m_ClothBuffer->getNbActiveParticles();
-		physx::PxVec4* particle = m_ClothBuffer->getPositionInvMasses();
+		//int paticleSize = m_ClothBuffer->getNbActiveParticles();
+		//physx::PxVec4* particle = m_ClothBuffer->getPositionInvMasses();
 
-		physx::PxCudaContextManager* cudaContextManager = m_CudaContextManager;
+		//physx::PxCudaContextManager* cudaContextManager = m_CudaContextManager;
+		//m_CudaContextManager->acquireContext();
 
-		cudaContextManager->acquireContext();
+		//physx::PxCudaContext* cudaContext = cudaContextManager->getCudaContext();
+		//std::vector<physx::PxVec4> vertex;
+		//vertex.resize(paticleSize);
 
-		physx::PxCudaContext* cudaContext = cudaContextManager->getCudaContext();
-		std::vector<physx::PxVec4> vertex;
-		vertex.resize(paticleSize);
+		//cudaContext->memcpyDtoH(vertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
 
-		cudaContext->memcpyDtoH(vertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
+		//physx::PxTransform pxCurrentTrnasform;
 
-		for (int i = 0; i < paticleSize; i++)
-		{
-			DirectX::SimpleMath::Matrix particleTransform = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(vertex[i].x, vertex[i].y, vertex[i].z));
-			DirectX::SimpleMath::Matrix rotationTransformX = DirectX::SimpleMath::Matrix::CreateRotationX(0.8f);
-			DirectX::SimpleMath::Matrix rotationTransformY = DirectX::SimpleMath::Matrix::CreateRotationY(0.3f);
-			DirectX::SimpleMath::Matrix rotationTransformZ = DirectX::SimpleMath::Matrix::CreateRotationZ(0.1f);
+		//DirectX::SimpleMath::Quaternion rotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::SimpleMath::Vector3(-1.8f, 0.3f, 0.f));
+		//DirectX::SimpleMath::Matrix TrnaslationTransform = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(x, 10000.f, -z));
+		//DirectX::SimpleMath::Matrix rotationTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+		//DirectX::SimpleMath::Matrix worldTransform = rotationTransform * TrnaslationTransform;
+		//CopyDirectXMatrixToPxTransform(worldTransform, pxCurrentTrnasform);
 
-			DirectX::SimpleMath::Matrix finalTransform = particleTransform * rotationTransformX;
-			vertex[i] = physx::PxVec4(finalTransform.Translation().x, finalTransform.Translation().y, finalTransform.Translation().z, 1.f);
-		}
+		//for (int i = 0; i < paticleSize; i++)
+		//{
+		//	vertex[i] = multiply(pxCurrentTrnasform, vertex[i]);		// 이전 월드 트랜스폼의 위치를 반환하고
+		//}
 
-		cudaContext->memcpyHtoD(CUdeviceptr(particle), vertex.data(), sizeof(physx::PxVec4)* paticleSize);
+		//cudaContext->memcpyHtoD(CUdeviceptr(particle), vertex.data(), sizeof(physx::PxVec4)* paticleSize);
 	}
 #pragma endregion
 
@@ -755,4 +813,15 @@ namespace PhysicsEngine
 	{
 		m_CharactorController->AddDirection(direction);
 	}
+
+	PhysicsClothGetData PhysX::GetPhysicsClothGetData()
+	{
+		PhysicsClothGetData getData;
+
+		physx::PxCudaContext* cudaContext = m_CudaContextManager->getCudaContext();
+		m_ClothPhysics->GetPhysicsCloth(m_CudaContextManager, cudaContext, getData);
+
+		return getData;
+	}
+
 }

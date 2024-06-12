@@ -32,5 +32,3 @@ namespace physics
 		physx::PxCudaContextManager*	mCudaContextManager;
 	};
 }
-
-

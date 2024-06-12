@@ -1,23 +1,5 @@
 #pragma once
 
-//#pragma comment(lib, "LowLevel_static_64.lib")
-//#pragma comment(lib, "LowLevelAABB_static_64.lib")
-//#pragma comment(lib, "LowLevelDynamics_static_64.lib")
-//#pragma comment(lib, "PhysX_64.lib")
-//#pragma comment(lib, "PhysXCharacterKinematic_static_64.lib")
-//#pragma comment(lib, "PhysXCommon_64.lib")
-//#pragma comment(lib, "PhysXCooking_64.lib")
-//#pragma comment(lib, "PhysXExtensions_static_64.lib")
-//#pragma comment(lib, "PhysXFoundation_64.lib")
-//#pragma comment(lib, "PhysXPvdSDK_static_64.lib")
-//#pragma comment(lib, "PhysXTask_static_64.lib")
-//#pragma comment(lib, "PhysXVehicle_static_64.lib")
-//#pragma comment(lib, "PhysXVehicle2_static_64.lib")
-////#pragma comment(lib, "PVDRuntime_64.lib")
-//#pragma comment(lib, "SceneQuery_static_64.lib")
-//#pragma comment(lib, "SimulationController_static_64.lib")
-//#pragma comment(lib, "cudart.lib")
-
 #include <PxPhysics.h>
 #include <PxPhysicsAPI.h>
 
@@ -25,6 +7,8 @@
 #include <memory>
 #include <directxtk/SimpleMath.h>
 #include <d3d11.h>
+
+#include "ClothPhysics.h"
 
 namespace PhysicsEngine
 {
@@ -46,6 +30,7 @@ namespace PhysicsEngine
 		void CreateCharactorController();
 		void CreateArticulation();
 		void CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position = physx::PxVec3(0, 0, 0), const physx::PxReal particleSpacing = 0.2f, const physx::PxReal totalClothMass = 10.f);
+		void CreateCloth();
 		physx::PxSoftBody* CreateSoftBody(const physx::PxCookingParams& params, const physx::PxArray<physx::PxVec3>& triVerts, const physx::PxArray<physx::PxU32>& triIndices, bool useCollisionMeshForSimulation = false);
 		void addSoftBody(physx::PxSoftBody* softBody, const physx::PxFEMParameters& femParams, const physx::PxTransform& transform, const physx::PxReal density, const physx::PxReal scale, const physx::PxU32 iterCount);
 
@@ -62,9 +47,11 @@ namespace PhysicsEngine
 		inline std::shared_ptr<CharactorController> GetCharactorController();
 		inline physx::PxCudaContextManager* GetCudaContextManager();
 		inline physx::PxParticleClothBuffer* GetParticleClothBuffer();
+		PhysicsClothGetData GetPhysicsClothGetData();
 
 	public:
 		inline void AddVertexPosition(physx::PxVec3 _vertex);
+		inline void AddIndex(unsigned int _index);
 
 	private:
 		physx::PxDefaultAllocator		m_DefaultAllocatorCallback;
@@ -100,11 +87,15 @@ namespace PhysicsEngine
 		std::vector<SoftBody> m_SoftBodies;
 
 		std::vector<physx::PxVec3> m_ModelVertices;
+		std::vector<unsigned int> m_ModelIndices;
 		// create simulation
 		PhysicsSimulationEventCallback* m_MyEventCallback;
 
 		// run simulation
 		physx::PxRigidDynamic* m_DynamicBody;
+
+		// Cloth
+		std::shared_ptr<ClothPhysics> m_ClothPhysics;
 	};
 
 	physx::PxScene* PhysX::GetPxScene()
@@ -130,6 +121,10 @@ namespace PhysicsEngine
 	void PhysX::AddVertexPosition(physx::PxVec3 _vertex)
 	{
 		m_ModelVertices.push_back(_vertex);
+	}
+	void PhysX::AddIndex(unsigned int _index)
+	{
+		m_ModelIndices.push_back(_index);
 	}
 	physx::PxCudaContextManager* PhysX::GetCudaContextManager()
 	{
