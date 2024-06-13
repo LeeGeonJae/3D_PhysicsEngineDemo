@@ -179,6 +179,8 @@ namespace PhysicsEngine
 		m_Scene = m_Physics->createScene(sceneDesc); // Scene을 생성합니다.
 		assert(m_Scene);
 
+		m_Material = m_Physics->createMaterial(5.f, 5.f, 20.f);
+
 		// 
 		m_pvdClient = m_Scene->getScenePvdClient();
 		if (m_pvdClient)
@@ -191,7 +193,7 @@ namespace PhysicsEngine
 		CreateActor();
 		CreateCharactorController();
 		//CreateSoftBodies();
-		CreateArticulation();
+		//CreateArticulation();
 
 		// Setup Cloth
 		//const physx::PxReal totalClothMass = 2.f;
@@ -256,7 +258,6 @@ namespace PhysicsEngine
 		// 시뮬레이션 생성
 		ActorUserData* data1 = new ActorUserData(ActorType::TILE);
 		ActorUserData* data2 = new ActorUserData(ActorType::MONSTER);
-		m_Material = m_Physics->createMaterial(5.f, 5.f, 20.f);
 		m_groundPlane = physx::PxCreatePlane(*m_Physics, physx::PxPlane(0, 1, 0, 1), *m_Material);
 		physx::PxShape* shape;
 		m_groundPlane->getShapes(&shape, sizeof(physx::PxShape));
@@ -285,7 +286,7 @@ namespace PhysicsEngine
 
 
 		float halfExtent = 5.f;
-		physx::PxU32 size = 3;
+		physx::PxU32 size = 1;
 
 		const physx::PxTransform t(physx::PxVec3(0));
 		for (physx::PxU32 i = 0; i < size; i++)
@@ -503,16 +504,22 @@ namespace PhysicsEngine
 	{
 		PhysicsClothInfo info;
 		std::vector<DirectX::SimpleMath::Vector3> vertices;
+		std::vector<DirectX::SimpleMath::Vector2> uv;
 		vertices.resize(m_ModelVertices.size());
+		uv.resize(m_ModelVertices.size());
 		for (int i = 0; i < m_ModelVertices.size(); i++)
 		{
 			vertices[i].x = m_ModelVertices[i].x;
 			vertices[i].y = m_ModelVertices[i].y;
 			vertices[i].z = m_ModelVertices[i].z;
+			uv[i].x = m_ModelUV[i].x;
+			uv[i].y = m_ModelUV[i].y;
 		}
 		info.vertices = vertices.data();
+		info.uv = uv.data();
 		info.vertexSize = vertices.size();
 		info.indices = m_ModelIndices.data();
+		info.indexSize = m_ModelIndices.size();
 		info.id = 100;
 		info.layerNumber = 1;
 		info.worldTransform = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 100.f, 0.f);
@@ -535,7 +542,7 @@ namespace PhysicsEngine
 
 		// 입자 및 스프링, 삼각형의 개수 계산
 		const physx::PxU32 numParticles = numX * numZ;	// 입자 갯수
-		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);	// 입자 하나당 이웃하는 입자들에 스프링 값을 가지는데, 그 스프링 갯수
+		const physx::PxU32 numSprings = (numX - 1) * (numZ - 1) * 3 + (numX - 1) + (numZ - 1);	// 입자 하나당 이웃하는 입자들에 스프링 값을 가지는데, 그 스프링 갯수
 		const physx::PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;	// 삼각형 갯수
 
 		const physx::PxReal restOffset = particleSpacing - 0.5f;
@@ -609,7 +616,7 @@ namespace PhysicsEngine
 				if (i > 0 && j > 0)
 				{
 					physx::PxParticleSpring spring0 = { id(i - 1, j - 1, numZ), id(i, j, numZ), physx::PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
-					springs.pushBack(spring0);
+					//springs.pushBack(spring0);
 					physx::PxParticleSpring spring1 = { id(i - 1, j, numZ), id(i, j - 1, numZ), physx::PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
 					springs.pushBack(spring1);
 

@@ -69,6 +69,7 @@ namespace GraphicsEngine
 		m_pPipeLine->StateSetDefault();
 		SortSkeletalMeshInstance();
 		renderStaticMeshInstance();
+		RenderPhysics();
 
 		RenderDebug();
 		//m_pImGuiTool->Render();
@@ -228,6 +229,56 @@ namespace GraphicsEngine
 		}
 
 		m_pStaticMeshInstanceVec.clear();
+	}
+
+	void RenderManager::SetPhysicsBuffer(vector<PhysicsVertex>& vertex, vector<unsigned int>& index)
+	{
+		m_PhysicsVertex = vertex;
+		m_PhysicsIndex = index;
+
+		// 건재 : 버텍스 및 인덱스 버퍼 생성
+		HRESULT hr;
+
+		D3D11_BUFFER_DESC vertexDesc;
+		vertexDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexDesc.ByteWidth = static_cast<UINT>(sizeof(PhysicsVertex) * m_PhysicsVertex.size());
+		vertexDesc.CPUAccessFlags = 0;
+		vertexDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA initData;
+		initData.pSysMem = &m_PhysicsVertex[0];
+
+		hr = DEVICE->CreateBuffer(&vertexDesc, &initData, m_VertexBuffer.GetAddressOf());
+		assert(SUCCEEDED(hr));
+
+		D3D11_BUFFER_DESC indexDesc;
+		indexDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		indexDesc.ByteWidth = static_cast<UINT>(sizeof(UINT) * m_PhysicsIndex.size());
+		indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		indexDesc.CPUAccessFlags = 0;
+		indexDesc.MiscFlags = 0;
+
+		initData.pSysMem = &m_PhysicsIndex[0];
+
+		hr = DEVICE->CreateBuffer(&indexDesc, &initData, m_IndexBuffer.GetAddressOf());
+		assert(SUCCEEDED(hr));
+	}
+	void RenderManager::RenderPhysics()
+	{
+		shared_ptr<Shader> shader = RESOURCE->Find<Shader>("PhysicsShader");
+
+		DEVICE_CONTEXT->IASetInputLayout(shader->GetInputLayout().Get());
+		DEVICE_CONTEXT->VSSetShader(shader->GetVertexShader().Get(), nullptr, 0);
+		DEVICE_CONTEXT->PSSetShader(shader->GetPixelShader().Get(), nullptr, 0);
+
+		UINT stride = sizeof(PhysicsVertex);
+		UINT offset = 0;
+
+		DEVICE_CONTEXT->IASetVertexBuffers(0, 1, m_VertexBuffer.GetAddressOf(), &stride, &offset);
+		DEVICE_CONTEXT->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		DEVICE_CONTEXT->DrawIndexed(static_cast<UINT>(m_PhysicsIndex.size()), 0, 0);
 	}
 
 	void RenderManager::SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance)

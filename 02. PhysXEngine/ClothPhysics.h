@@ -33,12 +33,13 @@ namespace PhysicsEngine
 		PhysicsClothMaterialInfo materialInfo;
 		DirectX::SimpleMath::Matrix worldTransform = {};
 		DirectX::SimpleMath::Vector3* vertices = nullptr;
+		DirectX::SimpleMath::Vector2* uv = nullptr;
 		unsigned int vertexSize = 0;
 		unsigned int* indices = nullptr;
 		unsigned int indexSize = 0;
 		unsigned int* activeVertexIndices = nullptr;
 		unsigned int activeVertexSize = 0;
-		float totalClothMass = 10.f;
+		float totalClothMass = 2.f;
 	};
 
 	struct PhysicsClothGetData
@@ -46,8 +47,9 @@ namespace PhysicsEngine
 		DirectX::SimpleMath::Matrix worldTransform;
 		DirectX::SimpleMath::Vector3* vertices;
 		DirectX::SimpleMath::Vector3* nomals;
+		DirectX::SimpleMath::Vector2* uv;
 		unsigned int vertexSize;
-		unsigned int* indics;
+		unsigned int* indices;
 		unsigned int indexSize;
 	};
 
@@ -74,6 +76,7 @@ namespace PhysicsEngine
 		inline const physx::PxPBDParticleSystem* GetParticleSystem() const;
 		inline const physx::PxParticleClothBuffer* GetClothBuffer() const;
 		inline const physx::ExtGpu::PxParticleClothBufferHelper* GetParticleClothBufferHelper() const;
+		inline const std::set<std::pair<unsigned int, unsigned int>>& GetSprings() const;
 
 	private:
 		physx::PxU32 id(const physx::PxU32& x, const physx::PxU32& y, const physx::PxU32& numY);
@@ -106,6 +109,7 @@ namespace PhysicsEngine
 		physx::PxVec4* mPositionInvMass;
 		physx::PxVec4* mVelocity;
 		std::vector<DirectX::SimpleMath::Vector3> mVertices;
+		std::vector<DirectX::SimpleMath::Vector2> mUV;
 		std::vector<DirectX::SimpleMath::Vector3> mNormals;
 		std::vector<unsigned int> mIndices;
 	};
@@ -138,6 +142,10 @@ namespace PhysicsEngine
 	const physx::ExtGpu::PxParticleClothBufferHelper* ClothPhysics::GetParticleClothBufferHelper() const
 	{
 		return mClothBufferHelper;
+	}
+	const std::set<std::pair<unsigned int, unsigned int>>& ClothPhysics::GetSprings() const
+	{
+		return mSprings;
 	}
 #pragma endregion
 }

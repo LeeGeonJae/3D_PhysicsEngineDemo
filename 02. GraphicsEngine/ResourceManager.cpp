@@ -28,8 +28,10 @@ namespace GraphicsEngine
 
 		shared_ptr<Shader> skeletalMeshShader = Create<Shader>("SkeletalMeshShader");
 		shared_ptr<Shader> staticMeshShader = Create<Shader>("StaticMeshShader");
+		shared_ptr<Shader> physicsShader = Create<Shader>("PhysicsShader");
 		skeletalMeshShader->Init(L"../Resources/Shader/SkeletalMeshShader.hlsl", ShaderType::SkeletalMesh);
 		staticMeshShader->Init(L"../Resources/Shader/StaticMeshShader.hlsl", ShaderType::StaticMesh);
+		physicsShader->Init(L"../Resources/Shader/PhysicsVertexShader.hlsl", ShaderType::Physics);
 	}
 
 	void ResourceManager::Load(const string& _path)

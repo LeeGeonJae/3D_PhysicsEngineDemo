@@ -59,20 +59,21 @@ void TestApp::Init()
 
 		m_ObjectVec.push_back(object);
 
-		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/zeldaPosed001.fbx");
-		for (auto& mesh : staticMesh->GetStaticMeshVec())
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/Vampire.fbx");
+		auto& mesh = staticMesh->GetStaticMeshVec()[0];
+		for (const auto& vertices : mesh.GetVertices())
 		{
-			for (const auto& vertices : mesh.GetVertices())
-			{
-				physx::PxVec3 vertex;
-				vertex.x = -vertices.m_Position.x;
-				vertex.y = -vertices.m_Position.y;
-				vertex.z = -vertices.m_Position.z;
-				m_PhysX->AddVertexPosition(vertex);
-			}
+			physx::PxVec3 vertex;
+			physx::PxVec2 uv;
+			vertex.x = vertices.m_Position.x;
+			vertex.y = vertices.m_Position.y;
+			vertex.z = vertices.m_Position.z;
+			uv.x = vertices.m_TexCoord.x;
+			uv.y = vertices.m_TexCoord.y;
+			m_PhysX->AddVertexPosition(vertex);
+			m_PhysX->AddUV(uv);
 		}
 
-		auto& mesh = staticMesh->GetStaticMeshVec()[0];
 		for (const auto& indices : mesh.GetIndices())
 		{
 			m_PhysX->AddIndex(indices);
@@ -211,54 +212,53 @@ void TestApp::Update(float _deltaTime)
 			sphere->Center.x = vertex.x;
 			sphere->Center.y = vertex.y;
 			sphere->Center.z = -vertex.z;
-			sphere->Radius = 0.05f;
+			sphere->Radius = 0.005f;
 
 			RENDER->AddDebugSphere(sphere);
 		}
 	}
 	{
-		physx::PxParticleClothBuffer* buffer = m_PhysX->GetParticleClothBuffer();
-		if (buffer != nullptr)
-		{
-			int paticleSize = buffer->getNbActiveParticles();
-			physx::PxVec4* particle = buffer->getPositionInvMasses();
+		//physx::PxParticleClothBuffer* buffer = m_PhysX->GetParticleClothBuffer();
+		//if (buffer != nullptr)
+		//{
+		//	int paticleSize = buffer->getNbActiveParticles();
+		//	physx::PxVec4* particle = buffer->getPositionInvMasses();
 
-			physx::PxCudaContextManager* cudaContextManager = m_PhysX->GetCudaContextManager();
+		//	physx::PxCudaContextManager* cudaContextManager = m_PhysX->GetCudaContextManager();
 
-			cudaContextManager->acquireContext();
+		//	cudaContextManager->acquireContext();
 
-			physx::PxCudaContext* cudaContext = cudaContextManager->getCudaContext();
-			vector<physx::PxVec4> vertex;
-			vertex.resize(paticleSize);
+		//	physx::PxCudaContext* cudaContext = cudaContextManager->getCudaContext();
+		//	vector<physx::PxVec4> vertex;
+		//	vertex.resize(paticleSize);
 
-			cudaContext->memcpyDtoH(vertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
+		//	cudaContext->memcpyDtoH(vertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
 
-			for (int i = 0; i < paticleSize; i++)
-			{
-				shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
-				sphere->Center.x = vertex[i].x;
-				sphere->Center.y = vertex[i].y;
-				sphere->Center.z = -vertex[i].z;
-				sphere->Radius = 0.05f;
+		//	for (int i = 0; i < paticleSize; i++)
+		//	{
+		//		shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
+		//		sphere->Center.x = vertex[i].x;
+		//		sphere->Center.y = vertex[i].y;
+		//		sphere->Center.z = -vertex[i].z;
+		//		sphere->Radius = 0.05f;
 
-				RENDER->AddDebugSphere(sphere);
-			}
-		}
+		//		RENDER->AddDebugSphere(sphere);
+		//	}
+		//}
 	}
 	{
-		PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
+		//PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
+		//auto cloth = m_PhysX->GetClothPhysics();
 
-		for (int i = 0; i < data.vertexSize; i++)
-		{
-			shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
-			sphere->Center.x = data.vertices[i].x;
-			sphere->Center.y = data.vertices[i].y;
-			sphere->Center.z = data.vertices[i].z;
-			sphere->Radius = 0.05f;
+		//for (auto& line : cloth->GetSprings())
+		//{
+		//	shared_ptr<GraphicsEngine::DebugLineData> lineData = make_shared< GraphicsEngine::DebugLineData>();
+		//	lineData->Pos0 = data.vertices[line.first];
+		//	lineData->Pos1 = data.vertices[line.second];
+		//	lineData->Color = Color(1.f, 0.f, 0.f, 1.f);
 
-			RENDER->AddDebugSphere(sphere);
-		}
-		
+		//	RENDER->AddDebugLine(lineData);
+		//}
 	}
 
 	physx::PxRigidActor* charactorBody = m_PhysX-> GetCharactorController()->GetPxController()->getActor();
@@ -313,8 +313,34 @@ void TestApp::Update(float _deltaTime)
 
 			m_PhysX->move(direction);
 		}
+		if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Z))
+		{
+			m_PhysX->Update(1 / 60.f);
+		}
 
-		m_PhysX->Update(1 / 60.f);
+		{
+			PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
+
+			vector<GraphicsEngine::PhysicsVertex> vertices;
+			vector<unsigned int> indices;
+
+			vertices.resize(data.vertexSize);
+			indices.resize(data.indexSize);
+
+			for (int i = 0; i < data.vertexSize; i++)
+			{
+				vertices[i].position = data.vertices[i];
+				vertices[i].normal = data.nomals[i];
+				vertices[i].uv = data.uv[i];
+			}
+
+			for (int i = 0; i < data.indexSize; i++)
+			{
+				indices[i] = data.indices[i];
+			}
+
+			RENDER->SetPhysicsBuffer(vertices, indices);
+		}
 	}
 }
 

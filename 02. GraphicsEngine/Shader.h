@@ -10,7 +10,7 @@ namespace GraphicsEngine
 	{
 		SkeletalMesh = 0,
 		StaticMesh,
-
+		Physics,
 
 		End,
 	};

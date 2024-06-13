@@ -120,6 +120,12 @@ namespace PhysicsEngine
 		return x * numY + y;
 	}
 
+	bool areVerticesEqual(const DirectX::SimpleMath::Vector3& vertex1, const DirectX::SimpleMath::Vector3& vertex2, float epsilon = 1e-6) {
+		return (std::abs(vertex1.x - vertex2.x) < epsilon) &&
+			(std::abs(vertex1.y - vertex2.y) < epsilon) &&
+			(std::abs(vertex1.z - vertex2.z) < epsilon);
+	}
+
 	void ClothPhysics::extractSpringsData(unsigned int* indices, unsigned int indexSize)
 	{
 		// 삼각형 단위로 인덱스를 순회
@@ -140,6 +146,17 @@ namespace PhysicsEngine
 			addEdge(v2, v3);
 			addEdge(v3, v1);
 		}
+
+		for (int i = 0; i < mVertices.size(); i++)
+		{
+			for (int j = i + 1; j < mVertices.size(); j++)
+			{
+				if (areVerticesEqual(mVertices[i], mVertices[j]))
+				{
+					mSprings.insert({i, j});
+				}
+			}
+		}
 	}
 
 	void ClothPhysics::settingInfoData(const PhysicsClothInfo& info)
@@ -151,12 +168,22 @@ namespace PhysicsEngine
 		memcpy(mIndices.data(), info.indices, info.indexSize * sizeof(unsigned int));
 
 		mVertices.resize(info.vertexSize);
+		mUV.resize(info.vertexSize);
 		for (int i = 0; i < info.vertexSize; i++)
 		{
 			mVertices[i].x = info.vertices[i].x;
 			mVertices[i].y = info.vertices[i].y;
 			mVertices[i].z = -info.vertices[i].z;
+			mUV[i] = info.uv[i];
 		}
+	}
+
+	float calculateVectorMagnitude(const DirectX::SimpleMath::Vector3& point1, const DirectX::SimpleMath::Vector3& point2) {
+		float dx = point2.x - point1.x;
+		float dy = point2.y - point1.y;
+		float dz = point2.z - point1.z;
+
+		return std::sqrt(dx * dx + dy * dy + dz * dz);
 	}
 
 	void ClothPhysics::settingParticleBuffer(
@@ -179,7 +206,7 @@ namespace PhysicsEngine
 		// 입자 상태 저장
 		for (int i = 0; i < numParticles; i++)
 		{
-			mPositionInvMass[i] = physx::PxVec4(0.f, 50.f, 0.f, 1.f / particleMass);
+			mPositionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y + 300.f, mVertices[i].z, 1.f / particleMass);
 			mPhase[i] = particlePhase;
 			mVelocity[i] = physx::PxVec4(0.f);
 		}
@@ -187,7 +214,7 @@ namespace PhysicsEngine
 		// 스프링 추가
 		for (auto line : mSprings)
 		{
-			physx::PxParticleSpring spring = { line.first, line.second, std::abs(mVertices[line.first].Length() - mVertices[line.second].Length()), stretchStiffness, springDamping, 0 };
+			physx::PxParticleSpring spring = { line.first, line.second, calculateVectorMagnitude(mVertices[line.first], mVertices[line.second]), stretchStiffness, springDamping, 0 };
 			springs.pushBack(spring);
 		}
 
@@ -264,9 +291,10 @@ namespace PhysicsEngine
 		calculateNormals();
 
 		data.vertices = mVertices.data();
+		data.uv = mUV.data();
 		data.vertexSize = mVertices.size();
 		data.nomals = mNormals.data();
-		data.indics = mIndices.data();
+		data.indices = mIndices.data();
 		data.indexSize = mIndices.size();
 		data.worldTransform = mWorldTransform;
 	}

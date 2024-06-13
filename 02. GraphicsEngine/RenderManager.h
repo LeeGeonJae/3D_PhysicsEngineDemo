@@ -70,6 +70,13 @@ namespace GraphicsEngine
 		DirectX::SimpleMath::Color Color;
 	};
 
+	struct PhysicsVertex
+	{
+		Vector3 position;
+		Vector2 uv;
+		Vector3 normal;
+	};
+
 	// 렌더 매니저 클래스
 	class RenderManager
 	{
@@ -107,6 +114,9 @@ namespace GraphicsEngine
 		inline void AddDebugPoint(shared_ptr<Vector3> _point);
 		inline void AddDebugPolygon(vector<Vector3> _triangle);
 
+		void SetPhysicsBuffer(vector<PhysicsVertex>& vertex, vector<unsigned int>& index);
+		void RenderPhysics();
+
 	private:
 		shared_ptr<Graphics> m_pGraphics;
 		shared_ptr<PipeLine> m_pPipeLine;
@@ -136,6 +146,11 @@ namespace GraphicsEngine
 		vector<shared_ptr<DebugLineData>> m_DebugLines;
 		vector<vector<Vector3>> m_DebugPolygon;
 		vector<shared_ptr<Vector3>> m_DebugPoints;
+
+		vector<PhysicsVertex> m_PhysicsVertex;
+		vector<unsigned int> m_PhysicsIndex;
+		ComPtr<ID3D11Buffer> m_VertexBuffer;
+		ComPtr<ID3D11Buffer> m_IndexBuffer;
 	};
 
 	// 건재 : RenderManager의 Get & Set 함수

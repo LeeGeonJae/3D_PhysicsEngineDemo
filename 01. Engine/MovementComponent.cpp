@@ -9,8 +9,8 @@ namespace Engine
 {
 	MovementComponent::MovementComponent()
 	{
-		m_MaxSpeed = 400.f;
-		m_Velocity = 400.f;
+		m_MaxSpeed = 100.f;
+		m_Velocity = 100.f;
 	}
 
 	MovementComponent::~MovementComponent()

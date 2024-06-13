@@ -47,10 +47,12 @@ namespace PhysicsEngine
 		inline std::shared_ptr<CharactorController> GetCharactorController();
 		inline physx::PxCudaContextManager* GetCudaContextManager();
 		inline physx::PxParticleClothBuffer* GetParticleClothBuffer();
+		inline const std::shared_ptr<ClothPhysics> GetClothPhysics();
 		PhysicsClothGetData GetPhysicsClothGetData();
 
 	public:
 		inline void AddVertexPosition(physx::PxVec3 _vertex);
+		inline void AddUV(physx::PxVec2 _uv);
 		inline void AddIndex(unsigned int _index);
 
 	private:
@@ -87,6 +89,7 @@ namespace PhysicsEngine
 		std::vector<SoftBody> m_SoftBodies;
 
 		std::vector<physx::PxVec3> m_ModelVertices;
+		std::vector<physx::PxVec2> m_ModelUV;
 		std::vector<unsigned int> m_ModelIndices;
 		// create simulation
 		PhysicsSimulationEventCallback* m_MyEventCallback;
@@ -122,6 +125,10 @@ namespace PhysicsEngine
 	{
 		m_ModelVertices.push_back(_vertex);
 	}
+	void PhysX::AddUV(physx::PxVec2 _uv)
+	{
+		m_ModelUV.push_back(_uv);
+	}
 	void PhysX::AddIndex(unsigned int _index)
 	{
 		m_ModelIndices.push_back(_index);
@@ -133,5 +140,9 @@ namespace PhysicsEngine
 	physx::PxParticleClothBuffer* PhysX::GetParticleClothBuffer()
 	{
 		return m_ClothBuffer;
+	}
+	const std::shared_ptr<ClothPhysics> PhysX::GetClothPhysics()
+	{
+		return m_ClothPhysics;
 	}
 } 

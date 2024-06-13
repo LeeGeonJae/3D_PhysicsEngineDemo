@@ -38,8 +38,8 @@ namespace Engine
 		shared_ptr<MovementComponent> movement = make_shared<MovementComponent>();
 		MovementComponentInfo movementInfo;
 		movementInfo.m_Name = "MovementComponent";
-		movementInfo.m_MaxSpeed = 400.f;
-		movementInfo.m_Acceleration = 2.f;
+		movementInfo.m_MaxSpeed = 10.f;
+		movementInfo.m_Acceleration = 1.f;
 		movement->Setting(movementInfo);
 
 		//// 콜리전 컴포넌트

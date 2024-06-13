@@ -167,5 +167,8 @@
     <FxCompile Include="..\Resources\Shader\SkeletalMeshShader.hlsl">
       <Filter>99.Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\Resources\Shader\PhysicsVertexShader.hlsl">
+      <Filter>99.Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
