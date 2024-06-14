@@ -3,6 +3,8 @@
 
 #include <physx/PxPhysics.h>
 #include <physx/PxPhysicsAPI.h>
+#include <cuda/cuda_runtime.h>
+#include <cuda/cuda_d3d11_interop.h>
 
 #pragma comment(lib, "LowLevel_static_64.lib")
 #pragma comment(lib, "LowLevelAABB_static_64.lib")

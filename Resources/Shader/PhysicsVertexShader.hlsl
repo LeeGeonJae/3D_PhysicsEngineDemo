@@ -2,9 +2,11 @@
 // Vertex Shader(VS) 입력
 struct VS_INPUT
 {
-    float4 mPosition : POSITION;
+    float3 mPosition : POSITION;
     float2 mUV : TEXCOORD;
     float3 mNormal : NORMAL0;
+    float3 mTangent : NORMAL1;
+    float3 mBiTangent : NORMAL2;
 };
 
 // Vertex Shader(VS) 출력
@@ -18,6 +20,8 @@ struct VS_OUTPUT
     float3 mViewDir : TEXCOORD2;
     float4 mDiffuse : COLOR;
     float3 mNormal : NORMAL0;
+    float3 mTangent : NORMAL1;
+    float3 mBiTangent : NORMAL2;
 };
 
 cbuffer CB_ModelTransform : register(b0)
@@ -101,7 +105,7 @@ VS_OUTPUT VS(VS_INPUT input)
     VS_OUTPUT output;
 
     // 오브젝트 월드 변환
-    float4 pos = input.mPosition;
+    float4 pos = float4(input.mPosition, 1.f);
     
     //pos = mul(pos, World);
     output.mPositionWorld = pos;
@@ -117,7 +121,12 @@ VS_OUTPUT VS(VS_INPUT input)
     output.mViewDir = viewDir;
     
     // 오브젝트 월드에서 노말 벡터 계산 (오브젝트의 정면에 90도를 이루는 벡터)
-    output.mNormal = normalize(mul(input.mNormal, (float3x3) World));
+    //output.mNormal = normalize(mul(input.mNormal, (float3x3) World));
+    //output.mTangent = normalize(mul(input.mTangent, (float3x3) World));
+    //output.mBiTangent = normalize(mul(input.mBiTangent, (float3x3) World));
+    output.mNormal = normalize(input.mNormal);
+    output.mTangent = normalize(input.mTangent);
+    output.mBiTangent = normalize(input.mBiTangent);
     
     // 난반사(Diffuse) 내적으로 구하기
     output.mDiffuse = saturate(dot(-lightDir, output.mNormal));
@@ -143,12 +152,10 @@ SamplerState BRDFsampler0 : register(s1);
 // Pixel Shader(PS) 프로그래밍
 float4 PS(VS_OUTPUT input) : SV_Target
 {
-    float3 albedo = baseColor.rgb;
+    float3 albedo = float3(0.5f, 0.5f, 0.5f);
     float roughness = 0.5f;
     float metalness = 0.5f;
     
-    //텍스처
-    //if (bIsValidDiffuseMap)
     albedo = texture0.Sample(sampler0, input.mUV).rgb;
     // 러프니스
     //if (bIsValidRoughnessMap)
@@ -163,6 +170,33 @@ float4 PS(VS_OUTPUT input) : SV_Target
     // 감마 콜렉션
     albedo.rgb = albedo.rgb * albedo.rgb;
     
+        // 노말
+    float3 Normal = input.mNormal;
+    float3 lightDir = normalize(Direction);
+    
+    float3 NormalTangentSpace = normal0.Sample(sampler0, input.mUV).rgb * 2.f - 1.f;
+    
+    if (bIsValidNormalMap && NormalTangentSpace.x != -1.f)
+    {
+        // 노멀 맵을 샘플링하여 노멀 벡터를 가져옵니다.
+        NormalTangentSpace = normalize(NormalTangentSpace);
+        
+        // 노멀 맵에서 가져온 벡터를 노멀 맵 좌표계에서 월드 좌표계로 변환합니다.
+        float3x3 WorldTransform = float3x3(input.mTangent, input.mBiTangent, input.mNormal);
+        Normal = mul(NormalTangentSpace, WorldTransform);
+        
+        // 노멀 벡터를 정규화합니다.
+        Normal = normalize(Normal);
+        
+        // 노말 맵 라이팅 적용
+        input.mDiffuse = saturate(dot(-lightDir, Normal));
+    }
+    
+    float4 finalColor = float4(albedo * (float3) input.mDiffuse, 1.f);
+    
+    // 감마 콜렉션
+    finalColor.rgb = sqrt(finalColor.rgb);
+    
     //(난반사광 + 직접광 + 주변광)
-    return float4(albedo * (float3)input.mDiffuse, 1.f);
+    return finalColor;
 }

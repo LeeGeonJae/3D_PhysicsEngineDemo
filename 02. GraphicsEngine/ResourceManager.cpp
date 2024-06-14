@@ -15,15 +15,15 @@ namespace GraphicsEngine
 {
 	void ResourceManager::Initalize()
 	{
-		RESOURCE->Load("../Resources/FBX/SkinningTest.fbx");
-		RESOURCE->Load("../Resources/FBX/Dying.fbx");
-		RESOURCE->Load("../Resources/FBX/cerberus_test.fbx");
-		RESOURCE->Load("../Resources/FBX/zeldaPosed001.fbx");
-		RESOURCE->Load("../Resources/FBX/PBR_Test.fbx");
-		RESOURCE->Load("../Resources/FBX/box.fbx");
-		RESOURCE->Load("../Resources/FBX/Tree.fbx");
-		RESOURCE->Load("../Resources/FBX/Monkey.fbx");
 		RESOURCE->Load("../Resources/FBX/Vampire.fbx");
+		//RESOURCE->Load("../Resources/FBX/SkinningTest.fbx");
+		//RESOURCE->Load("../Resources/FBX/Dying.fbx");
+		//RESOURCE->Load("../Resources/FBX/cerberus_test.fbx");
+		RESOURCE->Load("../Resources/FBX/zeldaPosed001.fbx");
+		//RESOURCE->Load("../Resources/FBX/PBR_Test.fbx");
+		RESOURCE->Load("../Resources/FBX/box.fbx");
+		//RESOURCE->Load("../Resources/FBX/Tree.fbx");
+		RESOURCE->Load("../Resources/FBX/Monkey.fbx");
 		RESOURCE->Load("../Resources/FBX/plane.fbx");
 
 		shared_ptr<Shader> skeletalMeshShader = Create<Shader>("SkeletalMeshShader");

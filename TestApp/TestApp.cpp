@@ -23,6 +23,8 @@
 #include "../02. PhysXEngine/CharactorController.h"
 #include "../02. PhysXEngine/SoftBody.h"
 #include "../02. PhysXEngine/ClothPhysics.h"
+#include "../02. PhysXEngine/CudaClothPhysics.h"
+#include "../02. PhysXEngine/type.h"
 
 
 void TestApp::Init()
@@ -49,7 +51,7 @@ void TestApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/cerberus_test.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/Vampire.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
@@ -92,7 +94,7 @@ void TestApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/zeldaPosed001.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/Vampire.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "PhysicsMeshComponent";
 		meshComponent->Setting(meshInfo);
@@ -315,31 +317,63 @@ void TestApp::Update(float _deltaTime)
 		}
 		if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Z))
 		{
-			m_PhysX->Update(1 / 60.f);
+			//m_PhysX->Update(1 / 60.f);
+
+			//PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
+
+			//vector<GraphicsEngine::PhysicsVertex> vertices;
+			//vector<unsigned int> indices;
+
+			//vertices.resize(data.vertexSize);
+			//indices.resize(data.indexSize);
+
+			//for (int i = 0; i < data.vertexSize; i++)
+			//{
+			//	vertices[i].position = data.vertices[i];
+			//	vertices[i].normal = data.nomals[i];
+			//	vertices[i].uv = data.uv[i];
+			//	vertices[i].tangent = data.tangents[i];
+			//	vertices[i].biTangent = data.biTangents[i];
+			//}
+
+			//for (int i = 0; i < data.indexSize; i++)
+			//{
+			//	indices[i] = data.indices[i];
+			//}
+
+			//RENDER->SetPhysicsBuffer(vertices, indices);
 		}
-
+		if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Z))
 		{
-			PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
+			m_PhysX->Update(1 / 60.f);
 
-			vector<GraphicsEngine::PhysicsVertex> vertices;
-			vector<unsigned int> indices;
-
-			vertices.resize(data.vertexSize);
-			indices.resize(data.indexSize);
-
-			for (int i = 0; i < data.vertexSize; i++)
+			if (m_PhysX->GetCudaGraphicsResource() == nullptr)
 			{
-				vertices[i].position = data.vertices[i];
-				vertices[i].normal = data.nomals[i];
-				vertices[i].uv = data.uv[i];
-			}
+				PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetCudaPhysicsClothGetData();
 
-			for (int i = 0; i < data.indexSize; i++)
-			{
-				indices[i] = data.indices[i];
-			}
+				vector<GraphicsEngine::PhysicsVertex> vertices;
+				vector<unsigned int> indices;
 
-			RENDER->SetPhysicsBuffer(vertices, indices);
+				vertices.resize(data.vertexSize);
+				indices.resize(data.indexSize);
+
+				for (int i = 0; i < data.vertexSize; i++)
+				{
+					vertices[i].position = data.vertices[i];
+					vertices[i].normal = data.nomals[i];
+					vertices[i].uv = data.uv[i];
+					vertices[i].tangent = data.tangents[i];
+					vertices[i].biTangent = data.biTangents[i];
+				}
+
+				for (int i = 0; i < data.indexSize; i++)
+				{
+					indices[i] = data.indices[i];
+				}
+
+				RENDER->SetPhysicsBuffer(vertices, indices);
+				m_PhysX->SetClothBuffer(RENDER->GetPhysicsBuffer());
+			}
 		}
 	}
 }

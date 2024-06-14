@@ -2,6 +2,8 @@
 #include "ClothPhysics.h"
 
 #include <cudamanager/PxCudaContext.h>
+#include <cuda_runtime.h>
+#include <cuda_d3d11_interop.h>
 
 namespace PhysicsEngine
 {
@@ -147,6 +149,7 @@ namespace PhysicsEngine
 			addEdge(v3, v1);
 		}
 
+		mSameVertices.reserve(mVertices.size() / 3);
 		for (int i = 0; i < mVertices.size(); i++)
 		{
 			for (int j = i + 1; j < mVertices.size(); j++)
@@ -154,6 +157,7 @@ namespace PhysicsEngine
 				if (areVerticesEqual(mVertices[i], mVertices[j]))
 				{
 					mSprings.insert({i, j});
+					mSameVertices.push_back({ i, j });
 				}
 			}
 		}
@@ -237,7 +241,11 @@ namespace PhysicsEngine
 	void ClothPhysics::calculateNormals()
 	{
 		mNormals.clear();
+		mTangents.clear();
+		mBiTangents.clear();
 		mNormals.resize(mVertices.size(), { 0.f, 0.f, 0.f });
+		mTangents.resize(mVertices.size(), { 0.f, 0.f, 0.f });
+		mBiTangents.resize(mVertices.size(), { 0.f, 0.f, 0.f });
 
 		// 삼각형 단위로 face normal 계산
 		for (int i = 0; i < mIndices.size(); i += 3)
@@ -249,9 +257,19 @@ namespace PhysicsEngine
 			DirectX::SimpleMath::Vector3 v0 = mVertices[idx0];
 			DirectX::SimpleMath::Vector3 v1 = mVertices[idx1];
 			DirectX::SimpleMath::Vector3 v2 = mVertices[idx2];
+			v0.z = -v0.z;
+			v1.z = -v1.z;
+			v2.z = -v2.z;
+
+			DirectX::SimpleMath::Vector2 uv0 = mUV[idx0];
+			DirectX::SimpleMath::Vector2 uv1 = mUV[idx1];
+			DirectX::SimpleMath::Vector2 uv2 = mUV[idx2];
 
 			DirectX::SimpleMath::Vector3 edge1 = v1 - v0;
-			DirectX::SimpleMath::Vector3 edge2 = v1 - v0;
+			DirectX::SimpleMath::Vector3 edge2 = v2 - v0;
+
+			DirectX::SimpleMath::Vector2 edge1uv = uv1 - uv0;
+			DirectX::SimpleMath::Vector2 edge2uv = uv2 - uv0;
 
 			DirectX::SimpleMath::Vector3 faceNormal = edge1.Cross(edge2);
 			faceNormal.Normalize();
@@ -260,12 +278,38 @@ namespace PhysicsEngine
 			mNormals[idx0] += faceNormal;
 			mNormals[idx1] += faceNormal;
 			mNormals[idx2] += faceNormal;
+
+			// tangent와 bitangent를 구하는 공식
+			float r = 1.0f / (edge1uv.x * edge2uv.y - edge1uv.y * edge2uv.x);
+			DirectX::SimpleMath::Vector3 tangent = (edge1 * edge2uv.y - edge2 * edge1uv.y) * r;
+			DirectX::SimpleMath::Vector3 bitangent = (edge2 * edge1uv.x - edge1 * edge2uv.x) * r;
+
+			tangent.Normalize();
+			bitangent.Normalize();
+			mTangents[idx0] += tangent;
+			mTangents[idx1] += tangent;
+			mTangents[idx2] += tangent;
+			mBiTangents[idx0] += bitangent;
+			mBiTangents[idx1] += bitangent;
+			mBiTangents[idx2] += bitangent;
+		}
+
+		for (auto& sameVertex : mSameVertices)
+		{
+			mNormals[sameVertex.first] += mNormals[sameVertex.second];
+			mNormals[sameVertex.second] += mNormals[sameVertex.first];
+			mTangents[sameVertex.first] += mTangents[sameVertex.second];
+			mTangents[sameVertex.second] += mTangents[sameVertex.first];
+			mBiTangents[sameVertex.first] += mBiTangents[sameVertex.second];
+			mBiTangents[sameVertex.second] += mBiTangents[sameVertex.first];
 		}
 
 		// vertex normal 정규화
-		for (auto& normal : mNormals)
+		for (int i = 0; i < mVertices.size(); i++)
 		{
-			normal.Normalize();
+			mNormals[i].Normalize();
+			mTangents[i].Normalize();
+			mBiTangents[i].Normalize();
 		}
 	}
 
@@ -295,6 +339,8 @@ namespace PhysicsEngine
 		data.vertexSize = mVertices.size();
 		data.nomals = mNormals.data();
 		data.indices = mIndices.data();
+		data.tangents = mTangents.data();
+		data.biTangents = mBiTangents.data();
 		data.indexSize = mIndices.size();
 		data.worldTransform = mWorldTransform;
 	}

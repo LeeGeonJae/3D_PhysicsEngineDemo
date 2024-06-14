@@ -75,6 +75,8 @@ namespace GraphicsEngine
 		Vector3 position;
 		Vector2 uv;
 		Vector3 normal;
+		Vector3 tangent;
+		Vector3 biTangent;
 	};
 
 	// 렌더 매니저 클래스
@@ -99,6 +101,7 @@ namespace GraphicsEngine
 		inline shared_ptr<Graphics> GetGraphics();
 		inline shared_ptr<PipeLine> GetPipeLine();
 		inline shared_ptr<ImGuiTool> GetImGuiTool();
+		inline ID3D11Buffer* GetPhysicsBuffer();
 		inline void SetCamera(CB_Camera&& _camera);
 		void SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance);
 		void SetStaticMeshInstance(shared_ptr<StaticMeshInstance> _meshInstance);
@@ -115,6 +118,7 @@ namespace GraphicsEngine
 		inline void AddDebugPolygon(vector<Vector3> _triangle);
 
 		void SetPhysicsBuffer(vector<PhysicsVertex>& vertex, vector<unsigned int>& index);
+		void SetPhysicsBuffer(unsigned int vertexSize, unsigned int indexSize);
 		void RenderPhysics();
 
 	private:
@@ -165,6 +169,13 @@ namespace GraphicsEngine
 	shared_ptr<GraphicsEngine::ImGuiTool> RenderManager::GetImGuiTool()
 	{
 		return m_pImGuiTool;
+	}
+	inline ID3D11Buffer* RenderManager::GetPhysicsBuffer()
+	{
+		if (m_VertexBuffer)
+			return m_VertexBuffer.Get();
+
+		return nullptr;
 	}
 	void RenderManager::SetCamera(CB_Camera&& _camera)
 	{

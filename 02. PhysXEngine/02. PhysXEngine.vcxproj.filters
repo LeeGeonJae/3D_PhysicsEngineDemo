@@ -58,6 +58,12 @@
     <ClInclude Include="ClothPhysics.h">
       <Filter>Cloth</Filter>
     </ClInclude>
+    <ClInclude Include="CudaClothPhysics.h">
+      <Filter>Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="type.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -93,5 +99,11 @@
     <ClCompile Include="ClothPhysics.cpp">
       <Filter>Cloth</Filter>
     </ClCompile>
+    <ClCompile Include="CudaClothPhysics.cpp">
+      <Filter>Cloth</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="kernel.cu" />
   </ItemGroup>
 </Project>

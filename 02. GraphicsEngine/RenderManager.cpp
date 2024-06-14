@@ -168,7 +168,6 @@ namespace GraphicsEngine
 				DEVICE_CONTEXT->VSSetConstantBuffers(0, 1, m_pCBModelTransform.GetAddressOf());
 				DEVICE_CONTEXT->VSSetConstantBuffers(12, 1, m_pCBBoneTransformPallete.GetAddressOf());
 
-
 				DEVICE_CONTEXT->IASetVertexBuffers(0, 1, meshInstance->GetSkeletalMesh()->GetVertexBuffer().GetAddressOf(), &stride, &offset);
 				DEVICE_CONTEXT->IASetIndexBuffer(meshInstance->GetSkeletalMesh()->GetIndexBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
 
@@ -233,6 +232,9 @@ namespace GraphicsEngine
 
 	void RenderManager::SetPhysicsBuffer(vector<PhysicsVertex>& vertex, vector<unsigned int>& index)
 	{
+		m_IndexBuffer.Reset();
+		m_VertexBuffer.Reset();
+
 		m_PhysicsVertex = vertex;
 		m_PhysicsIndex = index;
 
@@ -279,6 +281,8 @@ namespace GraphicsEngine
 		DEVICE_CONTEXT->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 		DEVICE_CONTEXT->DrawIndexed(static_cast<UINT>(m_PhysicsIndex.size()), 0, 0);
+
+
 	}
 
 	void RenderManager::SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance)

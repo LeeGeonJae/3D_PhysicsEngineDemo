@@ -8,7 +8,13 @@
 #include <directxtk/SimpleMath.h>
 #include <d3d11.h>
 
+#include "../Libraries/Include/CUDA/cuda_runtime.h"
+#include "../Libraries/Include/CUDA/cuda_d3d11_interop.h"
+
+//#pragma comment(lib, "../Libraries/Lib/cudart.lib")
+
 #include "ClothPhysics.h"
+#include "CudaClothPhysics.h"
 
 namespace PhysicsEngine
 {
@@ -31,6 +37,7 @@ namespace PhysicsEngine
 		void CreateArticulation();
 		void CreateCloth(const physx::PxU32 numX, const physx::PxU32 numZ, const physx::PxVec3& position = physx::PxVec3(0, 0, 0), const physx::PxReal particleSpacing = 0.2f, const physx::PxReal totalClothMass = 10.f);
 		void CreateCloth();
+		void CreateCudaCloth();
 		physx::PxSoftBody* CreateSoftBody(const physx::PxCookingParams& params, const physx::PxArray<physx::PxVec3>& triVerts, const physx::PxArray<physx::PxU32>& triIndices, bool useCollisionMeshForSimulation = false);
 		void addSoftBody(physx::PxSoftBody* softBody, const physx::PxFEMParameters& femParams, const physx::PxTransform& transform, const physx::PxReal density, const physx::PxReal scale, const physx::PxU32 iterCount);
 
@@ -48,7 +55,12 @@ namespace PhysicsEngine
 		inline physx::PxCudaContextManager* GetCudaContextManager();
 		inline physx::PxParticleClothBuffer* GetParticleClothBuffer();
 		inline const std::shared_ptr<ClothPhysics> GetClothPhysics();
+		const unsigned int& GetPhysicsVertexSize();
+		const unsigned int& GetPhysicsIndexSize();
 		PhysicsClothGetData GetPhysicsClothGetData();
+		PhysicsClothGetData GetCudaPhysicsClothGetData();
+		cudaGraphicsResource* GetCudaGraphicsResource();
+		bool SetClothBuffer(ID3D11Buffer* buffer);
 
 	public:
 		inline void AddVertexPosition(physx::PxVec3 _vertex);
@@ -99,6 +111,7 @@ namespace PhysicsEngine
 
 		// Cloth
 		std::shared_ptr<ClothPhysics> m_ClothPhysics;
+		std::shared_ptr<CudaClothPhysics> m_CudaClothPhysics;
 	};
 
 	physx::PxScene* PhysX::GetPxScene()
@@ -144,5 +157,9 @@ namespace PhysicsEngine
 	const std::shared_ptr<ClothPhysics> PhysX::GetClothPhysics()
 	{
 		return m_ClothPhysics;
+	}
+	cudaGraphicsResource* PhysX::GetCudaGraphicsResource()
+	{
+		return m_CudaClothPhysics->GetCudaGraphicsResource();
 	}
 } 

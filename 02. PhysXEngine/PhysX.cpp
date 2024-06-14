@@ -204,8 +204,8 @@ namespace PhysicsEngine
 
 		//CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 550.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
 
-		CreateCloth();
-
+		//CreateCloth();
+		CreateCudaCloth();
 	}
 
 	void PhysX::Update(float elapsedTime)
@@ -237,6 +237,11 @@ namespace PhysicsEngine
 
 		//	std::cout << "rayCast" << std::endl;
 		//}
+
+		if (m_CudaClothPhysics)
+		{
+			m_CudaClothPhysics->UpdatePhysicsCloth();
+		}
 	}
 
 #pragma region Actor
@@ -526,6 +531,34 @@ namespace PhysicsEngine
 
 		m_ClothPhysics = std::make_shared<ClothPhysics>(info.id, info.layerNumber);
 		m_ClothPhysics->Initialize(info, m_Physics, m_Scene, m_CudaContextManager);
+	}
+
+	void PhysX::CreateCudaCloth()
+	{
+		PhysicsClothInfo info;
+		std::vector<DirectX::SimpleMath::Vector3> vertices;
+		std::vector<DirectX::SimpleMath::Vector2> uv;
+		vertices.resize(m_ModelVertices.size());
+		uv.resize(m_ModelVertices.size());
+		for (int i = 0; i < m_ModelVertices.size(); i++)
+		{
+			vertices[i].x = m_ModelVertices[i].x;
+			vertices[i].y = m_ModelVertices[i].y;
+			vertices[i].z = m_ModelVertices[i].z;
+			uv[i].x = m_ModelUV[i].x;
+			uv[i].y = m_ModelUV[i].y;
+		}
+		info.vertices = vertices.data();
+		info.uv = uv.data();
+		info.vertexSize = vertices.size();
+		info.indices = m_ModelIndices.data();
+		info.indexSize = m_ModelIndices.size();
+		info.id = 100;
+		info.layerNumber = 1;
+		info.worldTransform = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 100.f, 0.f);
+
+		m_CudaClothPhysics = std::make_shared<CudaClothPhysics>(info.id, info.layerNumber);
+		m_CudaClothPhysics->Initialize(info, m_Physics, m_Scene, m_CudaContextManager);
 	}
 
 	// 천막(cloth)을 생성하는 함수
@@ -831,4 +864,30 @@ namespace PhysicsEngine
 		return getData;
 	}
 
+	PhysicsClothGetData PhysX::GetCudaPhysicsClothGetData()
+	{
+		PhysicsClothGetData getData;
+
+		physx::PxCudaContext* cudaContext = m_CudaContextManager->getCudaContext();
+		m_CudaClothPhysics->GetPhysicsCloth(m_CudaContextManager, cudaContext, getData);
+
+		return getData;
+	}
+
+	bool PhysX::SetClothBuffer(ID3D11Buffer* buffer)
+	{
+		if (buffer == nullptr)
+			return false;
+
+		return m_CudaClothPhysics->RegisterD3D11BufferWithCUDA(buffer);
+	}
+
+	const unsigned int& PhysX::GetPhysicsVertexSize()
+	{
+		return m_CudaClothPhysics->GetVertexSize();
+	}
+	const unsigned int& PhysX::GetPhysicsIndexSize()
+	{
+		return m_CudaClothPhysics->GetIndexSize();
+	}
 }

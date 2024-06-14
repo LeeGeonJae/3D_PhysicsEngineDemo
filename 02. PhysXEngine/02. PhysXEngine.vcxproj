@@ -54,7 +54,9 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.5.props" />
+  </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -120,7 +122,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\Libraries\Include\physX;..\Libraries\Include\cuda</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Libraries\Include\physX;..\Libraries\Include\CUDA</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -154,6 +156,7 @@
     <ClInclude Include="CharactorController.h" />
     <ClInclude Include="CharactorMovement.h" />
     <ClInclude Include="ClothPhysics.h" />
+    <ClInclude Include="CudaClothPhysics.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MeshGenerator.h" />
     <ClInclude Include="pch.h" />
@@ -162,12 +165,14 @@
     <ClInclude Include="PhysicsSimulationEventCallback.h" />
     <ClInclude Include="PhysX.h" />
     <ClInclude Include="SoftBody.h" />
+    <ClInclude Include="type.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActorUserData.cpp" />
     <ClCompile Include="CharactorController.cpp" />
     <ClCompile Include="CharactorMovement.cpp" />
     <ClCompile Include="ClothPhysics.cpp" />
+    <ClCompile Include="CudaClothPhysics.cpp" />
     <ClCompile Include="MeshGenerator.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -181,6 +186,11 @@
     <ClCompile Include="PhysX.cpp" />
     <ClCompile Include="SoftBody.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="kernel.cu" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.5.targets" />
+  </ImportGroup>
 </Project>
