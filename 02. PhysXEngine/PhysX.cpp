@@ -18,7 +18,6 @@
 //#include <extensions/PxTetMakerExt.h>
 #include <extensions/PxSoftBodyExt.h>
 #include <extensions/PxRemeshingExt.h>
-#include "..\03. PhysXEngine\EngineDataConverter.h"
 #include "ClothPhysics.h"
 
 
@@ -204,8 +203,8 @@ namespace PhysicsEngine
 
 		//CreateCloth(numPointsX, numPointsZ, physx::PxVec3(-0.5f * numPointsX * particleSpacing, 550.f, -0.5f * numPointsZ * particleSpacing), particleSpacing, totalClothMass);
 
-		//CreateCloth();
-		CreateCudaCloth();
+		CreateCloth();
+		//CreateCudaCloth();
 	}
 
 	void PhysX::Update(float elapsedTime)
@@ -238,9 +237,9 @@ namespace PhysicsEngine
 		//	std::cout << "rayCast" << std::endl;
 		//}
 
-		if (m_CudaClothPhysics)
+		if (m_ClothPhysics)
 		{
-			m_CudaClothPhysics->UpdatePhysicsCloth();
+			m_ClothPhysics->GetClothBuffer();
 		}
 	}
 
@@ -557,8 +556,8 @@ namespace PhysicsEngine
 		info.layerNumber = 1;
 		info.worldTransform = DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 100.f, 0.f);
 
-		m_CudaClothPhysics = std::make_shared<CudaClothPhysics>(info.id, info.layerNumber);
-		m_CudaClothPhysics->Initialize(info, m_Physics, m_Scene, m_CudaContextManager);
+		m_ClothPhysics = std::make_shared<ClothPhysics>(info.id, info.layerNumber);
+		m_ClothPhysics->Initialize(info, m_Physics, m_Scene, m_CudaContextManager);
 	}
 
 	// 천막(cloth)을 생성하는 함수
@@ -864,30 +863,30 @@ namespace PhysicsEngine
 		return getData;
 	}
 
-	PhysicsClothGetData PhysX::GetCudaPhysicsClothGetData()
-	{
-		PhysicsClothGetData getData;
+	//PhysicsClothGetData PhysX::GetCudaPhysicsClothGetData()
+	//{
+	//	PhysicsClothGetData getData;
 
-		physx::PxCudaContext* cudaContext = m_CudaContextManager->getCudaContext();
-		m_CudaClothPhysics->GetPhysicsCloth(m_CudaContextManager, cudaContext, getData);
+	//	physx::PxCudaContext* cudaContext = m_CudaContextManager->getCudaContext();
+	//	m_ClothPhysics->GetPhysicsCloth(m_CudaContextManager, cudaContext, getData);
 
-		return getData;
-	}
+	//	return getData;
+	//}
 
-	bool PhysX::SetClothBuffer(ID3D11Buffer* buffer)
-	{
-		if (buffer == nullptr)
-			return false;
+	//bool PhysX::SetClothBuffer(ID3D11Buffer* buffer)
+	//{
+	//	if (buffer == nullptr)
+	//		return false;
 
-		return m_CudaClothPhysics->RegisterD3D11BufferWithCUDA(buffer);
-	}
+	//	return m_CudaClothPhysics->RegisterD3D11BufferWithCUDA(buffer);
+	//}
 
-	const unsigned int& PhysX::GetPhysicsVertexSize()
-	{
-		return m_CudaClothPhysics->GetVertexSize();
-	}
-	const unsigned int& PhysX::GetPhysicsIndexSize()
-	{
-		return m_CudaClothPhysics->GetIndexSize();
-	}
+	//const unsigned int& PhysX::GetPhysicsVertexSize()
+	//{
+	//	return m_CudaClothPhysics->GetVertexSize();
+	//}
+	//const unsigned int& PhysX::GetPhysicsIndexSize()
+	//{
+	//	return m_CudaClothPhysics->GetIndexSize();
+	//}
 }

@@ -5,12 +5,15 @@
 #include "PhysicsRigidBodyManager.h"
 #include "PhysicsCharacterPhysicsManager.h"
 
+#include <d3d11.h>
+
 namespace physics
 {
 	class Physics;
 	class PhysicsSimulationEventCallback;
 	class PhysicsCharactorControllerManager;
 	class PhysicsResourceManager;
+	class PhysicsClothManager;
 
 	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
 
@@ -128,13 +131,24 @@ namespace physics
 		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, Params...);
 #pragma endregion
 
+#pragma region ClothManager
+
+		virtual bool CreateCloth(const PhysicsClothInfo& info);
+
+		bool RegisterD3D11Buffer(unsigned int id, ID3D11Buffer* clothBuffer);
+
+#pragma endregion
+
+
 	private:
 		// 씬
 		physx::PxScene* mScene;
+		physx::PxCudaContextManager* mCudaContextManager;
 		std::shared_ptr<Physics> mPhysics;
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
+		std::shared_ptr<PhysicsClothManager> mPhysicsClothManager;
 		std::shared_ptr<PhysicsResourceManager> mResourceManager;
 
 		// 충돌 이벤트 클래스

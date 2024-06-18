@@ -1,6 +1,6 @@
 #include "PhysicsClothManager.h"
 
-#include "PhysicsCloth.h"
+#include "CudaClothPhysics.h"
 
 namespace physics
 {
@@ -16,39 +16,49 @@ namespace physics
 	{
 	}
 
-	bool PhysicsClothManager::Initialize(physx::PxFoundation* foundation, physx::PxPhysics* physics, physx::PxScene* scene)
+	bool PhysicsClothManager::Initialize(physx::PxCudaContextManager* cudaContextManager, physx::PxPhysics* physics, physx::PxScene* scene)
 	{
+		PX_ASSERT(physics);
+		PX_ASSERT(scene);
+		PX_ASSERT(cudaContextManager);
+
 		mPhysics = physics;
 		mScene = scene;
+		mCudaContextManager = cudaContextManager;
 
-		if (PxGetSuggestedCudaDeviceOrdinal(foundation->getErrorCallback()) >= 0)
+		return true;
+	}
+	bool PhysicsClothManager::Update()
+	{
+		for (auto cloth : mPhysicsClothContainer)
 		{
-			// initialize CUDA
-			physx::PxCudaContextManagerDesc cudaContextManagerDesc;
-			mCudaContextManager = PxCreateCudaContextManager(*foundation, cudaContextManagerDesc, PxGetProfilerCallback());
-			if (mCudaContextManager && !mCudaContextManager->contextIsValid())
-			{
-				mCudaContextManager->release();
-				mCudaContextManager = NULL;
-			}
-		}
-		if (mCudaContextManager == NULL)
-		{
-			PxGetFoundation().error(physx::PxErrorCode::eINVALID_OPERATION, PX_FL, "Failed to initialize CUDA!\n");
-			return false;
+			if (!cloth.second->UpdatePhysicsCloth(mCudaContextManager)) return false;
 		}
 
 		return true;
 	}
 	bool PhysicsClothManager::CreateCloth(const PhysicsClothInfo& info)
 	{
-		std::shared_ptr<PhysicsCloth> cloth = std::make_shared<PhysicsCloth>(info.id, info.layerNumber);
+		std::shared_ptr<CudaClothPhysics> cloth = std::make_shared<CudaClothPhysics>(info.id, info.layerNumber);
 
-		if (!cloth->Initialize(info, mCudaContextManager))
+		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager))
 			return false;
 
 		mPhysicsClothContainer.insert(std::make_pair(info.id, cloth));
 
 		return true;
+	}
+
+	bool PhysicsClothManager::RegisterD3D11Buffer(unsigned int id, ID3D11Buffer* clothBuffer)
+	{
+		auto cloth = mPhysicsClothContainer.find(id);
+
+		if (cloth != mPhysicsClothContainer.end())
+		{
+			cloth->second->RegisterD3D11BufferWithCUDA(clothBuffer);
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common.h"
+
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
@@ -7,19 +9,25 @@
 #include <directxtk\SimpleMath.h>
 #include <PxPhysicsAPI.h>
 
+#include <cuda_runtime.h>
+#include <cuda_d3d11_interop.h>
+#include <device_launch_parameters.h>
+
 #include <extensions/PxParticleExt.h>
+#include "d3d11.h"
 
-#include "type.h"
-
-namespace PhysicsEngine
+namespace physics
 {
-	class ClothPhysics
+	class CudaClothPhysics
 	{
 	public:
-		ClothPhysics(unsigned int id, unsigned int layerNumber);
-		~ClothPhysics();
+		CudaClothPhysics(unsigned int id, unsigned int layerNumber);
+		~CudaClothPhysics();
 
 		bool Initialize(const PhysicsClothInfo& info, physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager);
+
+		bool RegisterD3D11BufferWithCUDA(ID3D11Buffer* buffer);
+		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager);
 
 		void GetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, PhysicsClothGetData& data);
 		void SetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data);
@@ -32,26 +40,27 @@ namespace PhysicsEngine
 		inline const physx::PxParticleClothBuffer* GetClothBuffer() const;
 		inline const physx::ExtGpu::PxParticleClothBufferHelper* GetParticleClothBufferHelper() const;
 		inline const std::set<std::pair<unsigned int, unsigned int>>& GetSprings() const;
+		inline const unsigned int& GetVertexSize() const;
+		inline const unsigned int& GetIndexSize() const;
+		inline cudaGraphicsResource* GetCudaGraphicsResource() const;
 
 	private:
-		physx::PxU32 id(const physx::PxU32& x, const physx::PxU32& y, const physx::PxU32& numY);
 		void extractSpringsData(unsigned int* indices, unsigned int indexSize);
 		void settingInfoData(const PhysicsClothInfo& info);
+		void createClothParticle(physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager);
 		void settingParticleBuffer(
 			const physx::PxU32& numSprings,
 			const physx::PxU32& numTriangles,
 			const physx::PxU32& numParticles,
 			const physx::PxU32& particlePhase,
 			const physx::PxReal& particleMass);
-
-		void calculateNormals();
+		void createCloth(const physx::PxU32& numParticles, physx::PxCudaContextManager* cudaContextManager);
 
 	private:
 		unsigned int	mID;
 		unsigned int	mLayNumber;
 
 		float			mTotalClothMass;
-
 		DirectX::SimpleMath::Matrix mWorldTransform;
 		std::set<std::pair<unsigned int, unsigned int>> mSprings;
 		std::vector<std::pair<unsigned int, unsigned int>> mSameVertices;
@@ -66,44 +75,55 @@ namespace PhysicsEngine
 		physx::PxVec4* mVelocity;
 		std::vector<DirectX::SimpleMath::Vector3> mVertices;
 		std::vector<DirectX::SimpleMath::Vector2> mUV;
-		std::vector<DirectX::SimpleMath::Vector3> mNormals;
-		std::vector<DirectX::SimpleMath::Vector3> mTangents;
-		std::vector<DirectX::SimpleMath::Vector3> mBiTangents;
 		std::vector<unsigned int> mIndices;
+
+		cudaGraphicsResource* mCudaResource;
 	};
 
 #pragma region GetSet
-	void ClothPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& position)
+	void CudaClothPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& position)
 	{
 		mWorldTransform = position;
 	}
-	void ClothPhysics::SetTotalClothMass(const float& toTalClothMass)
+	void CudaClothPhysics::SetTotalClothMass(const float& toTalClothMass)
 	{
 		mTotalClothMass = toTalClothMass;
 	}
-	const DirectX::SimpleMath::Matrix& ClothPhysics::GetWorldTransform() const
+	const DirectX::SimpleMath::Matrix& CudaClothPhysics::GetWorldTransform() const
 	{
 		return mWorldTransform;
 	}
-	const float& ClothPhysics::GetTotalClothMass() const
+	const float& CudaClothPhysics::GetTotalClothMass() const
 	{
 		return mTotalClothMass;
 	}
-	const physx::PxPBDParticleSystem* ClothPhysics::GetParticleSystem() const
+	const physx::PxPBDParticleSystem* CudaClothPhysics::GetParticleSystem() const
 	{
 		return mParticleSystem;
 	}
-	const physx::PxParticleClothBuffer* ClothPhysics::GetClothBuffer() const
+	const physx::PxParticleClothBuffer* CudaClothPhysics::GetClothBuffer() const
 	{
 		return mClothBuffer;
 	}
-	const physx::ExtGpu::PxParticleClothBufferHelper* ClothPhysics::GetParticleClothBufferHelper() const
+	const physx::ExtGpu::PxParticleClothBufferHelper* CudaClothPhysics::GetParticleClothBufferHelper() const
 	{
 		return mClothBufferHelper;
 	}
-	const std::set<std::pair<unsigned int, unsigned int>>& ClothPhysics::GetSprings() const
+	const std::set<std::pair<unsigned int, unsigned int>>& CudaClothPhysics::GetSprings() const
 	{
 		return mSprings;
+	}
+	const unsigned int& CudaClothPhysics::GetVertexSize() const
+	{
+		return mVertices.size();
+	}
+	const unsigned int& CudaClothPhysics::GetIndexSize() const
+	{
+		return mIndices.size();
+	}
+	cudaGraphicsResource* CudaClothPhysics::GetCudaGraphicsResource() const
+	{
+		return mCudaResource;
 	}
 #pragma endregion
 }

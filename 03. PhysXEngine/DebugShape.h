@@ -9,9 +9,9 @@
 using namespace Microsoft::WRL;
 using namespace std;
 
-#include "../02. GraphicsEngine/Types.h"
-#include "../02. GraphicsEngine/Define.h"
-#include "../02. GraphicsEngine/RenderManager.h"
+#include "../00. GraphicsEngine/Types.h"
+#include "../00. GraphicsEngine/Define.h"
+#include "../00. GraphicsEngine/RenderManager.h"
 
 void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape);
 void DebugBox(physx::PxRigidActor* _body, physx::PxShape* _shape);

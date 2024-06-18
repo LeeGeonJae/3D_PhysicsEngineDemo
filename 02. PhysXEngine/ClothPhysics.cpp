@@ -2,8 +2,6 @@
 #include "ClothPhysics.h"
 
 #include <cudamanager/PxCudaContext.h>
-#include <cuda_runtime.h>
-#include <cuda_d3d11_interop.h>
 
 namespace PhysicsEngine
 {

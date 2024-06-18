@@ -32,8 +32,8 @@ namespace GraphicsEngine
 
     public:
         inline const string& GetName();
-        inline vector<Vertex> GetVertices();
-        inline vector<UINT> GetIndices();
+        inline vector<Vertex>& GetVertices();
+        inline vector<UINT>& GetIndices();
         inline ComPtr<ID3D11Buffer> GetVertexBuffer();
         inline ComPtr<ID3D11Buffer> GetIndexBuffer();
         inline void SetMaterial(shared_ptr<Material> _material);
@@ -55,11 +55,11 @@ namespace GraphicsEngine
     {
         return m_Name;
     }
-    vector<Vertex> StaticMesh::GetVertices() 
+    vector<Vertex>& StaticMesh::GetVertices() 
     {
         return m_VertexVec;
     }
-    vector<UINT> StaticMesh::GetIndices()
+    vector<UINT>& StaticMesh::GetIndices()
     {
         return m_IndexVec;
     }

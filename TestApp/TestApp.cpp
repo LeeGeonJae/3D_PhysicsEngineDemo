@@ -12,11 +12,12 @@
 
 #include "DebugShape.h"
 
-#include "../02. GraphicsEngine/Graphics.h"
-#include "../02. GraphicsEngine/RenderManager.h"
-#include "../02. GraphicsEngine/ResourceManager.h"
-#include "../02. GraphicsEngine/StaticMeshResource.h"
-#include "../02. GraphicsEngine/SkeletalMeshResource.h"
+#include "../00. GraphicsEngine/Types.h"
+#include "../00. GraphicsEngine/Graphics.h"
+#include "../00. GraphicsEngine/RenderManager.h"
+#include "../00. GraphicsEngine/ResourceManager.h"
+#include "../00. GraphicsEngine/StaticMeshResource.h"
+#include "../00. GraphicsEngine/SkeletalMeshResource.h"
 #include "../02. PhysXEngine/PhysX.h"
 #include "../02. PhysXEngine/PhysicsSimulationEventCallback.h"
 #include "../01. Engine/InputManager.h"
@@ -127,18 +128,6 @@ void TestApp::Init()
 void TestApp::Update(float _deltaTime)
 {
 	__super::Update(_deltaTime);
-
-	static int dtCount = 0;
-	static float dt = 0;
-	dtCount++;
-	dt += _deltaTime;
-	if (dt >= 1.f)
-	{
-		std::cout << "FPS : " << dtCount << std::endl;
-
-		dt -= 1.f;
-		dtCount = 0;
-	}
 
 	int count = 1;
 	for (auto body : m_PhysX->GetPxBodies())
@@ -317,64 +306,64 @@ void TestApp::Update(float _deltaTime)
 		}
 		if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Z))
 		{
-			//m_PhysX->Update(1 / 60.f);
-
-			//PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
-
-			//vector<GraphicsEngine::PhysicsVertex> vertices;
-			//vector<unsigned int> indices;
-
-			//vertices.resize(data.vertexSize);
-			//indices.resize(data.indexSize);
-
-			//for (int i = 0; i < data.vertexSize; i++)
-			//{
-			//	vertices[i].position = data.vertices[i];
-			//	vertices[i].normal = data.nomals[i];
-			//	vertices[i].uv = data.uv[i];
-			//	vertices[i].tangent = data.tangents[i];
-			//	vertices[i].biTangent = data.biTangents[i];
-			//}
-
-			//for (int i = 0; i < data.indexSize; i++)
-			//{
-			//	indices[i] = data.indices[i];
-			//}
-
-			//RENDER->SetPhysicsBuffer(vertices, indices);
-		}
-		if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Z))
-		{
 			m_PhysX->Update(1 / 60.f);
 
-			if (m_PhysX->GetCudaGraphicsResource() == nullptr)
+			PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetPhysicsClothGetData();
+
+			vector<GraphicsEngine::PhysicsVertex> vertices;
+			vector<unsigned int> indices;
+
+			vertices.resize(data.vertexSize);
+			indices.resize(data.indexSize);
+
+			for (int i = 0; i < data.vertexSize; i++)
 			{
-				PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetCudaPhysicsClothGetData();
-
-				vector<GraphicsEngine::PhysicsVertex> vertices;
-				vector<unsigned int> indices;
-
-				vertices.resize(data.vertexSize);
-				indices.resize(data.indexSize);
-
-				for (int i = 0; i < data.vertexSize; i++)
-				{
-					vertices[i].position = data.vertices[i];
-					vertices[i].normal = data.nomals[i];
-					vertices[i].uv = data.uv[i];
-					vertices[i].tangent = data.tangents[i];
-					vertices[i].biTangent = data.biTangents[i];
-				}
-
-				for (int i = 0; i < data.indexSize; i++)
-				{
-					indices[i] = data.indices[i];
-				}
-
-				RENDER->SetPhysicsBuffer(vertices, indices);
-				m_PhysX->SetClothBuffer(RENDER->GetPhysicsBuffer());
+				vertices[i].position = data.vertices[i];
+				vertices[i].normal = data.nomals[i];
+				vertices[i].uv = data.uv[i];
+				vertices[i].tangent = data.tangents[i];
+				vertices[i].biTangent = data.biTangents[i];
 			}
+
+			for (int i = 0; i < data.indexSize; i++)
+			{
+				indices[i] = data.indices[i];
+			}
+
+			RENDER->SetPhysicsBuffer(vertices, indices);
 		}
+		//if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Z))
+		//{
+		//	m_PhysX->Update(1 / 60.f);
+
+		//	if (m_PhysX->GetCudaGraphicsResource() == nullptr)
+		//	{
+		//		PhysicsEngine::PhysicsClothGetData data = m_PhysX->GetCudaPhysicsClothGetData();
+
+		//		vector<GraphicsEngine::PhysicsVertex> vertices;
+		//		vector<unsigned int> indices;
+
+		//		vertices.resize(data.vertexSize);
+		//		indices.resize(data.indexSize);
+
+		//		for (int i = 0; i < data.vertexSize; i++)
+		//		{
+		//			vertices[i].position = data.vertices[i];
+		//			vertices[i].normal = data.nomals[i];
+		//			vertices[i].uv = data.uv[i];
+		//			vertices[i].tangent = data.tangents[i];
+		//			vertices[i].biTangent = data.biTangents[i];
+		//		}
+
+		//		for (int i = 0; i < data.indexSize; i++)
+		//		{
+		//			indices[i] = data.indices[i];
+		//		}
+
+		//		RENDER->SetPhysicsBuffer(vertices, indices);
+		//		m_PhysX->SetClothBuffer(RENDER->GetPhysicsBuffer());
+		//	}
+		//}
 	}
 }
 

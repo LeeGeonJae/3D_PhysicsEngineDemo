@@ -6,10 +6,11 @@
 #include <unordered_map>
 
 #include <PxPhysicsAPI.h>
+#include <d3d11.h>
 
 namespace physics
 {
-	class PhysicsCloth;
+	class CudaClothPhysics;
 
 	class PhysicsClothManager
 	{
@@ -20,12 +21,15 @@ namespace physics
 		/// <summary>
 		/// 천 시뮬레이션 매니저 초기화입니다.
 		/// </summary>
-		bool Initialize(physx::PxFoundation* foundation, physx::PxPhysics* physics, physx::PxScene* scene);
+		bool Initialize(physx::PxCudaContextManager* cudaContextManager, physx::PxPhysics* physics, physx::PxScene* scene);
+
+		bool Update();
 
 		bool CreateCloth(const PhysicsClothInfo& info);
+		bool RegisterD3D11Buffer(unsigned int id, ID3D11Buffer* clothBuffer);
 
 	private:
-		std::unordered_map<unsigned int, std::shared_ptr<PhysicsCloth>> mPhysicsClothContainer;
+		std::unordered_map<unsigned int, std::shared_ptr<CudaClothPhysics>> mPhysicsClothContainer;
 
 		physx::PxPhysics*				mPhysics;
 		physx::PxScene*					mScene;

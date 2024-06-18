@@ -6,6 +6,7 @@
 #include "PhysicsCharactorControllerManager.h"
 #include "PhysicsCharacterPhysicsManager.h"
 #include "PhysicsResourceManager.h"
+#include "PhysicsClothManager.h"
 #include "PhysicsSimulationEventCallback.h"
 #include "EngineDataConverter.h"
 
@@ -52,8 +53,18 @@ namespace physics
 		}
 		else
 		{
-			pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
-			return physx::PxFilterFlag::eSUPPRESS;
+			pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT
+				| physx::PxPairFlag::eDETECT_CCD_CONTACT
+				| physx::PxPairFlag::eNOTIFY_TOUCH_CCD
+				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
+				| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
+				| physx::PxPairFlag::eCONTACT_EVENT_POSE
+				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+			return physx::PxFilterFlag::eDEFAULT;
+
+			//pairFlags &= ~physx::PxPairFlag::eCONTACT_DEFAULT; // 충돌 행동 비허용
+			//return physx::PxFilterFlag::eSUPPRESS;
 		}
 	}
 
@@ -64,6 +75,7 @@ namespace physics
 		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mResourceManager(std::make_shared<PhysicsResourceManager>())
+		, mPhysicsClothManager(std::make_shared<PhysicsClothManager>())
 		, mScene(nullptr)
 		, mCollisionMatrix{}
 	{
@@ -85,6 +97,23 @@ namespace physics
 		// PhysX 시뮬레이션을 위한 Scene을 설정합니다.
 		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale()); // Scene을 생성할 때 물리적인 허용 오차 스케일을 설정합니다.
 
+		if (PxGetSuggestedCudaDeviceOrdinal(mPhysics->GetFoundation()->getErrorCallback()) >= 0)
+		{
+			// initialize CUDA
+			physx::PxCudaContextManagerDesc cudaContextManagerDesc;
+			mCudaContextManager = PxCreateCudaContextManager(*mPhysics->GetFoundation(), cudaContextManagerDesc, PxGetProfilerCallback());
+			if (mCudaContextManager && !mCudaContextManager->contextIsValid())
+			{
+				mCudaContextManager->release();
+				mCudaContextManager = NULL;
+			}
+		}
+		if (mCudaContextManager == NULL)
+		{
+			PxGetFoundation().error(physx::PxErrorCode::eINVALID_OPERATION, PX_FL, "Failed to initialize CUDA!\n");
+			return false;
+		}
+
 		// 중력을 설정합니다.
 		sceneDesc.gravity.x = info.gravity.x;
 		sceneDesc.gravity.y = info.gravity.y;
@@ -98,6 +127,7 @@ namespace physics
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = mMyEventCallback.get();
+		sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
@@ -113,6 +143,7 @@ namespace physics
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager)) return false;
 		if (!mCCTManager->initialize(mPhysics->GetPhysics(), mScene)) return false;
 		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene)) return false;
+		if (!mPhysicsClothManager->Initialize(mCudaContextManager, mPhysics->GetPhysics(), mScene)) return false;
 
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
@@ -132,6 +163,8 @@ namespace physics
 		if (!mScene->simulate(deltaTime))
 			return false;
 		if (!mScene->fetchResults(true))
+			return false;
+		if (!mPhysicsClothManager->Update())
 			return false;
 
 		return true;
@@ -283,4 +316,13 @@ namespace physics
 		return mCharacterPhysicsManager->SimulationCharacter(id);
 	}
 #pragma endregion
+
+	bool FQPhysics::CreateCloth(const PhysicsClothInfo& info)
+	{
+		return mPhysicsClothManager->CreateCloth(info);
+	}
+	bool FQPhysics::RegisterD3D11Buffer(unsigned int id, ID3D11Buffer* clothBuffer)
+	{
+		return mPhysicsClothManager->RegisterD3D11Buffer(id, clothBuffer);
+	}
 }

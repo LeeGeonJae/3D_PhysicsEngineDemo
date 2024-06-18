@@ -2,8 +2,6 @@
 
 #include "directxtk\SimpleMath.h"
 
-#include "../Libraries/Include/CUDA/vector_types.h"
-
 namespace PhysicsEngine
 {
 	struct PhysicsVertex
@@ -67,10 +65,10 @@ namespace PhysicsEngine
 }
 
 
-extern "C" void launchCalculateNormals(
-	float3 * vertices,
-	float2 * uvs,
-	unsigned int vertexSize,
-	unsigned int* indices,
-	unsigned int indexSize,
-	PhysicsEngine::PhysicsVertex * buffer);
+//extern "C" void launchCalculateNormals(
+//	float3 * vertices,
+//	float2 * uvs,
+//	unsigned int vertexSize,
+//	unsigned int* indices,
+//	unsigned int indexSize,
+//	PhysicsEngine::PhysicsVertex * buffer);

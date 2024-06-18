@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 
+#include "../00. GraphicsEngine/Types.h"
+
 namespace Engine
 {
 	// 건재 : 선언

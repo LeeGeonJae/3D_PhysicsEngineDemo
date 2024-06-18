@@ -12,14 +12,19 @@
 #include "DebugShape.h"
 #include "InputManager.h"
 
-#include "../02. GraphicsEngine/Graphics.h"
-#include "../02. GraphicsEngine/RenderManager.h"
-#include "../02. GraphicsEngine/ResourceManager.h"
-#include "../02. GraphicsEngine/StaticMeshResource.h"
-#include "../02. GraphicsEngine/SkeletalMeshResource.h"
+#include "../00. GraphicsEngine/Types.h"
+#include "../00. GraphicsEngine/Graphics.h"
+#include "../00. GraphicsEngine/RenderManager.h"
+#include "../00. GraphicsEngine/ResourceManager.h"
+#include "../00. GraphicsEngine/StaticMeshResource.h"
+#include "../00. GraphicsEngine/SkeletalMeshResource.h"
 
 #include "../03. PhysXEngine/FQPhysics.h"
 #include "../03. PhysXEngine/Common.h"
+
+#include <cuda_runtime.h>
+#include <cuda_d3d11_interop.h>
+#include <device_launch_parameters.h>
 
 void callbackFunction(physics::CollisionData data, physics::ECollisionEventType type)
 {
@@ -90,7 +95,7 @@ void DemoApp::Init()
 
 		std::shared_ptr<StaticMeshComponent> meshComponent = std::make_shared<StaticMeshComponent>();
 		StaticMeshComponentInfo meshInfo;
-		meshInfo.m_FilePath = "../Resources/FBX/cerberus_test.fbx";
+		meshInfo.m_FilePath = "../Resources/FBX/Vampire.fbx";
 		meshInfo.m_RenderComponentInfo.m_bIsVisible = true;
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
@@ -127,6 +132,45 @@ void DemoApp::Init()
 		convexInfo.vertices = meshVertex.data();
 
 		m_Physics->CreateDynamicBody(convexInfo, physics::EColliderType::COLLISION, "zelda");
+	}
+
+	{
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/Vampire.fbx");
+		auto& mesh = staticMesh->GetStaticMeshVec()[0];
+
+		std::vector<DirectX::SimpleMath::Vector3> vertices;
+		std::vector<DirectX::SimpleMath::Vector2> uvs;
+		std::vector<unsigned int> indices;
+		vertices.resize(mesh.GetVertices().size());
+		uvs.resize(mesh.GetVertices().size());
+		indices.resize(mesh.GetIndices().size());
+		
+		for (int i = 0; i < mesh.GetVertices().size(); i++)
+		{
+			vertices[i].x = mesh.GetVertices()[i].m_Position.x;
+			vertices[i].y = mesh.GetVertices()[i].m_Position.y;
+			vertices[i].z = mesh.GetVertices()[i].m_Position.z;
+			uvs[i].x = mesh.GetVertices()[i].m_TexCoord.x;
+			uvs[i].y = mesh.GetVertices()[i].m_TexCoord.y;
+		}
+
+		for (int i = 0; i < mesh.GetIndices().size(); i++)
+		{
+			indices[i] = mesh.GetIndices()[i];
+		}
+
+		physics::PhysicsClothInfo info;
+		info.id = 100;
+		info.layerNumber = 0;
+		info.vertices = vertices.data();
+		info.vertexSize = vertices.size();
+		info.uv = uvs.data();
+		info.indices = indices.data();
+		info.indexSize = indices.size();
+
+		m_Physics->CreateCloth(info);
+		m_Physics->RegisterD3D11Buffer(100, RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/Vampire.fbx", 100));
+		RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/Vampire.fbx", 100);
 	}
 
 	//// °üÀý
@@ -376,15 +420,15 @@ void DemoApp::Update(float _deltaTime)
 		m_Physics->AddInputMove(1000, direction);
 	}
 
-	m_Physics->Update(_deltaTime);
+	static float FixedTime = 0;
+	FixedTime += _deltaTime;
 
-	static float delayTime = 0.f;
-	delayTime += _deltaTime;
-
-	if ( delayTime >= 5.f)
-		m_Physics->RemoveController(1000);
-	
-	m_Physics->FinalUpdate();
+	if (FixedTime >= 1 / 60.f)
+	{
+		FixedTime -= 1 / 60.f;
+		m_Physics->Update(1 / 60.f);
+		m_Physics->FinalUpdate();
+	}
 }
 
 void DemoApp::LateUpdate(float _deltaTime)
@@ -401,6 +445,9 @@ void DemoApp::FixedUpdate(float _deltaTime)
 	{
 		object->FixedUpdate(_deltaTime);
 	}
+
+	m_Physics->Update(_deltaTime);
+	m_Physics->FinalUpdate();
 }
 
 void DemoApp::Render()

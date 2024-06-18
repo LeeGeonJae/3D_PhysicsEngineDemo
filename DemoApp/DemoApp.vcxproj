@@ -54,6 +54,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.5.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -109,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include;$(SolutionDir)01. Engine;..\Libraries\Include\physX</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include;$(SolutionDir)01. Engine;..\Libraries\Include\physX;$(CUDA_PATH)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,11 +144,11 @@
     <ClInclude Include="DemoApp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\00. GraphicsEngine\GraphicsEngine.vcxproj">
+      <Project>{2407ebee-d4d0-4e45-9bf6-43508db4b831}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\01. Engine\Engine.vcxproj">
       <Project>{550e2c8a-d7fd-4b34-a6b4-5c56e57281b7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\02. GraphicsEngine\GraphicsEngine.vcxproj">
-      <Project>{2407ebee-d4d0-4e45-9bf6-43508db4b831}</Project>
     </ProjectReference>
     <ProjectReference Include="..\03. PhysXEngine\03. PhysXEngine.vcxproj">
       <Project>{a5c66113-7f09-4dbe-a017-340d4db6550f}</Project>
@@ -155,5 +156,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 12.5.targets" />
   </ImportGroup>
 </Project>

@@ -118,7 +118,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include;$(SolutionDir)02. GraphicsEngine;..\Libraries\Include\physX</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include;$(SolutionDir)00. GraphicsEngine;..\Libraries\Include\physX</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>

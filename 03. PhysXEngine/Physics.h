@@ -31,6 +31,8 @@ namespace physics
 		/// </summary>
 		inline physx::PxDefaultCpuDispatcher* GetDispatcher();
 
+		inline physx::PxFoundation* GetFoundation();
+
 	private:
 		physx::PxDefaultAllocator		mDefaultAllocatorCallback;
 		physx::PxDefaultErrorCallback	mDefaultErrorCallback;
@@ -53,6 +55,10 @@ namespace physics
 	physx::PxDefaultCpuDispatcher* Physics::GetDispatcher()
 	{
 		return mDispatcher;
+	}
+	physx::PxFoundation* Physics::GetFoundation()
+	{
+		return mFoundation;
 	}
 }
 

@@ -89,6 +89,7 @@ namespace GraphicsEngine
 		void Update();
 		void Render();
 		void RenderDebug();
+		void RenderPhysics();
 
 	private:
 		void SortSkeletalMeshInstance();
@@ -118,8 +119,8 @@ namespace GraphicsEngine
 		inline void AddDebugPolygon(vector<Vector3> _triangle);
 
 		void SetPhysicsBuffer(vector<PhysicsVertex>& vertex, vector<unsigned int>& index);
-		void SetPhysicsBuffer(unsigned int vertexSize, unsigned int indexSize);
-		void RenderPhysics();
+		ID3D11Buffer* CreatePhysicsVertexBuffer(std::string path, unsigned int id);
+		ID3D11Buffer* CreatePhysicsIndexBuffer(std::string path, unsigned int id);
 
 	private:
 		shared_ptr<Graphics> m_pGraphics;
@@ -153,8 +154,12 @@ namespace GraphicsEngine
 
 		vector<PhysicsVertex> m_PhysicsVertex;
 		vector<unsigned int> m_PhysicsIndex;
-		ComPtr<ID3D11Buffer> m_VertexBuffer;
-		ComPtr<ID3D11Buffer> m_IndexBuffer;
+		
+		unordered_map<unsigned int, ComPtr<ID3D11Buffer>> m_PhysicsVertexBufferContainer;
+		ComPtr<ID3D11Buffer> m_PhysicsVertexBuffer;
+		unordered_map<unsigned int, ComPtr<ID3D11Buffer>> m_PhysicsIndexBufferContainer;
+		unordered_map<unsigned int, unsigned int> m_PhysicsIndexSize;
+		ComPtr<ID3D11Buffer> m_PhysicsIndexBuffer;
 	};
 
 	// 건재 : RenderManager의 Get & Set 함수
@@ -172,8 +177,8 @@ namespace GraphicsEngine
 	}
 	inline ID3D11Buffer* RenderManager::GetPhysicsBuffer()
 	{
-		if (m_VertexBuffer)
-			return m_VertexBuffer.Get();
+		if (m_PhysicsVertexBuffer)
+			return m_PhysicsVertexBuffer.Get();
 
 		return nullptr;
 	}

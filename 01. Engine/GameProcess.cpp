@@ -21,6 +21,7 @@ void Engine::GameProcess::Update(float _deltaTime)
 	{
 		m_FPSText = "FPS : ";
 		m_FPSText += to_string(m_FPS);
+		std::cout << "FPS : " << m_FPS << std::endl;
 
 		durationTime = 0.f;
 		m_FPS = 0;

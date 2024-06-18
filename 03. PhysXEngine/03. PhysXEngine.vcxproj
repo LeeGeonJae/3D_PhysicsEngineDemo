@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>..\Libraries\Lib\physX\deb;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\Libraries\Lib\physX\deb;$(CUDA_PATH);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -150,7 +150,7 @@
     <ClInclude Include="CharacterLink.h" />
     <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="CharacterPhysics.h" />
-    <ClInclude Include="PhysicsCloth.h" />
+    <ClInclude Include="CudaClothPhysics.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ConvexMeshResource.h" />
     <ClInclude Include="DebugShape.h" />
@@ -181,7 +181,6 @@
     <ClCompile Include="CharacterLink.cpp" />
     <ClCompile Include="CharacterMovement.cpp" />
     <ClCompile Include="CharacterPhysics.cpp" />
-    <ClCompile Include="PhysicsCloth.cpp" />
     <ClCompile Include="ConvexMeshResource.cpp" />
     <ClCompile Include="DebugShape.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -214,7 +213,10 @@
     <ClCompile Include="StaticRigidBody.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\02. GraphicsEngine\GraphicsEngine.vcxproj">
+    <CudaCompile Include="CudaClothPhysics.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\00. GraphicsEngine\GraphicsEngine.vcxproj">
       <Project>{2407ebee-d4d0-4e45-9bf6-43508db4b831}</Project>
     </ProjectReference>
   </ItemGroup>

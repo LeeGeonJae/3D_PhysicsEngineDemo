@@ -8,9 +8,6 @@
 #include <directxtk/SimpleMath.h>
 #include <d3d11.h>
 
-#include "../Libraries/Include/CUDA/cuda_runtime.h"
-#include "../Libraries/Include/CUDA/cuda_d3d11_interop.h"
-
 //#pragma comment(lib, "../Libraries/Lib/cudart.lib")
 
 #include "ClothPhysics.h"
@@ -55,12 +52,12 @@ namespace PhysicsEngine
 		inline physx::PxCudaContextManager* GetCudaContextManager();
 		inline physx::PxParticleClothBuffer* GetParticleClothBuffer();
 		inline const std::shared_ptr<ClothPhysics> GetClothPhysics();
-		const unsigned int& GetPhysicsVertexSize();
-		const unsigned int& GetPhysicsIndexSize();
+		//const unsigned int& GetPhysicsVertexSize();
+		//const unsigned int& GetPhysicsIndexSize();
 		PhysicsClothGetData GetPhysicsClothGetData();
-		PhysicsClothGetData GetCudaPhysicsClothGetData();
-		cudaGraphicsResource* GetCudaGraphicsResource();
-		bool SetClothBuffer(ID3D11Buffer* buffer);
+		//PhysicsClothGetData GetCudaPhysicsClothGetData();
+		//cudaGraphicsResource* GetCudaGraphicsResource();
+		//bool SetClothBuffer(ID3D11Buffer* buffer);
 
 	public:
 		inline void AddVertexPosition(physx::PxVec3 _vertex);
@@ -111,7 +108,7 @@ namespace PhysicsEngine
 
 		// Cloth
 		std::shared_ptr<ClothPhysics> m_ClothPhysics;
-		std::shared_ptr<CudaClothPhysics> m_CudaClothPhysics;
+		//std::shared_ptr<CudaClothPhysics> m_CudaClothPhysics;
 	};
 
 	physx::PxScene* PhysX::GetPxScene()
@@ -158,8 +155,8 @@ namespace PhysicsEngine
 	{
 		return m_ClothPhysics;
 	}
-	cudaGraphicsResource* PhysX::GetCudaGraphicsResource()
-	{
-		return m_CudaClothPhysics->GetCudaGraphicsResource();
-	}
+	//cudaGraphicsResource* PhysX::GetCudaGraphicsResource()
+	//{
+	//	return m_CudaClothPhysics->GetCudaGraphicsResource();
+	//}
 } 

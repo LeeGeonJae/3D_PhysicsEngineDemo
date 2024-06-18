@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "DebugShape.h"
 
-#include "../02. GraphicsEngine/RenderManager.h"
+#include "../00. GraphicsEngine/RenderManager.h"
 
 // 오른손 좌표계(PhysX)에서 왼손 좌표계(DirectX11)로 변환하기
 void CopyPxTransformToDirectXMatrix(const physx::PxTransform& pxTransform, Matrix& dxMatrix)

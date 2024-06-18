@@ -232,8 +232,8 @@ namespace GraphicsEngine
 
 	void RenderManager::SetPhysicsBuffer(vector<PhysicsVertex>& vertex, vector<unsigned int>& index)
 	{
-		m_IndexBuffer.Reset();
-		m_VertexBuffer.Reset();
+		m_PhysicsIndexBuffer.Reset();
+		m_PhysicsVertexBuffer.Reset();
 
 		m_PhysicsVertex = vertex;
 		m_PhysicsIndex = index;
@@ -251,7 +251,7 @@ namespace GraphicsEngine
 		D3D11_SUBRESOURCE_DATA initData;
 		initData.pSysMem = &m_PhysicsVertex[0];
 
-		hr = DEVICE->CreateBuffer(&vertexDesc, &initData, m_VertexBuffer.GetAddressOf());
+		hr = DEVICE->CreateBuffer(&vertexDesc, &initData, m_PhysicsVertexBuffer.GetAddressOf());
 		assert(SUCCEEDED(hr));
 
 		D3D11_BUFFER_DESC indexDesc;
@@ -263,8 +263,61 @@ namespace GraphicsEngine
 
 		initData.pSysMem = &m_PhysicsIndex[0];
 
-		hr = DEVICE->CreateBuffer(&indexDesc, &initData, m_IndexBuffer.GetAddressOf());
+		hr = DEVICE->CreateBuffer(&indexDesc, &initData, m_PhysicsIndexBuffer.GetAddressOf());
 		assert(SUCCEEDED(hr));
+	}
+	ID3D11Buffer* RenderManager::CreatePhysicsVertexBuffer(std::string path, unsigned int id)
+	{
+		auto resource = RESOURCE->Find<StaticMeshSceneResource>(path);
+		ComPtr<ID3D11Buffer> vertexBuffer;
+
+		// 건재 : 버텍스 및 인덱스 버퍼 생성
+		HRESULT hr;
+
+		D3D11_BUFFER_DESC vertexDesc;
+		vertexDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		vertexDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * resource->GetStaticMeshVec()[0].GetVertices().size());
+		vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexDesc.CPUAccessFlags = 0;
+		vertexDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA initData;
+		initData.pSysMem = &resource->GetStaticMeshVec()[0].GetVertices()[0];
+
+		hr = DEVICE->CreateBuffer(&vertexDesc, &initData, vertexBuffer.GetAddressOf());
+		assert(SUCCEEDED(hr));
+
+		m_PhysicsVertexBufferContainer.insert(make_pair(id, vertexBuffer));
+
+		return vertexBuffer.Get();
+	}
+
+	ID3D11Buffer* RenderManager::CreatePhysicsIndexBuffer(std::string path, unsigned int id)
+	{
+		auto resource = RESOURCE->Find<StaticMeshSceneResource>(path);
+
+		ComPtr<ID3D11Buffer> indexBuffer;
+
+		// 건재 : 버텍스 및 인덱스 버퍼 생성
+		HRESULT hr;
+
+		D3D11_BUFFER_DESC indexDesc;
+		indexDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		indexDesc.ByteWidth = static_cast<UINT>(sizeof(UINT) * resource->GetStaticMeshVec()[0].GetIndices().size());
+		indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		indexDesc.CPUAccessFlags = 0;
+		indexDesc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA initData;
+		initData.pSysMem = &resource->GetStaticMeshVec()[0].GetIndices()[0];
+
+		hr = DEVICE->CreateBuffer(&indexDesc, &initData, indexBuffer.GetAddressOf());
+		assert(SUCCEEDED(hr));
+
+		m_PhysicsIndexBufferContainer.insert(make_pair(id, indexBuffer));
+		m_PhysicsIndexSize.insert(make_pair(id, resource->GetStaticMeshVec()[0].GetIndices().size()));
+
+		return indexBuffer.Get();
 	}
 	void RenderManager::RenderPhysics()
 	{
@@ -277,12 +330,26 @@ namespace GraphicsEngine
 		UINT stride = sizeof(PhysicsVertex);
 		UINT offset = 0;
 
-		DEVICE_CONTEXT->IASetVertexBuffers(0, 1, m_VertexBuffer.GetAddressOf(), &stride, &offset);
-		DEVICE_CONTEXT->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		for (auto vertexIter : m_PhysicsVertexBufferContainer)
+		{
+			DEVICE_CONTEXT->IASetVertexBuffers(0, 1, vertexIter.second.GetAddressOf(), &stride, &offset);
 
+			auto indexIter = m_PhysicsIndexBufferContainer.find(vertexIter.first);
+			if (indexIter != m_PhysicsIndexBufferContainer.end())
+			{
+				DEVICE_CONTEXT->IASetIndexBuffer(indexIter->second.Get(), DXGI_FORMAT_R32_UINT, 0);
+			}
+
+			auto indexSizeIter = m_PhysicsIndexSize.find(vertexIter.first);
+			if (indexSizeIter != m_PhysicsIndexSize.end())
+			{
+				DEVICE_CONTEXT->DrawIndexed(static_cast<UINT>(indexSizeIter->second), 0, 0);
+			}
+		}
+
+		DEVICE_CONTEXT->IASetVertexBuffers(0, 1, m_PhysicsVertexBuffer.GetAddressOf(), &stride, &offset);
+		DEVICE_CONTEXT->IASetIndexBuffer(m_PhysicsIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 		DEVICE_CONTEXT->DrawIndexed(static_cast<UINT>(m_PhysicsIndex.size()), 0, 0);
-
-
 	}
 
 	void RenderManager::SetSkeletalMeshInstance(shared_ptr<SkeletalMeshInstance> _meshInstance)
