@@ -167,10 +167,20 @@ void DemoApp::Init()
 		info.uv = uvs.data();
 		info.indices = indices.data();
 		info.indexSize = indices.size();
+		info.vertexBuffer = RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/Vampire.fbx", 100);
+		info.indexBuffer = RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/Vampire.fbx", 100);
+
+
+		DirectX::SimpleMath::Matrix trnaslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 200.f, 0.f));
+		DirectX::SimpleMath::Matrix rotationX = DirectX::SimpleMath::Matrix::CreateRotationX(10.f);
+		DirectX::SimpleMath::Matrix rotationY = DirectX::SimpleMath::Matrix::CreateRotationY(20.f);
+		DirectX::SimpleMath::Matrix rotationZ = DirectX::SimpleMath::Matrix::CreateRotationZ(30.f);
+		DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.2f);
+		DirectX::SimpleMath::Matrix transform = trnaslation;
+
+		info.worldTransform = transform;
 
 		m_Physics->CreateCloth(info);
-		m_Physics->RegisterD3D11Buffer(100, RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/Vampire.fbx", 100));
-		RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/Vampire.fbx", 100);
 	}
 
 	//// °üÀý
@@ -419,15 +429,100 @@ void DemoApp::Update(float _deltaTime)
 
 		m_Physics->AddInputMove(1000, direction);
 	}
-
-	static float FixedTime = 0;
-	FixedTime += _deltaTime;
-
-	if (FixedTime >= 1 / 60.f)
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::Z))
 	{
-		FixedTime -= 1 / 60.f;
-		m_Physics->Update(1 / 60.f);
-		m_Physics->FinalUpdate();
+		physics::PhysicsClothSetData setData;
+		physics::PhysicsClothGetData getData = m_Physics->GetPhysicsCloth(100);
+
+		DirectX::SimpleMath::Vector3 translation;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 scale;
+		getData.worldTransform.Decompose(scale, rotation, translation);
+
+		DirectX::SimpleMath::Quaternion rotationQuaternion = Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f), 0.1f);
+		rotation = rotation * rotationQuaternion;
+
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::CreateScale(scale)
+			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+			* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
+		setData.worldTransform = worldTransform;
+		m_Physics->SetPhysicsCloth(100, setData);
+	}
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::X))
+	{
+		physics::PhysicsClothSetData setData;
+		physics::PhysicsClothGetData getData = m_Physics->GetPhysicsCloth(100);
+
+		DirectX::SimpleMath::Vector3 translation;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 scale;
+		getData.worldTransform.Decompose(scale, rotation, translation);
+
+		DirectX::SimpleMath::Quaternion rotationQuaternion = Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f), -0.1f);
+		rotation = rotation * rotationQuaternion;
+
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::CreateScale(scale)
+			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+			* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
+		setData.worldTransform = worldTransform;
+		m_Physics->SetPhysicsCloth(100, setData);
+	}
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::C))
+	{
+		physics::PhysicsClothSetData setData;
+		physics::PhysicsClothGetData getData = m_Physics->GetPhysicsCloth(100);
+
+		DirectX::SimpleMath::Vector3 translation;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 scale;
+		getData.worldTransform.Decompose(scale, rotation, translation);
+
+		scale = Vector3(scale.x + 0.01f, scale.y + 0.01f, scale.z + 0.01f);
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::CreateScale(scale)
+			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+			* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
+		setData.worldTransform = worldTransform;
+		m_Physics->SetPhysicsCloth(100, setData);
+	}
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::V))
+	{
+		physics::PhysicsClothSetData setData;
+		physics::PhysicsClothGetData getData = m_Physics->GetPhysicsCloth(100);
+		DirectX::SimpleMath::Matrix worldTransform = getData.worldTransform
+			* DirectX::SimpleMath::Matrix::CreateTranslation(0.f, -1.f, 0.f);
+		setData.worldTransform = worldTransform;
+		m_Physics->SetPhysicsCloth(100, setData);
+	}
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::B))
+	{
+		physics::PhysicsClothSetData setData;
+		physics::PhysicsClothGetData getData = m_Physics->GetPhysicsCloth(100);
+		DirectX::SimpleMath::Matrix worldTransform = getData.worldTransform
+			* DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 0.f, 1.f);
+		setData.worldTransform = worldTransform;
+		m_Physics->SetPhysicsCloth(100, setData);
+	}
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::N))
+	{
+		physics::PhysicsClothSetData setData;
+		physics::PhysicsClothGetData getData = m_Physics->GetPhysicsCloth(100);
+		DirectX::SimpleMath::Matrix worldTransform = getData.worldTransform
+			* DirectX::SimpleMath::Matrix::CreateTranslation(0.f, 0.f, -1.f);
+		setData.worldTransform = worldTransform;
+		m_Physics->SetPhysicsCloth(100, setData);
+	}
+	if (INPUT->GetKeyboardState().IsKeyDown(DirectX::Keyboard::Keys::T))
+	{
+		static float FixedTime = 0;
+		FixedTime += _deltaTime;
+
+		if (FixedTime >= 1 / 60.f)
+		{
+			FixedTime -= 1 / 60.f;
+
+			m_Physics->Update(1 / 60.f);
+			m_Physics->FinalUpdate();
+		}
 	}
 }
 
@@ -445,9 +540,6 @@ void DemoApp::FixedUpdate(float _deltaTime)
 	{
 		object->FixedUpdate(_deltaTime);
 	}
-
-	m_Physics->Update(_deltaTime);
-	m_Physics->FinalUpdate();
 }
 
 void DemoApp::Render()

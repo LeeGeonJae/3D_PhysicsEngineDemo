@@ -1,48 +1,39 @@
 #include "CudaClothPhysics.h"
 #include "cudamanager\PxCudaContext.h"
 
+#include <cuda_runtime.h>
 #include <iostream>
+#include <math.h>
+
+#include <directxtk\SimpleMath.h>
+
+#include "EngineDataConverter.h"
 
 #pragma comment (lib, "cudart.lib")
 
-__device__ physx::PxVec2 Sub(const physx::PxVec2& lhs, const physx::PxVec2& rhs)
-{
-	physx::PxVec2 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    return result;
+__device__ physx::PxVec2 Sub(const physx::PxVec2& lhs, const physx::PxVec2& rhs) {
+	return { lhs.x - rhs.x, lhs.y - rhs.y };
 }
 
-__device__ physx::PxVec4 Sub(const physx::PxVec4& lhs, const physx::PxVec4& rhs)
-{
-	physx::PxVec4 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    result.z = lhs.z - rhs.z;
-	result.w = lhs.w - rhs.w;
-    return result;
+__device__ physx::PxVec4 Sub(const physx::PxVec4& lhs, const physx::PxVec4& rhs) {
+	return { lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w };
 }
 
 __device__ physx::PxVec3 cross(const physx::PxVec4& a, const physx::PxVec4& b) {
-    return {
-        a.y * b.z - a.z * b.y,
-        a.z * b.x - a.x * b.z,
-        a.x * b.y - a.y * b.x,
-    };
+	return { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x };
 }
 
 __device__ float DotProduct(const physx::PxVec3& a, const physx::PxVec3& b) {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
+	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-__device__ void NormalizeVector(physx::PxVec3& vectors)
-{
-    float length = vectors.x + vectors.y + vectors.z;
-    if (length > 0) {
-        vectors.x /= length;
-        vectors.y /= length;
-        vectors.z /= length;
-    }
+__device__ void NormalizeVector(physx::PxVec3& vec) {
+	float length = sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+	if (length > 0) {
+		vec.x /= length;
+		vec.y /= length;
+		vec.z /= length;
+	}
 }
 
 // CUDA 커널 함수 정의
@@ -98,50 +89,134 @@ __global__ void CalculateNormals(
 	buffer[i0].position.x = v0.x;
 	buffer[i0].position.y = v0.y;
 	buffer[i0].position.z = v0.z;
-
 	buffer[i1].position.x = v1.x;
 	buffer[i1].position.y = v1.y;
 	buffer[i1].position.z = v1.z;
-
 	buffer[i2].position.x = v2.x;
 	buffer[i2].position.y = v2.y;
 	buffer[i2].position.z = v2.z;
 
-    buffer[i0].normal.x += normal.x;
-    buffer[i0].normal.y += normal.y;
-    buffer[i0].normal.z += normal.z;
+	buffer[i0].normal.x = normal.x;
+	buffer[i0].normal.y = normal.y;
+	buffer[i0].normal.z = normal.z;
+					    
+	buffer[i1].normal.x = normal.x;
+	buffer[i1].normal.y = normal.y;
+	buffer[i1].normal.z = normal.z;
+					    
+	buffer[i2].normal.x = normal.x;
+	buffer[i2].normal.y = normal.y;
+	buffer[i2].normal.z = normal.z;
 
-    buffer[i1].normal.x += normal.x;
-    buffer[i1].normal.y += normal.y;
-    buffer[i1].normal.z += normal.z;
+	buffer[i0].tangent.x = tangent.x;
+	buffer[i0].tangent.y = tangent.y;
+	buffer[i0].tangent.z = tangent.z;
+						 
+	buffer[i1].tangent.x = tangent.x;
+	buffer[i1].tangent.y = tangent.y;
+	buffer[i1].tangent.z = tangent.z;
+						 
+	buffer[i2].tangent.x = tangent.x;
+	buffer[i2].tangent.y = tangent.y;
+	buffer[i2].tangent.z = tangent.z;
 
-    buffer[i2].normal.x += normal.x;
-    buffer[i2].normal.y += normal.y;
-    buffer[i2].normal.z += normal.z;
+	buffer[i0].biTangent.x = bitangent.x;
+	buffer[i0].biTangent.y = bitangent.y;
+	buffer[i0].biTangent.z = bitangent.z;
+						   
+	buffer[i1].biTangent.x = bitangent.x;
+	buffer[i1].biTangent.y = bitangent.y;
+	buffer[i1].biTangent.z = bitangent.z;
+						   
+	buffer[i2].biTangent.x = bitangent.x;
+	buffer[i2].biTangent.y = bitangent.y;
+	buffer[i2].biTangent.z = bitangent.z;
+}
 
-    buffer[i0].tangent.x += tangent.x;
-    buffer[i0].tangent.y += tangent.y;
-    buffer[i0].tangent.z += tangent.z;
+__global__ void processVerticesKernel(unsigned int* sameVerticesFirst, unsigned int* sameVerticesSecond,
+	physics::PhysicsVertex* buffer, int size) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-    buffer[i1].tangent.x += tangent.x;
-    buffer[i1].tangent.y += tangent.y;
-    buffer[i1].tangent.z += tangent.z;
+	if (idx < size) {
+		int first = sameVerticesFirst[idx];
+		int second = sameVerticesSecond[idx];
 
-    buffer[i2].tangent.x += tangent.x;
-    buffer[i2].tangent.y += tangent.y;
-    buffer[i2].tangent.z += tangent.z;
+		// 중간값을 사용하여 덧셈 연산을 분리
+		float3 normalTemp, tangentTemp, biTangentTemp;
 
-    buffer[i0].biTangent.x += bitangent.x;
-    buffer[i0].biTangent.y += bitangent.y;
-    buffer[i0].biTangent.z += bitangent.z;
+		normalTemp.x = buffer[first].normal.x + buffer[second].normal.x;
+		normalTemp.y = buffer[first].normal.y + buffer[second].normal.y;
+		normalTemp.z = buffer[first].normal.z + buffer[second].normal.z;
 
-    buffer[i1].biTangent.x += bitangent.x;
-    buffer[i1].biTangent.y += bitangent.y;
-    buffer[i1].biTangent.z += bitangent.z;
+		tangentTemp.x = buffer[first].tangent.x + buffer[second].tangent.x;
+		tangentTemp.y = buffer[first].tangent.y + buffer[second].tangent.y;
+		tangentTemp.z = buffer[first].tangent.z + buffer[second].tangent.z;
 
-    buffer[i2].biTangent.x += bitangent.x;
-    buffer[i2].biTangent.y += bitangent.y;
-    buffer[i2].biTangent.z += bitangent.z;
+		biTangentTemp.x = buffer[first].biTangent.x + buffer[second].biTangent.x;
+		biTangentTemp.y = buffer[first].biTangent.y + buffer[second].biTangent.y;
+		biTangentTemp.z = buffer[first].biTangent.z + buffer[second].biTangent.z;
+
+		buffer[first].normal.x = normalTemp.x;
+		buffer[first].normal.y = normalTemp.y;
+		buffer[first].normal.z = normalTemp.z;
+		buffer[second].normal.x = normalTemp.x;
+		buffer[second].normal.y = normalTemp.y;
+		buffer[second].normal.z = normalTemp.z;
+
+		buffer[first].tangent.x = tangentTemp.x;
+		buffer[first].tangent.y = tangentTemp.y;
+		buffer[first].tangent.z = tangentTemp.z;
+		buffer[second].tangent.x = tangentTemp.x;
+		buffer[second].tangent.y = tangentTemp.y;
+		buffer[second].tangent.z = tangentTemp.z;
+
+		buffer[first].biTangent.x = biTangentTemp.x;
+		buffer[first].biTangent.y = biTangentTemp.y;
+		buffer[first].biTangent.z = biTangentTemp.z;
+		buffer[second].biTangent.x = biTangentTemp.x;
+		buffer[second].biTangent.y = biTangentTemp.y;
+		buffer[second].biTangent.z = biTangentTemp.z;
+	}
+}
+
+struct SimpleVector3 {
+	float x, y, z;
+};
+
+struct SimpleMatrix {
+	float m[4][4];
+};
+
+__device__ SimpleVector3 multiply(SimpleMatrix& mat, const SimpleVector3& vec)
+{
+	SimpleVector3 result;
+	result.x = mat.m[0][0] * vec.x + mat.m[1][0] * vec.y + mat.m[2][0] * vec.z + mat.m[3][0] * 1.0f;
+	result.y = mat.m[0][1] * vec.x + mat.m[1][1] * vec.y + mat.m[2][1] * vec.z + mat.m[3][1] * 1.0f;
+	result.z = mat.m[0][2] * vec.x + mat.m[1][2] * vec.y + mat.m[2][2] * vec.z + mat.m[3][2] * 1.0f;
+	return result;
+}
+
+// 커널 함수
+__global__ void TransformVertices(physx::PxVec4* particle, SimpleMatrix previousTransformInverse, SimpleMatrix newTransform, int vertexCount)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if (idx >= vertexCount) return;
+
+	SimpleVector3 vertex;
+	vertex.x = particle[idx].x;
+	vertex.y = particle[idx].y;
+	vertex.z = -particle[idx].z;
+
+	// 이전 worldTransform의 역행렬 적용
+	vertex = multiply(previousTransformInverse, vertex);
+
+	// 새로운 worldTransform 적용
+	vertex = multiply(newTransform, vertex);
+
+	// 변환된 vertex 저장
+	particle[idx].x = vertex.x;
+	particle[idx].y = vertex.y;
+	particle[idx].z = -vertex.z;
 }
 
 namespace physics
@@ -250,20 +325,34 @@ namespace physics
 
 	void CudaClothPhysics::settingInfoData(const PhysicsClothInfo& info)
 	{
+		RegisterD3D11VertexBufferWithCUDA((ID3D11Buffer*)info.vertexBuffer);
+		RegisterD3D11IndexBufferWithCUDA((ID3D11Buffer*)info.indexBuffer);
+
 		mWorldTransform = info.worldTransform;
 		mTotalClothMass = info.totalClothMass;
 
 		mIndices.resize(info.indexSize);
 		memcpy(mIndices.data(), info.indices, info.indexSize * sizeof(unsigned int));
 
-		mVertices.resize(info.vertexSize);
 		mUV.resize(info.vertexSize);
+		mVertices.resize(info.vertexSize);
+
 		for (int i = 0; i < info.vertexSize; i++)
 		{
 			mVertices[i].x = info.vertices[i].x;
 			mVertices[i].y = info.vertices[i].y;
-			mVertices[i].z = -info.vertices[i].z;
+			mVertices[i].z = info.vertices[i].z;
 			mUV[i] = info.uv[i];
+		}
+
+		for (auto& vertex : mVertices)
+		{
+			MulMatrixVector3(mWorldTransform, vertex);
+		}
+
+		for (int i = 0; i < info.vertexSize; i++)
+		{
+			mVertices[i].z = -mVertices[i].z;
 		}
 	}
 
@@ -393,9 +482,20 @@ namespace physics
 		cudaContextManager->freePinnedHostBuffer(mPhase);
 	}
 
-	bool CudaClothPhysics::RegisterD3D11BufferWithCUDA(ID3D11Buffer* buffer)
+	bool CudaClothPhysics::RegisterD3D11VertexBufferWithCUDA(ID3D11Buffer* buffer)
 	{
-		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaResource, buffer, cudaGraphicsRegisterFlagsNone);
+		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaVertexResource, buffer, cudaGraphicsRegisterFlagsNone);
+		if (cudaStatus != cudaSuccess)
+		{
+			std::cerr << "Direct3D 리소스 등록 실패" << std::endl;
+			return false;
+		}
+		return true;
+	}
+
+	bool CudaClothPhysics::RegisterD3D11IndexBufferWithCUDA(ID3D11Buffer* buffer)
+	{
+		cudaError_t cudaStatus = cudaGraphicsD3D11RegisterResource(&mCudaIndexResource, buffer, cudaGraphicsRegisterFlagsNone);
 		if (cudaStatus != cudaSuccess)
 		{
 			std::cerr << "Direct3D 리소스 등록 실패" << std::endl;
@@ -407,7 +507,7 @@ namespace physics
 	bool CudaClothPhysics::UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager)
 	{
 		// CUDA 리소스를 매핑
-		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &mCudaResource);
+		cudaError_t cudaStatus = cudaGraphicsMapResources(1, &mCudaVertexResource);
 		//if (cudaStatus != cudaSuccess) {
 		//	std::cerr << "cudaGraphicsMapResources 실패: " << cudaGetErrorString(cudaStatus) << std::endl;
 		//	return false;
@@ -416,7 +516,7 @@ namespace physics
 		// CUDA 포인터 가져오기
 		void* devPtr = nullptr;
 		size_t size = 0;
-		cudaGraphicsResourceGetMappedPointer(&devPtr, &size, mCudaResource);
+		cudaGraphicsResourceGetMappedPointer(&devPtr, &size, mCudaVertexResource);
 		//if (cudaStatus != cudaSuccess) {
 		//	std::cerr << "cudaGraphicsResourceGetMappedPointer 실패: " << cudaGetErrorString(cudaStatus) << std::endl;
 		//	return false;
@@ -437,21 +537,6 @@ namespace physics
 		int particleSize = mClothBuffer->getNbActiveParticles();
 		physx::PxVec4* particle = mClothBuffer->getPositionInvMasses();
 
-		cudaContextManager->acquireContext();
-		physx::PxCudaContext* cudaContext = cudaContextManager->getCudaContext();
-
-		std::vector<physx::PxVec4> vertex;
-		vertex.resize(particleSize);
-
-		cudaContext->memcpyDtoH(vertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * particleSize);
-
-		for (int i = 0; i < particleSize; i++)
-		{
-			mVertices[i].x = vertex[i].x;
-			mVertices[i].y = vertex[i].y;
-			mVertices[i].z = -vertex[i].z;
-		}
-
 		int threadsPerBlock = 256;
 		int blocksPerGrid = (mIndices.size() / 3 + threadsPerBlock - 1) / threadsPerBlock;
 
@@ -459,24 +544,98 @@ namespace physics
 		CalculateNormals <<<blocksPerGrid, threadsPerBlock>>> (
 			particle, d_uvs, deviceVertexSize, d_indices, deviceIndexSize, (PhysicsVertex*)devPtr);
 
+		blocksPerGrid = (size + threadsPerBlock - 1) / threadsPerBlock;
+
+		std::vector<unsigned int> firstVertex;
+		std::vector<unsigned int> secondVertex;
+		firstVertex.resize(mSameVertices.size());
+		secondVertex.resize(mSameVertices.size());
+		for (int i = 0; i < mSameVertices.size(); i++)
+		{
+			firstVertex.push_back(mSameVertices[i].first);
+			secondVertex.push_back(mSameVertices[i].second);
+		}
+
+		unsigned int* d_firstVertex;
+		unsigned int* d_secondVertex;
+
+		cudaMalloc(&d_firstVertex, firstVertex.size() * sizeof(unsigned int));
+		cudaMalloc(&d_secondVertex, secondVertex.size() * sizeof(unsigned int));
+		cudaMemcpy(d_firstVertex, firstVertex.data(), firstVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
+		cudaMemcpy(d_secondVertex, secondVertex.data(), secondVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
+
+		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (PhysicsVertex*)devPtr, mVertices.size());
+
 		cudaDeviceSynchronize();
 
 		// CUDA 리소스를 언매핑
-		cudaGraphicsUnmapResources(1, &mCudaResource);
+		cudaGraphicsUnmapResources(1, &mCudaVertexResource);
 
 		// 메모리 해제
 		cudaFree(d_uvs);
 		cudaFree(d_indices);
+		cudaFree(d_firstVertex);
+		cudaFree(d_secondVertex);
 
 		return false;
 	}
 
-	void CudaClothPhysics::GetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, PhysicsClothGetData& data)
+	void CudaClothPhysics::GetPhysicsCloth(PhysicsClothGetData& data)
 	{
+		data.worldTransform = mWorldTransform;
 	}
 
-	void CudaClothPhysics::SetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data)
+	void CudaClothPhysics::SetPhysicsCloth(const PhysicsClothSetData& data)
 	{
+		DirectX::SimpleMath::Matrix prevTransform = mWorldTransform.Invert();
+		DirectX::SimpleMath::Matrix nextTransform = data.worldTransform;
 
+		SimpleMatrix prevMatrix;
+		SimpleMatrix nextMatrix;
+
+		prevMatrix.m[0][0] = prevTransform._11;
+		prevMatrix.m[0][1] = prevTransform._12;
+		prevMatrix.m[0][2] = prevTransform._13;
+		prevMatrix.m[0][3] = prevTransform._14;
+		prevMatrix.m[1][0] = prevTransform._21;
+		prevMatrix.m[1][1] = prevTransform._22;
+		prevMatrix.m[1][2] = prevTransform._23;
+		prevMatrix.m[1][3] = prevTransform._24;
+		prevMatrix.m[2][0] = prevTransform._31;
+		prevMatrix.m[2][1] = prevTransform._32;
+		prevMatrix.m[2][2] = prevTransform._33;
+		prevMatrix.m[2][3] = prevTransform._34;
+		prevMatrix.m[3][0] = prevTransform._41;
+		prevMatrix.m[3][1] = prevTransform._42;
+		prevMatrix.m[3][2] = prevTransform._43;
+		prevMatrix.m[3][3] = prevTransform._44;
+
+		nextMatrix.m[0][0] = nextTransform._11;
+		nextMatrix.m[0][1] = nextTransform._12;
+		nextMatrix.m[0][2] = nextTransform._13;
+		nextMatrix.m[0][3] = nextTransform._14;
+		nextMatrix.m[1][0] = nextTransform._21;
+		nextMatrix.m[1][1] = nextTransform._22;
+		nextMatrix.m[1][2] = nextTransform._23;
+		nextMatrix.m[1][3] = nextTransform._24;
+		nextMatrix.m[2][0] = nextTransform._31;
+		nextMatrix.m[2][1] = nextTransform._32;
+		nextMatrix.m[2][2] = nextTransform._33;
+		nextMatrix.m[2][3] = nextTransform._34;
+		nextMatrix.m[3][0] = nextTransform._41;
+		nextMatrix.m[3][1] = nextTransform._42;
+		nextMatrix.m[3][2] = nextTransform._43;
+		nextMatrix.m[3][3] = nextTransform._44;
+
+		physx::PxVec4* particle = mClothBuffer->getPositionInvMasses();
+
+		int threadsPerBlock = 256;
+		int blocksPerGrid = (mVertices.size() + threadsPerBlock - 1) / threadsPerBlock;
+
+		TransformVertices <<<blocksPerGrid, threadsPerBlock>>>(particle, prevMatrix, nextMatrix, mVertices.size());
+
+		mClothBuffer->raiseFlags(physx::PxParticleBufferFlag::eUPDATE_POSITION);
+
+		mWorldTransform = data.worldTransform;
 	}
 }

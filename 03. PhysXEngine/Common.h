@@ -253,19 +253,6 @@ namespace physics
 		DirectX::SimpleMath::Vector3 biTangent;
 	};
 
-	struct PhysicsClothGetData
-	{
-		DirectX::SimpleMath::Matrix worldTransform;
-		DirectX::SimpleMath::Vector3* vertices;
-		DirectX::SimpleMath::Vector3* nomals;
-		DirectX::SimpleMath::Vector3* tangents;
-		DirectX::SimpleMath::Vector3* biTangents;
-		DirectX::SimpleMath::Vector2* uv;
-		unsigned int vertexSize;
-		unsigned int* indices;
-		unsigned int indexSize;
-	};
-
 	struct PhysicsClothMaterialInfo
 	{
 		float friction = 0.8f;
@@ -290,12 +277,19 @@ namespace physics
 		void* DirectXBuffer = nullptr;
 		DirectX::SimpleMath::Vector3* vertices = nullptr;
 		DirectX::SimpleMath::Vector2* uv = nullptr;
+		void* vertexBuffer = nullptr;
+		void* indexBuffer = nullptr;
 		unsigned int vertexSize = 0;
 		unsigned int* indices = nullptr;
 		unsigned int indexSize = 0;
 		unsigned int* activeVertexIndices = nullptr;
 		unsigned int activeVertexSize = 0;
 		float totalClothMass = 1.f;
+	};
+
+	struct PhysicsClothGetData
+	{
+		DirectX::SimpleMath::Matrix worldTransform;
 	};
 
 	struct PhysicsClothSetData

@@ -10,5 +10,7 @@ namespace physics
 		/// </summary>
 		/// <returns> PxShape에 들어갈 ConvexMesh를 생성하여 반환합니다. </returns>
 		static physx::PxConvexMesh* CookingConvexMesh(physx::PxPhysics* physics, DirectX::SimpleMath::Vector3* vertices, int vertexSize, int polygonLimit);
+
+		static void CookingTriangleMesh(physx::PxPhysics* physics, DirectX::SimpleMath::Vector3* vertices, unsigned int vertexSize, unsigned int* indices, unsigned int indexSize);
 	};
 }

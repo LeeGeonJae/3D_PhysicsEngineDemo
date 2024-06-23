@@ -325,4 +325,15 @@ namespace physics
 	{
 		return mPhysicsClothManager->RegisterD3D11Buffer(id, clothBuffer);
 	}
+	PhysicsClothGetData FQPhysics::GetPhysicsCloth(unsigned int id)
+	{
+		PhysicsClothGetData clothData;
+		mPhysicsClothManager->GetClothData(id, clothData);
+
+		return clothData;
+	}
+	void FQPhysics::SetPhysicsCloth(unsigned int id, const PhysicsClothSetData& clothData)
+	{
+		mPhysicsClothManager->SetClothData(id, clothData);
+	}
 }

@@ -26,11 +26,12 @@ namespace physics
 
 		bool Initialize(const PhysicsClothInfo& info, physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager);
 
-		bool RegisterD3D11BufferWithCUDA(ID3D11Buffer* buffer);
+		bool RegisterD3D11VertexBufferWithCUDA(ID3D11Buffer* buffer);
+		bool RegisterD3D11IndexBufferWithCUDA(ID3D11Buffer* buffer);
 		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager);
 
-		void GetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, PhysicsClothGetData& data);
-		void SetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data);
+		void GetPhysicsCloth(PhysicsClothGetData& data);
+		void SetPhysicsCloth(const PhysicsClothSetData& data);
 
 		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& position);
 		inline void SetTotalClothMass(const float& toTalClothMass);
@@ -43,6 +44,10 @@ namespace physics
 		inline const unsigned int& GetVertexSize() const;
 		inline const unsigned int& GetIndexSize() const;
 		inline cudaGraphicsResource* GetCudaGraphicsResource() const;
+
+	public:
+		// cuda ÇÔ¼ö
+		void CombineVertex();
 
 	private:
 		void extractSpringsData(unsigned int* indices, unsigned int indexSize);
@@ -74,10 +79,15 @@ namespace physics
 		physx::PxVec4* mPositionInvMass;
 		physx::PxVec4* mVelocity;
 		std::vector<DirectX::SimpleMath::Vector3> mVertices;
+		std::vector<DirectX::SimpleMath::Vector3> mWeldVertices;
 		std::vector<DirectX::SimpleMath::Vector2> mUV;
+		std::vector<DirectX::SimpleMath::Vector2> mWeldUV;
 		std::vector<unsigned int> mIndices;
+		std::vector<unsigned int> mWeldIndices;
+		unsigned int mOverlapVertexCount;
 
-		cudaGraphicsResource* mCudaResource;
+		cudaGraphicsResource* mCudaVertexResource;
+		cudaGraphicsResource* mCudaIndexResource;
 	};
 
 #pragma region GetSet
@@ -123,7 +133,7 @@ namespace physics
 	}
 	cudaGraphicsResource* CudaClothPhysics::GetCudaGraphicsResource() const
 	{
-		return mCudaResource;
+		return mCudaVertexResource;
 	}
 #pragma endregion
 }

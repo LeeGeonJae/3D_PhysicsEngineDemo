@@ -104,3 +104,23 @@ void CopyDxVec3ToPxVec3(const DirectX::SimpleMath::Vector3& dxVector, physx::PxV
 	pxVector.y = dxVector.y;
 	pxVector.z = -dxVector.z;
 }
+
+void MulMatrixVector3(const DirectX::SimpleMath::Matrix& mat, DirectX::SimpleMath::Vector3& vec) 
+{
+	DirectX::SimpleMath::Vector3 result;
+	result.x = mat._11 * vec.x + mat._21 * vec.y + mat._31 * vec.z + mat._41;
+	result.y = mat._12 * vec.x + mat._22 * vec.y + mat._32 * vec.z + mat._42;
+	result.z = mat._13 * vec.x + mat._23 * vec.y + mat._33 * vec.z + mat._43;
+	vec = result;
+}
+
+DirectX::SimpleMath::Matrix LeftHandedToRightHanded(const DirectX::SimpleMath::Matrix& lhsMatrix) 
+{
+	// z축을 반전시키는 행렬
+	DirectX::SimpleMath::Matrix flipZ = DirectX::SimpleMath::Matrix::CreateScale(1.0f, 1.0f, -1.0f);
+
+	// 왼손 좌표계 행렬에 flipZ를 곱하여 오른손 좌표계로 변환
+	DirectX::SimpleMath::Matrix rhsMatrix = lhsMatrix * flipZ;
+
+	return rhsMatrix;
+}

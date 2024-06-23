@@ -1,6 +1,7 @@
 #include "PhysicsClothManager.h"
 
 #include "CudaClothPhysics.h"
+#include "cudamanager\PxCudaContext.h"
 
 namespace physics
 {
@@ -25,6 +26,8 @@ namespace physics
 		mPhysics = physics;
 		mScene = scene;
 		mCudaContextManager = cudaContextManager;
+
+		physx::PxCudaContext* cudaContext = mCudaContextManager->getCudaContext();
 
 		return true;
 	}
@@ -55,7 +58,31 @@ namespace physics
 
 		if (cloth != mPhysicsClothContainer.end())
 		{
-			cloth->second->RegisterD3D11BufferWithCUDA(clothBuffer);
+			cloth->second->RegisterD3D11VertexBufferWithCUDA(clothBuffer);
+			return true;
+		}
+
+		return false;
+	}
+	bool PhysicsClothManager::GetClothData(const unsigned int& id, PhysicsClothGetData& data)
+	{
+		auto cloth = mPhysicsClothContainer.find(id);
+
+		if (cloth != mPhysicsClothContainer.end())
+		{
+			cloth->second->GetPhysicsCloth(data);
+			return true;
+		}
+
+		return false;
+	}
+	bool PhysicsClothManager::SetClothData(const unsigned int& id, const PhysicsClothSetData& data)
+	{
+		auto cloth = mPhysicsClothContainer.find(id);
+
+		if (cloth != mPhysicsClothContainer.end())
+		{
+			cloth->second->SetPhysicsCloth(data);
 			return true;
 		}
 

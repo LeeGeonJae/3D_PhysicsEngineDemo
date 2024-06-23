@@ -33,7 +33,7 @@ namespace GraphicsEngine
 
 	struct CB_DirectionLight
 	{
-		Vector3 m_Direction = { 0.0f, -1.0f, 1.0f };
+		Vector3 m_Direction = { 0.0f, -0.0f, 1.0f };
 		Vector3 m_DircetionColor = { 1.f, 1.f, 1.f };
 		Vector2 m_dummy;
 	};

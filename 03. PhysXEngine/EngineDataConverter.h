@@ -26,3 +26,17 @@ void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, st
 
 void CopyPxVec3ToDxVec3(const physx::PxVec3& pxVector, DirectX::SimpleMath::Vector3& dxVector);
 void CopyDxVec3ToPxVec3(const DirectX::SimpleMath::Vector3& dxVector, physx::PxVec3& pxVector);
+
+/// <summary>
+/// Vector3 x 4x4Trnasofom 함수
+/// </summary>
+/// <param name="mat"></param>
+/// <param name="vec"></param>
+void MulMatrixVector3(const DirectX::SimpleMath::Matrix& mat, DirectX::SimpleMath::Vector3& vec);
+
+/// <summary>
+/// DirectX 왼손 좌표계를 오른손 좌표계로 변환
+/// </summary>
+/// <param name="lhsMatrix"></param>
+/// <returns></returns>
+DirectX::SimpleMath::Matrix LeftHandedToRightHanded(const DirectX::SimpleMath::Matrix& lhsMatrix);

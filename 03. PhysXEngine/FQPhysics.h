@@ -137,6 +137,9 @@ namespace physics
 
 		bool RegisterD3D11Buffer(unsigned int id, ID3D11Buffer* clothBuffer);
 
+		PhysicsClothGetData GetPhysicsCloth(unsigned int id);
+		void SetPhysicsCloth(unsigned int id, const PhysicsClothSetData& clothData);
+
 #pragma endregion
 
 

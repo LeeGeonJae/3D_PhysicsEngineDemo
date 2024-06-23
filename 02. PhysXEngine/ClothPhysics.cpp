@@ -171,6 +171,9 @@ namespace PhysicsEngine
 
 		mVertices.resize(info.vertexSize);
 		mUV.resize(info.vertexSize);
+
+
+
 		for (int i = 0; i < info.vertexSize; i++)
 		{
 			mVertices[i].x = info.vertices[i].x;
@@ -208,7 +211,7 @@ namespace PhysicsEngine
 		// 입자 상태 저장
 		for (int i = 0; i < numParticles; i++)
 		{
-			mPositionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y + 300.f, mVertices[i].z, 1.f / particleMass);
+			mPositionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
 			mPhase[i] = particlePhase;
 			mVelocity[i] = physx::PxVec4(0.f);
 		}

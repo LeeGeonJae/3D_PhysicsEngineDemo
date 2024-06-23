@@ -28,6 +28,9 @@ namespace physics
 		bool CreateCloth(const PhysicsClothInfo& info);
 		bool RegisterD3D11Buffer(unsigned int id, ID3D11Buffer* clothBuffer);
 
+		bool GetClothData(const unsigned int& id, PhysicsClothGetData& data);
+		bool SetClothData(const unsigned int& id, const  PhysicsClothSetData& data);
+
 	private:
 		std::unordered_map<unsigned int, std::shared_ptr<CudaClothPhysics>> mPhysicsClothContainer;
 
