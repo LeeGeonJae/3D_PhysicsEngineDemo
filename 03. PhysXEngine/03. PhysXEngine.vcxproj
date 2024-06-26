@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>..\Libraries\Lib\physX\deb;$(CUDA_PATH);$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\Libraries\Lib\physX\deb;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,6 +158,7 @@
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="FQPhysics.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="HeightFieldResource.h" />
     <ClInclude Include="MaterialResource.h" />
     <ClInclude Include="CharacterQueryFilterCallback.h" />
     <ClInclude Include="pch.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="StaticRigidBody.h" />
+    <ClInclude Include="TriangleMeshResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterController.cpp" />
@@ -190,6 +192,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FQPhysics.cpp" />
+    <ClCompile Include="HeightFieldResource.cpp" />
     <ClCompile Include="MaterialResource.cpp" />
     <ClCompile Include="CharacterQueryFilterCallback.cpp" />
     <ClCompile Include="pch.cpp">
@@ -211,6 +214,7 @@
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="StaticRigidBody.cpp" />
+    <ClCompile Include="TriangleMeshResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CudaClothPhysics.cu" />

@@ -6,7 +6,11 @@
 
 namespace physics
 {
-	physx::PxConvexMesh* PhysicsCookingMeshTool::CookingConvexMesh(physx::PxPhysics* physics, DirectX::SimpleMath::Vector3* vertices, int vertexSize, int polygonLimit)
+	physx::PxConvexMesh* PhysicsCookingMeshTool::CookingConvexMesh(
+		physx::PxPhysics* physics, 
+		const physx::PxVec3* vertices,
+		const int& vertexSize, 
+		const int& polygonLimit)
 	{
 		// 컨벡스 메시 생성
 		physx::PxConvexMeshDesc convexdesc;
@@ -32,10 +36,17 @@ namespace physics
 		return convexMesh;
 	}
 
-	void PhysicsCookingMeshTool::CookingTriangleMesh(physx::PxPhysics* physics, DirectX::SimpleMath::Vector3* vertices, unsigned int vertexSize, unsigned int* indices, unsigned int indexSize)
+	physx::PxTriangleMesh* PhysicsCookingMeshTool::CookingTriangleMesh(
+		physx::PxPhysics* physics, 
+		const physx::PxVec3* vertices, 
+		const unsigned int& vertexSize, 
+		const unsigned int* indices, 
+		const unsigned int& indexSize)
 	{
 		physx::PxTolerancesScale scale;
 		physx::PxCookingParams params(scale);
+		params.buildGPUData = true;
+		params.buildTriangleAdjacencies = true;
 		// 메쉬 청소 사용 안 함 - 개발 구성에 대해 메쉬 유효성 검사 수행
 		params.meshPreprocessParams |= physx::PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
 		// 에지 사전 계산 사용 안 함, 각 삼각형에 대해 에지 설정, 연락처 생성 속도 저하
@@ -48,17 +59,56 @@ namespace physics
 		meshDesc.points.stride = sizeof(physx::PxVec3);
 		meshDesc.points.data = vertices;
 
-		meshDesc.triangles.count = indexSize;
-		meshDesc.triangles.stride = 3 * sizeof(unsigned int);
+		meshDesc.triangles.count = indexSize / 3;
+		meshDesc.triangles.stride = sizeof(unsigned int) * 3;
 		meshDesc.triangles.data = indices;
 
 #ifdef _DEBUG
-		// 메쉬 청소를 하지 않고 조리하기 전에 메쉬의 유효성을 확인해야 합니다
+		// 메쉬 청소를 하지 않고 조리하기 전에 메쉬의 유효성을 확인해야 합니다6
 		bool res = PxValidateTriangleMesh(params, meshDesc);
 		PX_ASSERT(res);
 #endif
 
 		physx::PxTriangleMesh* aTriangleMesh = PxCreateTriangleMesh(params, meshDesc,
 			physics->getPhysicsInsertionCallback());
+
+		return aTriangleMesh;
+	}
+
+	physx::PxHeightField* PhysicsCookingMeshTool::CookingHeightField(
+		physx::PxPhysics* physics,
+		const int* height,
+		const unsigned int& numCols,
+		const unsigned int& numRows)
+	{
+		// Height Field 데이터 준비
+		std::vector<physx::PxHeightFieldSample> samples(numRows * numCols);
+
+		// 샘플 배열 초기화 (높이 값 설정)
+		for (physx::PxU32 i = 0; i < numRows; ++i) 
+		{
+			for (physx::PxU32 j = 0; j < numCols; ++j) 
+			{
+				samples[i * numCols + j].height = height[i * numCols + j]; // 예제 높이 값
+				samples[i * numCols + j].setTessFlag();
+			}
+		}
+
+		// Height Field Desc 생성
+		physx::PxHeightFieldDesc hfDesc;
+		hfDesc.format = physx::PxHeightFieldFormat::eS16_TM;
+		hfDesc.nbRows = numRows;
+		hfDesc.nbColumns = numCols;
+		hfDesc.samples.data = samples.data();
+		hfDesc.samples.stride = sizeof(physx::PxHeightFieldSample);
+
+		// Cooking을 사용하여 Height Field 생성
+		physx::PxHeightField* heightField = PxCreateHeightField(hfDesc, physics->getPhysicsInsertionCallback());
+		if (!heightField) {
+			// 오류 처리
+			return nullptr;
+		}
+
+		return heightField;
 	}
 }

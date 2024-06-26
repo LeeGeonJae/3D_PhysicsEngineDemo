@@ -17,3 +17,4 @@ void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape);
 void DebugBox(physx::PxRigidActor* _body, physx::PxShape* _shape);
 void DebugSphere(physx::PxRigidActor* _body, physx::PxShape* _shape);
 void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void DebugTriangleMesh(physx::PxRigidActor* _body, physx::PxShape* _shape);

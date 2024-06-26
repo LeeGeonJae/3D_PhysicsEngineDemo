@@ -117,6 +117,14 @@ namespace GraphicsEngine
 			{
 				DebugDraw::DrawRay(DebugDraw::g_Batch.get(), *point.get(), *point.get(), true, DirectX::Colors::Red);
 			}
+			for (int i = 0; i < m_DebugTrianglesIndex.size(); i += 3)
+			{
+				DebugDraw::DrawTriangle(DebugDraw::g_Batch.get(), 
+					*m_DebugTrianglesVertex[*m_DebugTrianglesIndex[i]],
+					*m_DebugTrianglesVertex[*m_DebugTrianglesIndex[i + 1]],
+					*m_DebugTrianglesVertex[*m_DebugTrianglesIndex[i + 2]],
+					DirectX::Colors::Yellow);
+			}
 		}
 
 		DebugDraw::g_Batch->End();
@@ -124,6 +132,8 @@ namespace GraphicsEngine
 		m_DebugBoxes.clear();
 		m_DebugSpheres.clear();
 		m_DebugLines.clear();
+		m_DebugTrianglesVertex.clear();
+		m_DebugTrianglesIndex.clear();
 		m_DebugPolygon.clear();
 	}
 

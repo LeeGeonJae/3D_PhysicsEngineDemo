@@ -18,13 +18,24 @@ namespace GraphicsEngine
 		RESOURCE->Load("../Resources/FBX/Vampire.fbx");
 		RESOURCE->Load("../Resources/FBX/SkinningTest.fbx");
 		RESOURCE->Load("../Resources/FBX/Dying.fbx");
-		RESOURCE->Load("../Resources/FBX/cerberus_test.fbx");
+		//RESOURCE->Load("../Resources/FBX/cerberus_test.fbx");
 		RESOURCE->Load("../Resources/FBX/zeldaPosed001.fbx");
-		RESOURCE->Load("../Resources/FBX/PBR_Test.fbx");
+		//RESOURCE->Load("../Resources/FBX/PBR_Test.fbx");
+		RESOURCE->Load("../Resources/FBX/Character.fbx");
 		RESOURCE->Load("../Resources/FBX/box.fbx");
 		RESOURCE->Load("../Resources/FBX/Tree.fbx");
 		RESOURCE->Load("../Resources/FBX/Monkey.fbx");
 		RESOURCE->Load("../Resources/FBX/plane.fbx");
+		RESOURCE->Load("../Resources/FBX/Flag_A.fbx");
+		RESOURCE->Load("../Resources/FBX/Barricade_Tall.fbx");
+		RESOURCE->Load("../Resources/FBX/market01.fbx");
+		RESOURCE->Load("../Resources/FBX/SM_Cloak0_T1.fbx");
+		RESOURCE->Load("../Resources/FBX/SM_Cloak0_T2.fbx");
+		RESOURCE->Load("../Resources/FBX/SM_Cloak0_T7_Crow.fbx");
+		RESOURCE->Load("../Resources/FBX/SM_Cloak1_T1.fbx");
+		RESOURCE->Load("../Resources/FBX/SM_Cloak1_T2.fbx");
+		RESOURCE->Load("../Resources/FBX/SM_Cloak1_T7_Fox.fbx");
+		RESOURCE->Load("../Resources/FBX/SM_Cloak1_T7_Wolf.fbx");
 
 		shared_ptr<Shader> skeletalMeshShader = Create<Shader>("SkeletalMeshShader");
 		shared_ptr<Shader> staticMeshShader = Create<Shader>("StaticMeshShader");

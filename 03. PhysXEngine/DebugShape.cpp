@@ -85,7 +85,6 @@ void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
 {
 	const physx::PxConvexMeshGeometry& convexMeshGeometry = static_cast<const physx::PxConvexMeshGeometry&>(_shape->getGeometry());
 
-
 	Matrix dxMatrix;
 	Matrix matrix;
 	CopyPxTransformToDirectXMatrix(_body->getGlobalPose(), dxMatrix);
@@ -120,5 +119,63 @@ void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
 		}
 
 		RENDER->AddDebugPolygon(vertices);
+	}
+}
+
+void DebugTriangleMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
+{
+	const physx::PxTriangleMeshGeometry& triangleGeometry = static_cast<const physx::PxTriangleMeshGeometry&>(_shape->getGeometry());
+
+	Matrix dxMatrix;
+	CopyPxTransformToDirectXMatrix(_body->getGlobalPose(), dxMatrix);
+
+	const physx::PxVec3* vertices = triangleGeometry.triangleMesh->getVertices();
+	const void* indices = triangleGeometry.triangleMesh->getTriangles();
+
+	if (triangleGeometry.triangleMesh->getTriangleMeshFlags() && physx::PxTriangleMeshFlag::e16_BIT_INDICES)
+	{
+		const unsigned short* indices16Bits = static_cast<const unsigned short*>(indices);
+
+		for (int i = 0; i < triangleGeometry.triangleMesh->getNbTriangles() * 3; i += 3)
+		{
+			std::shared_ptr<unsigned int> index1 = std::make_shared<unsigned int>();
+			std::shared_ptr<unsigned int> index2 = std::make_shared<unsigned int>();
+			std::shared_ptr<unsigned int> index3 = std::make_shared<unsigned int>();
+			*index1 = indices16Bits[i];
+			*index2 = indices16Bits[i+1];
+			*index3 = indices16Bits[i+2];
+
+			RENDER->AddDebugTriangleIndex(index1);
+			RENDER->AddDebugTriangleIndex(index2);
+			RENDER->AddDebugTriangleIndex(index3);
+		}
+	}
+	else
+	{
+		const unsigned int* indices32Bits = static_cast<const unsigned int*>(indices);
+
+		for (int i = 0; i < triangleGeometry.triangleMesh->getNbTriangles() * 3; i += 3)
+		{
+			std::shared_ptr<unsigned int> index1 = std::make_shared<unsigned int>();
+			std::shared_ptr<unsigned int> index2 = std::make_shared<unsigned int>();
+			std::shared_ptr<unsigned int> index3 = std::make_shared<unsigned int>();
+			*index1 = indices32Bits[i];
+			*index2 = indices32Bits[i+1];
+			*index3 = indices32Bits[i+2];
+
+			RENDER->AddDebugTriangleIndex(index1);
+			RENDER->AddDebugTriangleIndex(index2);
+			RENDER->AddDebugTriangleIndex(index3);
+		}
+	}
+
+	for (int i = 0; i < triangleGeometry.triangleMesh->getNbVertices(); i++)
+	{
+		std::shared_ptr<DirectX::SimpleMath::Vector3> vertex = std::make_shared<DirectX::SimpleMath::Vector3>();
+		vertex->x = -vertices[i].x;
+		vertex->y = -vertices[i].y;
+		vertex->z = -vertices[i].z;
+
+		RENDER->AddDebugTriangleVertex(vertex);
 	}
 }

@@ -66,6 +66,7 @@ namespace physics
 		unsigned int	mLayNumber;
 
 		float			mTotalClothMass;
+		float			mRestOffset;
 		DirectX::SimpleMath::Matrix mWorldTransform;
 		std::set<std::pair<unsigned int, unsigned int>> mSprings;
 		std::vector<std::pair<unsigned int, unsigned int>> mSameVertices;

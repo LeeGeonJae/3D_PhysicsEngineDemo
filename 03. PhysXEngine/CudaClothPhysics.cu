@@ -330,6 +330,7 @@ namespace physics
 
 		mWorldTransform = info.worldTransform;
 		mTotalClothMass = info.totalClothMass;
+		mRestOffset = info.restOffset;
 
 		mIndices.resize(info.indexSize);
 		memcpy(mIndices.data(), info.indices, info.indexSize * sizeof(unsigned int));
@@ -364,16 +365,15 @@ namespace physics
 		const physx::PxU32 numTriangles = mIndices.size() / 3;	// 삼각형 갯수
 
 		// 입자 시스템의 설정
-		const physx::PxReal particleMass = mTotalClothMass / mVertices.size();
-		const physx::PxReal restOffset = 2.f;
+		const physx::PxReal particleMass = mTotalClothMass / 100.f;
 
 		// 입자 시스템 생성
 		mParticleSystem = physics->createPBDParticleSystem(*cudaContextManager);
 
-		mParticleSystem->setRestOffset(1.f);
-		mParticleSystem->setContactOffset(restOffset + 0.02f);
-		mParticleSystem->setParticleContactOffset(restOffset + 0.02f);
-		mParticleSystem->setSolidRestOffset(restOffset);
+		mParticleSystem->setRestOffset(0.1f);
+		mParticleSystem->setContactOffset(mRestOffset + 0.02f);
+		mParticleSystem->setParticleContactOffset(mRestOffset + 0.02f);
+		mParticleSystem->setSolidRestOffset(mRestOffset);
 
 		// 씬에 입자 시스템 추가
 		scene->addActor(*mParticleSystem);
@@ -420,7 +420,7 @@ namespace physics
 		// 입자 상태 저장
 		for (int i = 0; i < numParticles; i++)
 		{
-			mPositionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y + 300.f, mVertices[i].z, 1.f / particleMass);
+			mPositionInvMass[i] = physx::PxVec4(mVertices[i].x, mVertices[i].y, mVertices[i].z, 1.f / particleMass);
 			mPhase[i] = particlePhase;
 			mVelocity[i] = physx::PxVec4(0.f);
 		}
@@ -477,7 +477,7 @@ namespace physics
 		mClothBufferHelper->release();
 
 		// 할당된 메모리 해제
-		//cudaContextManager->freePinnedHostBuffer(mPositionInvMass);
+		cudaContextManager->freePinnedHostBuffer(mPositionInvMass);
 		cudaContextManager->freePinnedHostBuffer(mVelocity);
 		cudaContextManager->freePinnedHostBuffer(mPhase);
 	}
@@ -543,30 +543,30 @@ namespace physics
 		// CUDA 함수 실행
 		CalculateNormals <<<blocksPerGrid, threadsPerBlock>>> (
 			particle, d_uvs, deviceVertexSize, d_indices, deviceIndexSize, (PhysicsVertex*)devPtr);
-
-		blocksPerGrid = (size + threadsPerBlock - 1) / threadsPerBlock;
-
-		std::vector<unsigned int> firstVertex;
-		std::vector<unsigned int> secondVertex;
-		firstVertex.resize(mSameVertices.size());
-		secondVertex.resize(mSameVertices.size());
-		for (int i = 0; i < mSameVertices.size(); i++)
-		{
-			firstVertex.push_back(mSameVertices[i].first);
-			secondVertex.push_back(mSameVertices[i].second);
-		}
-
-		unsigned int* d_firstVertex;
-		unsigned int* d_secondVertex;
-
-		cudaMalloc(&d_firstVertex, firstVertex.size() * sizeof(unsigned int));
-		cudaMalloc(&d_secondVertex, secondVertex.size() * sizeof(unsigned int));
-		cudaMemcpy(d_firstVertex, firstVertex.data(), firstVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
-		cudaMemcpy(d_secondVertex, secondVertex.data(), secondVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
-
-		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (PhysicsVertex*)devPtr, mVertices.size());
-
 		cudaDeviceSynchronize();
+
+		//blocksPerGrid = (size + threadsPerBlock - 1) / threadsPerBlock;
+
+		//std::vector<unsigned int> firstVertex;
+		//std::vector<unsigned int> secondVertex;
+		//firstVertex.resize(mSameVertices.size());
+		//secondVertex.resize(mSameVertices.size());
+		//for (int i = 0; i < mSameVertices.size(); i++)
+		//{
+		//	firstVertex[i] = mSameVertices[i].first;
+		//	secondVertex[i] = mSameVertices[i].second;
+		//}
+
+		//unsigned int* d_firstVertex;
+		//unsigned int* d_secondVertex;
+
+		//cudaMalloc(&d_firstVertex, firstVertex.size() * sizeof(unsigned int));
+		//cudaMalloc(&d_secondVertex, secondVertex.size() * sizeof(unsigned int));
+		//cudaMemcpy(d_firstVertex, firstVertex.data(), firstVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
+		//cudaMemcpy(d_secondVertex, secondVertex.data(), secondVertex.size() * sizeof(unsigned int), cudaMemcpyKind::cudaMemcpyHostToDevice);
+
+		//processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (PhysicsVertex*)devPtr, mVertices.size());
+		//cudaDeviceSynchronize();
 
 		// CUDA 리소스를 언매핑
 		cudaGraphicsUnmapResources(1, &mCudaVertexResource);
@@ -574,10 +574,10 @@ namespace physics
 		// 메모리 해제
 		cudaFree(d_uvs);
 		cudaFree(d_indices);
-		cudaFree(d_firstVertex);
-		cudaFree(d_secondVertex);
+		//cudaFree(d_firstVertex);
+		//cudaFree(d_secondVertex);
 
-		return false;
+		return true;
 	}
 
 	void CudaClothPhysics::GetPhysicsCloth(PhysicsClothGetData& data)

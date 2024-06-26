@@ -14,7 +14,7 @@ namespace physics
     {
     public:
         ConvexMeshResource(physx::PxPhysics* physics, 
-            DirectX::SimpleMath::Vector3* vertices, 
+            physx::PxVec3* vertices,
             int vertexSize, 
             int polygonLimit);
         virtual ~ConvexMeshResource();

@@ -117,6 +117,8 @@ namespace GraphicsEngine
 		inline void AddDebugLine(shared_ptr<DebugLineData> _line);
 		inline void AddDebugPoint(shared_ptr<Vector3> _point);
 		inline void AddDebugPolygon(vector<Vector3> _triangle);
+		inline void AddDebugTriangleVertex(shared_ptr<Vector3> _point);
+		inline void AddDebugTriangleIndex(shared_ptr<unsigned int> _index);
 
 		void SetPhysicsBuffer(vector<PhysicsVertex>& vertex, vector<unsigned int>& index);
 		ID3D11Buffer* CreatePhysicsVertexBuffer(std::string path, unsigned int id);
@@ -151,6 +153,8 @@ namespace GraphicsEngine
 		vector<shared_ptr<DebugLineData>> m_DebugLines;
 		vector<vector<Vector3>> m_DebugPolygon;
 		vector<shared_ptr<Vector3>> m_DebugPoints;
+		vector<shared_ptr<Vector3>> m_DebugTrianglesVertex;
+		vector<shared_ptr<unsigned int>> m_DebugTrianglesIndex;
 
 		vector<PhysicsVertex> m_PhysicsVertex;
 		vector<unsigned int> m_PhysicsIndex;
@@ -205,6 +209,14 @@ namespace GraphicsEngine
 	inline void RenderManager::AddDebugPolygon(vector<Vector3> _triangle)
 	{
 		m_DebugPolygon.push_back(_triangle);
+	}
+	inline void RenderManager::AddDebugTriangleVertex(shared_ptr<Vector3> _point)
+	{
+		m_DebugTrianglesVertex.push_back(_point);
+	}
+	inline void RenderManager::AddDebugTriangleIndex(shared_ptr<unsigned int> _index)
+	{
+		m_DebugTrianglesIndex.push_back(_index);
 	}
 }
 

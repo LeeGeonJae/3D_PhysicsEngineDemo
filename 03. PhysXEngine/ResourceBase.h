@@ -8,6 +8,8 @@ namespace physics
 	{
 		MATERIAL,
 		CONVEX_MESH,
+		TRIANGLE_MESH,
+		HEIGHT_FIELD_MESH,
 
 		END
 	};

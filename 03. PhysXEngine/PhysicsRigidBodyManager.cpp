@@ -10,6 +10,8 @@
 
 #include "MaterialResource.h"
 #include "ConvexMeshResource.h"
+#include "TriangleMeshResource.h"
+#include "HeightFieldResource.h"
 
 #include "DebugShape.h"
 
@@ -83,6 +85,8 @@ namespace physics
 					DebugCapsule(pxBody, shape);
 				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 					DebugConvexMesh(pxBody, shape);
+				if (shape->getGeometry().getType() == physx::PxGeometryType::eTRIANGLEMESH)
+					DebugTriangleMesh(pxBody, shape);
 
 				continue;
 			}
@@ -101,6 +105,8 @@ namespace physics
 					DebugCapsule(pxBody, shape);
 				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 					DebugConvexMesh(pxBody, shape);
+				if (shape->getGeometry().getType() == physx::PxGeometryType::eTRIANGLEMESH)
+					DebugTriangleMesh(pxBody, shape);
 
 				continue;
 			}
@@ -221,6 +227,34 @@ namespace physics
 		return true;
 	}
 
+	bool PhysicsRigidBodyManager::CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix)
+	{
+		std::weak_ptr<MaterialResource> material = mResourceManager.lock()->Create<MaterialResource>(name, info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		std::weak_ptr<TriangleMeshResource> triangleMesh = mResourceManager.lock()->Create<TriangleMeshResource>(name, info.vertices, info.vertexSize, info.indices, info.indexSize);
+		physx::PxTriangleMesh* pxTriangleMesh = triangleMesh.lock()->GetTriangleMesh();
+		physx::PxMaterial* pxMaterial = material.lock()->GetPxMaterial();
+
+		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh), *pxMaterial);
+
+		if (!SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+
+		return true;
+	}
+
+	bool PhysicsRigidBodyManager::CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix)
+	{
+		std::weak_ptr<MaterialResource> material = mResourceManager.lock()->Create<MaterialResource>(name, info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		std::weak_ptr<HeightFieldResource> heightField = mResourceManager.lock()->Create<HeightFieldResource>(name, info.height, info.numCols, info.numRows);
+		physx::PxHeightField* pxHeightField = heightField.lock()->GetHeightField();
+		physx::PxMaterial* pxMaterial = material.lock()->GetPxMaterial();
+
+		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField), *pxMaterial);
+
+		if (!SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+
+		return true;
+	}
+
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix)
 	{
 		std::weak_ptr<MaterialResource> material = mResourceManager.lock()->Create<MaterialResource>(name, info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
@@ -265,6 +299,34 @@ namespace physics
 		physx::PxMaterial* pxMaterial = material.lock()->GetPxMaterial();
 
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
+
+		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+
+		return true;
+	}
+
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix)
+	{
+		std::weak_ptr<MaterialResource> material = mResourceManager.lock()->Create<MaterialResource>(name, info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		std::weak_ptr<TriangleMeshResource> triangleMesh = mResourceManager.lock()->Create<TriangleMeshResource>(name, info.vertices, info.vertexSize, info.indices, info.indexSize);
+		physx::PxTriangleMesh* pxTriangleMesh = triangleMesh.lock()->GetTriangleMesh();
+		physx::PxMaterial* pxMaterial = material.lock()->GetPxMaterial();
+
+		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh), *pxMaterial);
+
+		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+
+		return true;
+	}
+
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, const std::string& name, int* collisionMatrix)
+	{
+		std::weak_ptr<MaterialResource> material = mResourceManager.lock()->Create<MaterialResource>(name, info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		std::weak_ptr<HeightFieldResource> heightField = mResourceManager.lock()->Create<HeightFieldResource>(name, info.height, info.numCols, info.numRows);
+		physx::PxHeightField* pxHeightField = heightField.lock()->GetHeightField();
+		physx::PxMaterial* pxMaterial = material.lock()->GetPxMaterial();
+
+		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField), *pxMaterial);
 
 		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
 

@@ -62,15 +62,115 @@ void DemoApp::Init()
 		m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION, "ground");
 		m_RigidBodyIDVec.push_back(0);
 
-		boxInfo.boxExtent = Vector3(5.f, 5.f, 5.f);
-		boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 20.f, 0.f));
+		boxInfo;
+		boxInfo.boxExtent = Vector3(1.f, 1.f, 1.f);
+		boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 300.f, 0.f));
+		boxInfo.colliderInfo.density = 1.f;
+		boxInfo.colliderInfo.dynamicFriction = 1.f;
 		boxInfo.colliderInfo.id = 1;
-		m_Physics->CreateDynamicBody(boxInfo, physics::EColliderType::COLLISION, "box");
+		boxInfo.colliderInfo.layerNumber = 0;
+		boxInfo.colliderInfo.restitution = 1.f;
+		boxInfo.colliderInfo.staticFriction = 1.f;
+		m_Physics->CreateDynamicBody(boxInfo, physics::EColliderType::COLLISION, "bar01");
+		m_RigidBodyIDVec.push_back(1);
+
+		//boxInfo;
+		//boxInfo.boxExtent = Vector3(1000.f, 1.f, 1.f);
+		//boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 100.f, 20.f));
+		//boxInfo.colliderInfo.density = 1.f;
+		//boxInfo.colliderInfo.dynamicFriction = 1.f;
+		//boxInfo.colliderInfo.id = 2;
+		//boxInfo.colliderInfo.layerNumber = 0;
+		//boxInfo.colliderInfo.restitution = 1.f;
+		//boxInfo.colliderInfo.staticFriction = 1.f;
+		//m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION, "bar02");
+		//m_RigidBodyIDVec.push_back(2);
+
+		//boxInfo;
+		//boxInfo.boxExtent = Vector3(1000.f, 1.f, 1.f);
+		//boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 100.f, -20.f));
+		//boxInfo.colliderInfo.density = 1.f;
+		//boxInfo.colliderInfo.dynamicFriction = 1.f;
+		//boxInfo.colliderInfo.id = 3;
+		//boxInfo.colliderInfo.layerNumber = 0;
+		//boxInfo.colliderInfo.restitution = 1.f;
+		//boxInfo.colliderInfo.staticFriction = 1.f;
+		//m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION, "bar03");
+		//m_RigidBodyIDVec.push_back(3);
+
+		//boxInfo;
+		//boxInfo.boxExtent = Vector3(1000.f, 1.f, 1.f);
+		//boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 100.f, 40.f));
+		//boxInfo.colliderInfo.density = 1.f;
+		//boxInfo.colliderInfo.dynamicFriction = 1.f;
+		//boxInfo.colliderInfo.id = 4;
+		//boxInfo.colliderInfo.layerNumber = 0;
+		//boxInfo.colliderInfo.restitution = 1.f;
+		//boxInfo.colliderInfo.staticFriction = 1.f;
+		//m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION, "bar04");
+		//m_RigidBodyIDVec.push_back(4);
+
+		//boxInfo;
+		//boxInfo.boxExtent = Vector3(1000.f, 1.f, 1.f);
+		//boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 100.f, -40.f));
+		//boxInfo.colliderInfo.density = 1.f;
+		//boxInfo.colliderInfo.dynamicFriction = 1.f;
+		//boxInfo.colliderInfo.id = 5;
+		//boxInfo.colliderInfo.layerNumber = 0;
+		//boxInfo.colliderInfo.restitution = 1.f;
+		//boxInfo.colliderInfo.staticFriction = 1.f;
+		//m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION, "bar05");
+		//m_RigidBodyIDVec.push_back(5);
+
+		//boxInfo;
+		//boxInfo.boxExtent = Vector3(1000.f, 1.f, 1.f);
+		//boxInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 100.f, -40.f));
+		//boxInfo.colliderInfo.density = 1.f;
+		//boxInfo.colliderInfo.dynamicFriction = 1.f;
+		//boxInfo.colliderInfo.id = 6;
+		//boxInfo.colliderInfo.layerNumber = 0;
+		//boxInfo.colliderInfo.restitution = 1.f;
+		//boxInfo.colliderInfo.staticFriction = 1.f;
+		//m_Physics->CreateStaticBody(boxInfo, physics::EColliderType::COLLISION, "bar06");
+		//m_RigidBodyIDVec.push_back(6);
+
+		physics::TriangleMeshColliderInfo triangleMeshInfo;
+		std::vector<physx::PxVec3> vertices;
+		std::vector<unsigned int> indices;
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/Vampire.fbx");
+		auto& mesh = staticMesh->GetStaticMeshVec()[0];
+
+		vertices.resize(mesh.GetVertices().size());
+		indices.resize(mesh.GetIndices().size());
+		for (int i = 0; i < mesh.GetVertices().size(); i++)
+		{
+			vertices[i].x = -mesh.GetVertices()[i].m_Position.x;
+			vertices[i].y = -mesh.GetVertices()[i].m_Position.y;
+			vertices[i].z = -mesh.GetVertices()[i].m_Position.z;
+		}
+		for (int i = 0; i < mesh.GetIndices().size(); i++)
+		{
+			indices[i] = mesh.GetIndices()[i];
+		}
+
+		triangleMeshInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(0.f, 10.f, 0.f));
+		triangleMeshInfo.colliderInfo.id = 7;
+		triangleMeshInfo.colliderInfo.density = 1.f;
+		triangleMeshInfo.colliderInfo.dynamicFriction = 1.f;
+		triangleMeshInfo.colliderInfo.layerNumber = 0;
+		triangleMeshInfo.colliderInfo.restitution = 1.f;
+		triangleMeshInfo.colliderInfo.staticFriction = 1.f;
+		triangleMeshInfo.vertices = vertices.data();
+		triangleMeshInfo.vertexSize = vertices.size();
+		triangleMeshInfo.indices = indices.data();
+		triangleMeshInfo.indexSize = indices.size();
+		m_Physics->CreateStaticBody(triangleMeshInfo, physics::EColliderType::COLLISION, "triangleObject");
+		m_RigidBodyIDVec.push_back(7);
 
 		physics::CharacterControllerInfo controllerInfo;
 		controllerInfo.id = 1000;
 		controllerInfo.layerNumber = 0;
-		controllerInfo.position = Vector3(000.f, 100.f, 0.f);
+		controllerInfo.position = Vector3(1000.f, 100.f, 0.f);
 
 		physics::CharacterMovementInfo movementInfo;
 		m_Physics->CreateCCT(controllerInfo, movementInfo);
@@ -100,42 +200,42 @@ void DemoApp::Init()
 		meshInfo.m_RenderComponentInfo.m_SceneComponentInfo.m_Name = "TestComponent";
 		meshComponent->Setting(meshInfo);
 		meshComponent->SetOwner(object->GetRootComponent());
-		object->SetPosition(Vector3(100.f, 500.f, 0.f));
+		object->SetPosition(Vector3(100.f, 50.f, 0.f));
 		object->SetScale(Vector3(0.1f, 0.1f, 0.1f));
 
 		m_ObjectVec.push_back(object);
 
-		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/zeldaPosed001.fbx");
-		std::vector<Vector3> meshVertex;
-		meshVertex.reserve(100000);
-		for (auto& mesh : staticMesh->GetStaticMeshVec())
-		{
-			for (const auto& vertices : mesh.GetVertices())
-			{
-				Vector3 vertex;
-				vertex.x = -vertices.m_Position.x;
-				vertex.y = -vertices.m_Position.y;
-				vertex.z = -vertices.m_Position.z;
-				meshVertex.push_back(vertex);
-			}
-		}
-		physics::ConvexMeshColliderInfo convexInfo;
-		convexInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(200.f, 200.f, 0.f));
-		convexInfo.colliderInfo.density = 1.f;
-		convexInfo.colliderInfo.dynamicFriction = 1.f;
-		convexInfo.colliderInfo.id = 2;
-		convexInfo.colliderInfo.restitution = 1.f;
-		convexInfo.colliderInfo.staticFriction = 1.f;
-		convexInfo.colliderInfo.layerNumber = 1;
-		convexInfo.convexPolygonLimit = 10.f;
-		convexInfo.vertexSize = meshVertex.size();
-		convexInfo.vertices = meshVertex.data();
+		//shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/Flag_B.fbx");
+		//std::vector<Vector3> meshVertex;
+		//meshVertex.reserve(100000);
+		//for (auto& mesh : staticMesh->GetStaticMeshVec())
+		//{
+		//	for (const auto& vertices : mesh.GetVertices())
+		//	{
+		//		Vector3 vertex;
+		//		vertex.x = -vertices.m_Position.x;
+		//		vertex.y = -vertices.m_Position.y;
+		//		vertex.z = -vertices.m_Position.z;
+		//		meshVertex.push_back(vertex);
+		//	}
+		//}
+		//physics::ConvexMeshColliderInfo convexInfo;
+		//convexInfo.colliderInfo.collisionTransform = Matrix::CreateTranslation(Vector3(200.f, 200.f, 0.f));
+		//convexInfo.colliderInfo.density = 1.f;
+		//convexInfo.colliderInfo.dynamicFriction = 1.f;
+		//convexInfo.colliderInfo.id = 2;
+		//convexInfo.colliderInfo.restitution = 1.f;
+		//convexInfo.colliderInfo.staticFriction = 1.f;
+		//convexInfo.colliderInfo.layerNumber = 1;
+		//convexInfo.convexPolygonLimit = 10.f;
+		//convexInfo.vertexSize = meshVertex.size();
+		//convexInfo.vertices = meshVertex.data();
 
-		m_Physics->CreateDynamicBody(convexInfo, physics::EColliderType::COLLISION, "zelda");
+		//m_Physics->CreateDynamicBody(convexInfo, physics::EColliderType::COLLISION, "Flag");
 	}
 
 	{
-		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/Vampire.fbx");
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/SM_Cloak1_T7_Wolf.fbx");
 		auto& mesh = staticMesh->GetStaticMeshVec()[0];
 
 		std::vector<DirectX::SimpleMath::Vector3> vertices;
@@ -167,16 +267,212 @@ void DemoApp::Init()
 		info.uv = uvs.data();
 		info.indices = indices.data();
 		info.indexSize = indices.size();
-		info.vertexBuffer = RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/Vampire.fbx", 100);
-		info.indexBuffer = RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/Vampire.fbx", 100);
+		info.totalClothMass = 0.3f;
+		info.restOffset = 0.8f;
+		info.materialInfo.cohesion = 1.f;
+		info.materialInfo.adhesion = 1e+3f;
+		info.materialInfo.friction = 0.2f;
+		info.materialInfo.damping = 0.01f;
+		info.materialInfo.viscosity = 0.005f;
+		info.materialInfo.vorticityConfinement = 0.5f;
+		info.materialInfo.surfaceTension = 0.01f;
+		info.materialInfo.lift = 0.01f;
+		info.materialInfo.drag = 0.01f;
+		info.materialInfo.cflCoefficient = 1.f;
+		info.materialInfo.gravityScale = 1.f;
+		info.vertexBuffer = RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/SM_Cloak1_T7_Wolf.fbx", 100);
+		info.indexBuffer = RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/SM_Cloak1_T7_Wolf.fbx", 100);
 
-
-		DirectX::SimpleMath::Matrix trnaslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 200.f, 0.f));
+		DirectX::SimpleMath::Matrix trnaslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(0.f, 300.f, 0.f));
 		DirectX::SimpleMath::Matrix rotationX = DirectX::SimpleMath::Matrix::CreateRotationX(10.f);
 		DirectX::SimpleMath::Matrix rotationY = DirectX::SimpleMath::Matrix::CreateRotationY(20.f);
 		DirectX::SimpleMath::Matrix rotationZ = DirectX::SimpleMath::Matrix::CreateRotationZ(30.f);
-		DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.2f);
-		DirectX::SimpleMath::Matrix transform = trnaslation;
+		DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.5f) ;
+		DirectX::SimpleMath::Matrix transform = scale * trnaslation;
+
+		info.worldTransform = transform;
+
+		m_Physics->CreateCloth(info);
+	}
+
+	{
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/SM_Cloak0_T1.fbx");
+		auto& mesh = staticMesh->GetStaticMeshVec()[0];
+
+		std::vector<DirectX::SimpleMath::Vector3> vertices;
+		std::vector<DirectX::SimpleMath::Vector2> uvs;
+		std::vector<unsigned int> indices;
+		vertices.resize(mesh.GetVertices().size());
+		uvs.resize(mesh.GetVertices().size());
+		indices.resize(mesh.GetIndices().size());
+		
+		for (int i = 0; i < mesh.GetVertices().size(); i++)
+		{
+			vertices[i].x = mesh.GetVertices()[i].m_Position.x;
+			vertices[i].y = mesh.GetVertices()[i].m_Position.y;
+			vertices[i].z = mesh.GetVertices()[i].m_Position.z;
+			uvs[i].x = mesh.GetVertices()[i].m_TexCoord.x;
+			uvs[i].y = mesh.GetVertices()[i].m_TexCoord.y;
+		}
+
+		for (int i = 0; i < mesh.GetIndices().size(); i++)
+		{
+			indices[i] = mesh.GetIndices()[i];
+		}
+
+		physics::PhysicsClothInfo info;
+		info.id = 101;
+		info.layerNumber = 0;
+		info.vertices = vertices.data();
+		info.vertexSize = vertices.size();
+		info.uv = uvs.data();
+		info.indices = indices.data();
+		info.indexSize = indices.size();
+		info.totalClothMass = 0.3f;
+		info.restOffset = 0.8f;
+		info.materialInfo.cohesion = 1.f;
+		info.materialInfo.adhesion = 1e+3f;
+		info.materialInfo.friction = 0.2f;
+		info.materialInfo.damping = 0.01f;
+		info.materialInfo.viscosity = 0.005f;
+		info.materialInfo.vorticityConfinement = 0.5f;
+		info.materialInfo.surfaceTension = 0.01f;
+		info.materialInfo.lift = 0.01f;
+		info.materialInfo.drag = 0.01f;
+		info.materialInfo.cflCoefficient = 1.f;
+		info.materialInfo.gravityScale = 1.f;
+		info.vertexBuffer = RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/SM_Cloak0_T1.fbx", 101);
+		info.indexBuffer = RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/SM_Cloak0_T1.fbx", 101);
+
+		DirectX::SimpleMath::Matrix trnaslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(100.f, 300.f, 0.f));
+		DirectX::SimpleMath::Matrix rotationX = DirectX::SimpleMath::Matrix::CreateRotationX(10.f);
+		DirectX::SimpleMath::Matrix rotationY = DirectX::SimpleMath::Matrix::CreateRotationY(20.f);
+		DirectX::SimpleMath::Matrix rotationZ = DirectX::SimpleMath::Matrix::CreateRotationZ(30.f);
+		DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.5f) ;
+		DirectX::SimpleMath::Matrix transform = scale * trnaslation;
+
+		info.worldTransform = transform;
+
+		m_Physics->CreateCloth(info);
+	}
+
+	{
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/SM_Cloak1_T2.fbx");
+		auto& mesh = staticMesh->GetStaticMeshVec()[0];
+
+		std::vector<DirectX::SimpleMath::Vector3> vertices;
+		std::vector<DirectX::SimpleMath::Vector2> uvs;
+		std::vector<unsigned int> indices;
+		vertices.resize(mesh.GetVertices().size());
+		uvs.resize(mesh.GetVertices().size());
+		indices.resize(mesh.GetIndices().size());
+		
+		for (int i = 0; i < mesh.GetVertices().size(); i++)
+		{
+			vertices[i].x = mesh.GetVertices()[i].m_Position.x;
+			vertices[i].y = mesh.GetVertices()[i].m_Position.y;
+			vertices[i].z = mesh.GetVertices()[i].m_Position.z;
+			uvs[i].x = mesh.GetVertices()[i].m_TexCoord.x;
+			uvs[i].y = mesh.GetVertices()[i].m_TexCoord.y;
+		}
+
+		for (int i = 0; i < mesh.GetIndices().size(); i++)
+		{
+			indices[i] = mesh.GetIndices()[i];
+		}
+
+		physics::PhysicsClothInfo info;
+		info.id = 102;
+		info.layerNumber = 0;
+		info.vertices = vertices.data();
+		info.vertexSize = vertices.size();
+		info.uv = uvs.data();
+		info.indices = indices.data();
+		info.indexSize = indices.size();
+		info.totalClothMass = 0.3f;
+		info.restOffset = 0.8f;
+		info.materialInfo.cohesion = 1.f;
+		info.materialInfo.adhesion = 1e+3f;
+		info.materialInfo.friction = 0.2f;
+		info.materialInfo.damping = 0.01f;
+		info.materialInfo.viscosity = 0.005f;
+		info.materialInfo.vorticityConfinement = 0.5f;
+		info.materialInfo.surfaceTension = 0.01f;
+		info.materialInfo.lift = 0.01f;
+		info.materialInfo.drag = 0.01f;
+		info.materialInfo.cflCoefficient = 1.f;
+		info.materialInfo.gravityScale = 1.f;
+		info.vertexBuffer = RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/SM_Cloak1_T2.fbx", 102);
+		info.indexBuffer = RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/SM_Cloak1_T2.fbx", 102);
+
+		DirectX::SimpleMath::Matrix trnaslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(50.f, 300.f, 0.f));
+		DirectX::SimpleMath::Matrix rotationX = DirectX::SimpleMath::Matrix::CreateRotationX(10.f);
+		DirectX::SimpleMath::Matrix rotationY = DirectX::SimpleMath::Matrix::CreateRotationY(20.f);
+		DirectX::SimpleMath::Matrix rotationZ = DirectX::SimpleMath::Matrix::CreateRotationZ(30.f);
+		DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.5f) ;
+		DirectX::SimpleMath::Matrix transform = scale * trnaslation;
+
+		info.worldTransform = transform;
+
+		m_Physics->CreateCloth(info);
+	}
+
+	{
+		shared_ptr<GraphicsEngine::StaticMeshSceneResource> staticMesh = RESOURCE->Find<GraphicsEngine::StaticMeshSceneResource>("../Resources/FBX/SM_Cloak1_T1.fbx");
+		auto& mesh = staticMesh->GetStaticMeshVec()[0];
+
+		std::vector<DirectX::SimpleMath::Vector3> vertices;
+		std::vector<DirectX::SimpleMath::Vector2> uvs;
+		std::vector<unsigned int> indices;
+		vertices.resize(mesh.GetVertices().size());
+		uvs.resize(mesh.GetVertices().size());
+		indices.resize(mesh.GetIndices().size());
+		
+		for (int i = 0; i < mesh.GetVertices().size(); i++)
+		{
+			vertices[i].x = mesh.GetVertices()[i].m_Position.x;
+			vertices[i].y = mesh.GetVertices()[i].m_Position.y;
+			vertices[i].z = mesh.GetVertices()[i].m_Position.z;
+			uvs[i].x = mesh.GetVertices()[i].m_TexCoord.x;
+			uvs[i].y = mesh.GetVertices()[i].m_TexCoord.y;
+		}
+
+		for (int i = 0; i < mesh.GetIndices().size(); i++)
+		{
+			indices[i] = mesh.GetIndices()[i];
+		}
+
+
+		physics::PhysicsClothInfo info;
+		info.id = 103;
+		info.layerNumber = 0;
+		info.vertices = vertices.data();
+		info.vertexSize = vertices.size();
+		info.uv = uvs.data();
+		info.indices = indices.data();
+		info.indexSize = indices.size();
+		info.totalClothMass = 0.1f;
+		info.restOffset = 0.8f;
+		info.materialInfo.cohesion = 1.f;
+		info.materialInfo.adhesion = 1e+3f;
+		info.materialInfo.friction = 0.2f;
+		info.materialInfo.damping = 0.01f;
+		info.materialInfo.viscosity = 0.005f;
+		info.materialInfo.vorticityConfinement = 0.5f;
+		info.materialInfo.surfaceTension = 0.01f;
+		info.materialInfo.lift = 0.005f;
+		info.materialInfo.drag = 0.005f;
+		info.materialInfo.cflCoefficient = 1.f;
+		info.materialInfo.gravityScale = 1.f;
+		info.vertexBuffer = RENDER->CreatePhysicsVertexBuffer("../Resources/FBX/SM_Cloak1_T1.fbx", 103);
+		info.indexBuffer = RENDER->CreatePhysicsIndexBuffer("../Resources/FBX/SM_Cloak1_T1.fbx", 103);
+
+		DirectX::SimpleMath::Matrix trnaslation = DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-50.f, 300.f, 0.f));
+		DirectX::SimpleMath::Matrix rotationX = DirectX::SimpleMath::Matrix::CreateRotationX(10.f);
+		DirectX::SimpleMath::Matrix rotationY = DirectX::SimpleMath::Matrix::CreateRotationY(20.f);
+		DirectX::SimpleMath::Matrix rotationZ = DirectX::SimpleMath::Matrix::CreateRotationZ(30.f);
+		DirectX::SimpleMath::Matrix scale = DirectX::SimpleMath::Matrix::CreateScale(0.5f) ;
+		DirectX::SimpleMath::Matrix transform = scale * trnaslation;
 
 		info.worldTransform = transform;
 
@@ -439,7 +735,7 @@ void DemoApp::Update(float _deltaTime)
 		DirectX::SimpleMath::Vector3 scale;
 		getData.worldTransform.Decompose(scale, rotation, translation);
 
-		DirectX::SimpleMath::Quaternion rotationQuaternion = Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f), 0.1f);
+		DirectX::SimpleMath::Quaternion rotationQuaternion = Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f), 0.01f);
 		rotation = rotation * rotationQuaternion;
 
 		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::CreateScale(scale)
@@ -458,7 +754,7 @@ void DemoApp::Update(float _deltaTime)
 		DirectX::SimpleMath::Vector3 scale;
 		getData.worldTransform.Decompose(scale, rotation, translation);
 
-		DirectX::SimpleMath::Quaternion rotationQuaternion = Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f), -0.1f);
+		DirectX::SimpleMath::Quaternion rotationQuaternion = Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3(1.f, 0.f, 0.f), 0.01f);
 		rotation = rotation * rotationQuaternion;
 
 		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::CreateScale(scale)
@@ -520,9 +816,10 @@ void DemoApp::Update(float _deltaTime)
 		{
 			FixedTime -= 1 / 60.f;
 
-			m_Physics->Update(1 / 60.f);
-			m_Physics->FinalUpdate();
+
 		}
+		m_Physics->Update(_deltaTime);
+		m_Physics->FinalUpdate();
 	}
 }
 

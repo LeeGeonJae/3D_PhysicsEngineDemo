@@ -3,6 +3,8 @@
 namespace physics
 {
 	PhysicsResourceManager::PhysicsResourceManager()
+		: mPhysics(nullptr)
+		, mResourceContainer()
 	{
 	}
 
